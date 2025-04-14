@@ -17,46 +17,35 @@ import { canCreateInvitations } from '@/utils/permissions';
 const inviteMember = ref(false);
 
 defineProps<{
-    availableRoles: Role[];
+	availableRoles: Role[];
 }>();
 
 const activeTab = ref<'all' | 'invitations'>('all');
 function isActiveTab(tab: string) {
-    return activeTab.value === tab;
+	return activeTab.value === tab;
 }
 </script>
 
 <template>
-    <AppLayout title="Members" data-testid="members_view">
-        <MainContainer
-            class="py-5 border-b border-default-background-separator flex justify-between items-center">
-            <div class="flex items-center space-x-4 sm:space-x-6">
-                <PageTitle :icon="UserGroupIcon" title="Members"> </PageTitle>
-                <TabBar>
-                    <TabBarItem
-                        :active="isActiveTab('all')"
-                        @click="activeTab = 'all'"
-                        >All</TabBarItem
-                    >
-                    <TabBarItem
-                        :active="isActiveTab('invitations')"
-                        @click="activeTab = 'invitations'"
-                        >Invitations</TabBarItem
-                    >
-                </TabBar>
-            </div>
-            <SecondaryButton
-                v-if="canCreateInvitations()"
-                :icon="PlusIcon"
-                @click="inviteMember = true"
-                >Invite member</SecondaryButton
-            >
-            <MemberInviteModal
-                v-model:show="inviteMember"
-                :available-roles="availableRoles"
-                @close="activeTab = 'invitations'"></MemberInviteModal>
-        </MainContainer>
-        <MemberTable v-if="activeTab === 'all'"></MemberTable>
-        <InvitationTable v-if="activeTab === 'invitations'"></InvitationTable>
-    </AppLayout>
+	<AppLayout title="Members" data-testid="members_view">
+		<MainContainer class="py-5 border-b border-default-background-separator flex justify-between items-center">
+			<div class="flex items-center space-x-4 sm:space-x-6">
+				<PageTitle :icon="UserGroupIcon" title="Members"> </PageTitle>
+				<TabBar>
+					<TabBarItem :active="isActiveTab('all')" @click="activeTab = 'all'">All</TabBarItem>
+					<TabBarItem :active="isActiveTab('invitations')" @click="activeTab = 'invitations'">Invitations</TabBarItem>
+				</TabBar>
+			</div>
+			<SecondaryButton v-if="canCreateInvitations()" :icon="PlusIcon" @click="inviteMember = true"
+				>Invite member</SecondaryButton
+			>
+			<MemberInviteModal
+				v-model:show="inviteMember"
+				:available-roles="availableRoles"
+				@close="activeTab = 'invitations'"
+			></MemberInviteModal>
+		</MainContainer>
+		<MemberTable v-if="activeTab === 'all'"></MemberTable>
+		<InvitationTable v-if="activeTab === 'invitations'"></InvitationTable>
+	</AppLayout>
 </template>

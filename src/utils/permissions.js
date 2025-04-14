@@ -3,118 +3,118 @@ import { usePage } from './inertia';
 const page = usePage();
 
 function currentUserHasPermission(permission) {
-    if (Array.isArray(page.props.auth.permissions)) {
-        return page.props.auth.permissions.includes(permission);
-    }
-    return false;
+	if (Array.isArray(page.props.auth.permissions)) {
+		return page.props.auth.permissions.includes(permission);
+	}
+	return false;
 }
 
 export function canUpdateOrganization() {
-    return currentUserHasPermission('organizations:update');
+	return currentUserHasPermission('organizations:update');
 }
 
 export function canViewProjects() {
-    return currentUserHasPermission('projects:view');
+	return currentUserHasPermission('projects:view');
 }
 
 export function canCreateProjects() {
-    return currentUserHasPermission('projects:create');
+	return currentUserHasPermission('projects:create');
 }
 
 export function canUpdateProjects() {
-    return currentUserHasPermission('projects:update');
+	return currentUserHasPermission('projects:update');
 }
 
 export function canDeleteProjects() {
-    return currentUserHasPermission('projects:delete');
+	return currentUserHasPermission('projects:delete');
 }
 
 export function canViewProjectMembers() {
-    return currentUserHasPermission('project-members:view');
+	return currentUserHasPermission('project-members:view');
 }
 
 export function canCreateTasks() {
-    return currentUserHasPermission('tasks:create');
+	return currentUserHasPermission('tasks:create');
 }
 
 export function canUpdateTasks() {
-    return currentUserHasPermission('tasks:update');
+	return currentUserHasPermission('tasks:update');
 }
 
 export function canDeleteTasks() {
-    return currentUserHasPermission('tasks:delete');
+	return currentUserHasPermission('tasks:delete');
 }
 
 export function canCreateClients() {
-    return currentUserHasPermission('clients:create');
+	return currentUserHasPermission('clients:create');
 }
 
 export function canUpdateClients() {
-    return currentUserHasPermission('clients:update');
+	return currentUserHasPermission('clients:update');
 }
 
 export function canDeleteClients() {
-    return currentUserHasPermission('clients:delete');
+	return currentUserHasPermission('clients:delete');
 }
 
 export function canViewClients() {
-    return currentUserHasPermission('clients:view');
+	return currentUserHasPermission('clients:view');
 }
 
 export function canViewMembers() {
-    return currentUserHasPermission('members:view');
+	return currentUserHasPermission('members:view');
 }
 
 export function canUpdateMembers() {
-    return currentUserHasPermission('members:update');
+	return currentUserHasPermission('members:update');
 }
 
 export function canDeleteMembers() {
-    return currentUserHasPermission('members:delete');
+	return currentUserHasPermission('members:delete');
 }
 
 export function canMergeMembers() {
-    return currentUserHasPermission('members:merge-into');
+	return currentUserHasPermission('members:merge-into');
 }
 
 export function canMakeMembersPlaceholders() {
-    return currentUserHasPermission('members:make-placeholder');
+	return currentUserHasPermission('members:make-placeholder');
 }
 
 export function canInvitePlaceholderMembers() {
-    return currentUserHasPermission('members:invite-placeholder');
+	return currentUserHasPermission('members:invite-placeholder');
 }
 
 export function canCreateInvitations() {
-    return currentUserHasPermission('invitations:create');
+	return currentUserHasPermission('invitations:create');
 }
 
 export function canViewTags() {
-    return currentUserHasPermission('tags:view');
+	return currentUserHasPermission('tags:view');
 }
 
 export function canCreateTags() {
-    return currentUserHasPermission('tags:create');
+	return currentUserHasPermission('tags:create');
 }
 
 export function canDeleteTags() {
-    return currentUserHasPermission('tags:delete');
+	return currentUserHasPermission('tags:delete');
 }
 
 export function canManageBilling() {
-    return currentUserHasPermission('billing');
+	return currentUserHasPermission('billing');
 }
 
 export function canViewReport() {
-    return currentUserHasPermission('reports:view');
+	return currentUserHasPermission('reports:view');
 }
 export function canUpdateReport() {
-    return currentUserHasPermission('reports:update');
+	return currentUserHasPermission('reports:update');
 }
 export function canDeleteReport() {
-    return currentUserHasPermission('reports:delete');
+	return currentUserHasPermission('reports:delete');
 }
 
 export function canViewAllTimeEntries() {
-    return currentUserHasPermission('time-entries:view:all');
+	return currentUserHasPermission('time-entries:view:all');
 }

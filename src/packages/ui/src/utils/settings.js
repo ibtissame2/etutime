@@ -1,7 +1,7 @@
 export function getWeekStart() {
-    return 'monday';
+	return 'monday';
 }
 
 export function getUserTimezone() {
-    return 'GMT+1';
+	return 'GMT+1';
 }

@@ -5,83 +5,83 @@ import { getCurrentOrganizationId } from '@/utils/useUser';
 import { useNotificationsStore } from '@/utils/notification';
 
 export const useClientsStore = defineStore('clients', () => {
-    const clientResponse = ref(null);
-    const { handleApiRequestNotifications } = useNotificationsStore();
+	const clientResponse = ref(null);
+	const { handleApiRequestNotifications } = useNotificationsStore();
 
-    async function fetchClients() {
-        const organization = getCurrentOrganizationId();
-        if (organization) {
-            clientResponse.value = await handleApiRequestNotifications(
-                () =>
-                    api.getClients({
-                        queries: {
-                            archived: 'all',
-                        },
-                        params: {
-                            organization: organization,
-                        },
-                    }),
-                undefined,
-                'Failed to fetch clients'
-            );
-        }
-    }
+	async function fetchClients() {
+		const organization = getCurrentOrganizationId();
+		if (organization) {
+			clientResponse.value = await handleApiRequestNotifications(
+				() =>
+					api.getClients({
+						queries: {
+							archived: 'all',
+						},
+						params: {
+							organization: organization,
+						},
+					}),
+				undefined,
+				'Failed to fetch clients'
+			);
+		}
+	}
 
-    async function createClient(clientBody) {
-        const organization = getCurrentOrganizationId();
-        if (organization) {
-            const response = await handleApiRequestNotifications(
-                () =>
-                    api.createClient(clientBody, {
-                        params: {
-                            organization: organization,
-                        },
-                    }),
-                'Client created successfully',
-                'Failed to create client'
-            );
-            await fetchClients();
-            return response?.data;
-        }
-    }
+	async function createClient(clientBody) {
+		const organization = getCurrentOrganizationId();
+		if (organization) {
+			const response = await handleApiRequestNotifications(
+				() =>
+					api.createClient(clientBody, {
+						params: {
+							organization: organization,
+						},
+					}),
+				'Client created successfully',
+				'Failed to create client'
+			);
+			await fetchClients();
+			return response?.data;
+		}
+	}
 
-    async function updateClient(clientId, clientBody) {
-        const organization = getCurrentOrganizationId();
-        if (organization) {
-            await handleApiRequestNotifications(
-                () =>
-                    api.updateClient(clientBody, {
-                        params: {
-                            organization: organization,
-                            client: clientId,
-                        },
-                    }),
-                'Client updated successfully',
-                'Failed to update client'
-            );
-            await fetchClients();
-        }
-    }
+	async function updateClient(clientId, clientBody) {
+		const organization = getCurrentOrganizationId();
+		if (organization) {
+			await handleApiRequestNotifications(
+				() =>
+					api.updateClient(clientBody, {
+						params: {
+							organization: organization,
+							client: clientId,
+						},
+					}),
+				'Client updated successfully',
+				'Failed to update client'
+			);
+			await fetchClients();
+		}
+	}
 
-    async function deleteClient(clientId) {
-        const organization = getCurrentOrganizationId();
-        if (organization) {
-            await handleApiRequestNotifications(
-                () =>
-                    api.deleteClient(undefined, {
-                        params: {
-                            organization: organization,
-                            client: clientId,
-                        },
-                    }),
-                'Client deleted successfully',
-                'Failed to delete client'
-            );
-            await fetchClients();
-        }
-    }
+	async function deleteClient(clientId) {
+		const organization = getCurrentOrganizationId();
+		if (organization) {
+			await handleApiRequestNotifications(
+				() =>
+					api.deleteClient(undefined, {
+						params: {
+							organization: organization,
+							client: clientId,
+						},
+					}),
+				'Client deleted successfully',
+				'Failed to delete client'
+			);
+			await fetchClients();
+		}
+	}
 
-    const clients = computed(() => clientResponse.value?.data || []);
+	const clients = computed(() => clientResponse.value?.data || []);
 
-    return { clients, fetchClients, createClient, deleteClient, updateClient };
+	return { clients, fetchClients, createClient, deleteClient, updateClient };
 });

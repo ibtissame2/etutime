@@ -1,71 +1,54 @@
-import {computed, watch} from "vue";
-import {onKeyStroke} from "@vueuse/core";
+import { computed, watch } from 'vue';
+import { onKeyStroke } from '@vueuse/core';
 
 export function useSelectEvents(filteredItems, highlightedItemId, getKeyFromItem, open) {
-    function moveHighlightUp() {
-        if (highlightedItem.value) {
-            const currentHightlightedIndex = filteredItems.value.indexOf(
-                highlightedItem.value
-            );
-            if (currentHightlightedIndex === 0) {
-                highlightedItemId.value = getKeyFromItem(
-                    filteredItems.value[filteredItems.value.length - 1]
-                );
-            } else {
-                highlightedItemId.value = getKeyFromItem(
-                    filteredItems.value[currentHightlightedIndex - 1]
-                );
-            }
-        }
-        else {
-            highlightedItemId.value = getKeyFromItem(filteredItems.value[filteredItems.value.length - 1]);
-        }
-    }
+	function moveHighlightUp() {
+		if (highlightedItem.value) {
+			const currentHightlightedIndex = filteredItems.value.indexOf(highlightedItem.value);
+			if (currentHightlightedIndex === 0) {
+				highlightedItemId.value = getKeyFromItem(filteredItems.value[filteredItems.value.length - 1]);
+			} else {
+				highlightedItemId.value = getKeyFromItem(filteredItems.value[currentHightlightedIndex - 1]);
+			}
+		} else {
+			highlightedItemId.value = getKeyFromItem(filteredItems.value[filteredItems.value.length - 1]);
+		}
+	}
 
-    function moveHighlightDown() {
-        if (highlightedItem.value) {
-            const currentHightlightedIndex = filteredItems.value.indexOf(
-                highlightedItem.value
-            );
-            if (currentHightlightedIndex === filteredItems.value.length - 1) {
-                highlightedItemId.value = getKeyFromItem(
-                    filteredItems.value[0]
-                );
-            } else {
-                highlightedItemId.value = getKeyFromItem(
-                    filteredItems.value[currentHightlightedIndex + 1]
-                );
-            }
-        }
-        else{
-            highlightedItemId.value = getKeyFromItem(filteredItems.value[0]);
-        }
-    }
+	function moveHighlightDown() {
+		if (highlightedItem.value) {
+			const currentHightlightedIndex = filteredItems.value.indexOf(highlightedItem.value);
+			if (currentHightlightedIndex === filteredItems.value.length - 1) {
+				highlightedItemId.value = getKeyFromItem(filteredItems.value[0]);
+			} else {
+				highlightedItemId.value = getKeyFromItem(filteredItems.value[currentHightlightedIndex + 1]);
+			}
+		} else {
+			highlightedItemId.value = getKeyFromItem(filteredItems.value[0]);
+		}
+	}
 
-    const highlightedItem = computed(() => {
-        return filteredItems.value.find(
-            (item) => getKeyFromItem(item) === highlightedItemId.value
-        );
-    });
+	const highlightedItem = computed(() => {
+		return filteredItems.value.find((item) => getKeyFromItem(item) === highlightedItemId.value);
+	});
 
-    onKeyStroke('ArrowDown', (e) => {
-        if (open.value === true) {
-            moveHighlightDown();
-            e.preventDefault();
-        }
-    });
+	onKeyStroke('ArrowDown', (e) => {
+		if (open.value === true) {
+			moveHighlightDown();
+			e.preventDefault();
+		}
+	});
 
-    onKeyStroke('ArrowUp', (e) => {
-        if (open.value === true) {
-            moveHighlightUp();
-            e.preventDefault();
-        }
-    });
+	onKeyStroke('ArrowUp', (e) => {
+		if (open.value === true) {
+			moveHighlightUp();
+			e.preventDefault();
+		}
+	});
 
-    watch(open, (newOpen) => {
-        if (newOpen === false) {
-            highlightedItemId.value = null;
-        }
-    });
+	watch(open, (newOpen) => {
+		if (newOpen === false) {
+			highlightedItemId.value = null;
+		}
+	});
 }
-

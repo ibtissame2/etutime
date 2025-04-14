@@ -10,19 +10,19 @@ const show = defineModel('show', { default: false });
 const saving = ref(false);
 
 const tag = ref({
-    name: '',
+	name: '',
 });
 
 const props = defineProps({
-    createTag: Function,
+	createTag: Function,
 });
 
 async function submit() {
-    const newTag = props.createTag(tag.value.name);
-    if (newTag !== undefined) {
-        show.value = false;
-        tag.value.name = '';
-    }
+	const newTag = props.createTag(tag.value.name);
+	if (newTag !== undefined) {
+		show.value = false;
+		tag.value.name = '';
+	}
 }
 
 const tagNameInput = ref(null);
@@ -31,40 +31,37 @@ useFocus(tagNameInput, { initialValue: true });
 </script>
 
 <template>
-    <DialogModal closeable :show="show" @close="show = false">
-        <template #title>
-            <div class="flex space-x-2">
-                <span> Create Tags </span>
-            </div>
-        </template>
-        <template #content>
-            <div class="flex items-center space-x-4">
-                <div class="col-span-6 sm:col-span-4 flex-1">
-                    <TextInput
-                        id="tagName"
-                        ref="tagNameInput"
-                        v-model="tag.name"
-                        type="text"
-                        placeholder="Tag Name"
-                        class="mt-1 block w-full"
-                        required
-                        autocomplete="tagName"
-                        @keydown.enter="submit" />
-                </div>
-            </div>
-        </template>
-        <template #footer>
-            <SecondaryButton @click="show = false"> Cancel </SecondaryButton>
+	<DialogModal closeable :show="show" @close="show = false">
+		<template #title>
+			<div class="flex space-x-2">
+				<span> Create Tags </span>
+			</div>
+		</template>
+		<template #content>
+			<div class="flex items-center space-x-4">
+				<div class="col-span-6 sm:col-span-4 flex-1">
+					<TextInput
+						id="tagName"
+						ref="tagNameInput"
+						v-model="tag.name"
+						type="text"
+						placeholder="Tag Name"
+						class="mt-1 block w-full"
+						required
+						autocomplete="tagName"
+						@keydown.enter="submit"
+					/>
+				</div>
+			</div>
+		</template>
+		<template #footer>
+			<SecondaryButton @click="show = false"> Cancel </SecondaryButton>
 
-            <PrimaryButton
-                class="ms-3"
-                :class="{ 'opacity-25': saving }"
-                :disabled="saving"
-                @click="submit">
-                Create Tag
-            </PrimaryButton>
-        </template>
-    </DialogModal>
+			<PrimaryButton class="ms-3" :class="{ 'opacity-25': saving }" :disabled="saving" @click="submit">
+				Create Tag
+			</PrimaryButton>
+		</template>
+	</DialogModal>
 </template>
 
 <style scoped></style>

@@ -8,19 +8,19 @@ import { useTimeEntriesStore } from '@/utils/useTimeEntries';
 import { canViewClients, canViewMembers } from '@/utils/permissions';
 
 export function initializeStores() {
-    refreshStores();
+	refreshStores();
 }
 
 export function refreshStores() {
-    useProjectsStore().fetchProjects();
-    useTasksStore().fetchTasks();
-    useTagsStore().fetchTags();
-    useCurrentTimeEntryStore().fetchCurrentTimeEntry();
-    useTimeEntriesStore().patchTimeEntries();
-    if (canViewMembers()) {
-        useMembersStore().fetchMembers();
-    }
-    if (canViewClients()) {
-        useClientsStore().fetchClients();
-    }
+	useProjectsStore().fetchProjects();
+	useTasksStore().fetchTasks();
+	useTagsStore().fetchTags();
+	useCurrentTimeEntryStore().fetchCurrentTimeEntry();
+	useTimeEntriesStore().patchTimeEntries();
+	if (canViewMembers()) {
+		useMembersStore().fetchMembers();
+	}
+	if (canViewClients()) {
+		useClientsStore().fetchClients();
+	}
 }
