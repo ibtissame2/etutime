@@ -13,27 +13,21 @@ import { useTagsStore } from '@/utils/useTags';
 const showCreateTagModal = ref(false);
 
 async function createTag(tag: string) {
-    return await useTagsStore().createTag(tag);
+	return await useTagsStore().createTag(tag);
 }
 </script>
 
 <template>
-    <AppLayout title="Tags" data-testid="tags_view">
-        <MainContainer
-            class="py-5 border-b border-default-background-separator flex justify-between items-center">
-            <div class="flex items-center space-x-6">
-                <PageTitle :icon="TagIcon" title="Tags"></PageTitle>
-            </div>
-            <SecondaryButton
-                v-if="canCreateTags()"
-                :icon="PlusIcon"
-                @click="showCreateTagModal = true"
-                >Create Tag
-            </SecondaryButton>
-            <TagCreateModal
-                v-model:show="showCreateTagModal"
-                :create-tag="createTag"></TagCreateModal>
-        </MainContainer>
-        <TagTable :create-tag="createTag"></TagTable>
-    </AppLayout>
+	<AppLayout title="Tags" data-testid="tags_view">
+		<MainContainer class="py-5 border-b border-default-background-separator flex justify-between items-center">
+			<div class="flex items-center space-x-6">
+				<PageTitle :icon="TagIcon" title="Tags"></PageTitle>
+			</div>
+			<SecondaryButton v-if="canCreateTags()" :icon="PlusIcon" @click="showCreateTagModal = true"
+				>Create Tag
+			</SecondaryButton>
+			<TagCreateModal v-model:show="showCreateTagModal" :create-tag="createTag"></TagCreateModal>
+		</MainContainer>
+		<TagTable :create-tag="createTag"></TagTable>
+	</AppLayout>
 </template>

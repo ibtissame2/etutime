@@ -7,71 +7,61 @@ import DangerButton from '@/packages/ui/src/Buttons/DangerButton.vue';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 
 const props = defineProps({
-    team: Object,
+	team: Object,
 });
 
 const confirmingTeamDeletion = ref(false);
 const form = useForm({});
 
 const confirmTeamDeletion = () => {
-    confirmingTeamDeletion.value = true;
+	confirmingTeamDeletion.value = true;
 };
 
 const deleteTeam = () => {
-    form.delete(route('teams.destroy', props.team), {
-        errorBag: 'deleteTeam',
-    });
+	form.delete(route('teams.destroy', props.team), {
+		errorBag: 'deleteTeam',
+	});
 };
 </script>
 
 <template>
-    <ActionSection>
-        <template #title> Delete Organization </template>
+	<ActionSection>
+		<template #title> Delete Organization </template>
 
-        <template #description>
-            Permanently delete this organization.
-        </template>
+		<template #description> Permanently delete this organization. </template>
 
-        <template #content>
-            <div class="max-w-xl text-sm text-muted">
-                Once a organization is deleted, all of its resources and data
-                will be permanently deleted. Before deleting this organization,
-                please download any data or information regarding this
-                organization that you wish to retain.
-            </div>
+		<template #content>
+			<div class="max-w-xl text-sm text-muted">
+				Once a organization is deleted, all of its resources and data will be permanently deleted. Before deleting this
+				organization, please download any data or information regarding this organization that you wish to retain.
+			</div>
 
-            <div class="mt-5">
-                <DangerButton @click="confirmTeamDeletion">
-                    Delete Organization
-                </DangerButton>
-            </div>
+			<div class="mt-5">
+				<DangerButton @click="confirmTeamDeletion"> Delete Organization </DangerButton>
+			</div>
 
-            <!-- Delete Organization Confirmation Modal -->
-            <ConfirmationModal
-                :show="confirmingTeamDeletion"
-                @close="confirmingTeamDeletion = false">
-                <template #title> Delete Organization </template>
+			<!-- Delete Organization Confirmation Modal -->
+			<ConfirmationModal :show="confirmingTeamDeletion" @close="confirmingTeamDeletion = false">
+				<template #title> Delete Organization </template>
 
-                <template #content>
-                    Are you sure you want to delete this organization? Once a
-                    organization is deleted, all of its resources and data will
-                    be permanently deleted.
-                </template>
+				<template #content>
+					Are you sure you want to delete this organization? Once a organization is deleted, all of its resources and
+					data will be permanently deleted.
+				</template>
 
-                <template #footer>
-                    <SecondaryButton @click="confirmingTeamDeletion = false">
-                        Cancel
-                    </SecondaryButton>
+				<template #footer>
+					<SecondaryButton @click="confirmingTeamDeletion = false"> Cancel </SecondaryButton>
 
-                    <DangerButton
-                        class="ms-3"
-                        :class="{ 'opacity-25': form.processing }"
-                        :disabled="form.processing"
-                        @click="deleteTeam">
-                        Delete Organization
-                    </DangerButton>
-                </template>
-            </ConfirmationModal>
-        </template>
-    </ActionSection>
+					<DangerButton
+						class="ms-3"
+						:class="{ 'opacity-25': form.processing }"
+						:disabled="form.processing"
+						@click="deleteTeam"
+					>
+						Delete Organization
+					</DangerButton>
+				</template>
+			</ConfirmationModal>
+		</template>
+	</ActionSection>
 </template>
