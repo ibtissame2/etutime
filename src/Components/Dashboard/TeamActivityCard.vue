@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup>
 import { useQuery } from '@tanstack/vue-query';
 import { computed } from 'vue';
 import DashboardCard from '@/Components/Dashboard/DashboardCard.vue';
@@ -17,13 +17,12 @@ const { data: latestTeamActivity, isLoading } = useQuery({
   queryFn: () => {
       return api.latestTeamActivity({
           params: {
-              organization: organizationId.value!
+              organization: organizationId.value
           }
-      })
+      });
   },
   enabled: computed(() => !!organizationId.value),
 });
-
 </script>
 
 <template>

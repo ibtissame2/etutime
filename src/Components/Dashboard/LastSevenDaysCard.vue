@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 import DashboardCard from "@/Components/Dashboard/DashboardCard.vue";
@@ -10,13 +10,12 @@ import { LoadingSpinner } from "@/packages/ui/src";
 
 const organizationId = computed(() => getCurrentOrganizationId());
 
-
 const { data: last7Days, isLoading } = useQuery({
     queryKey: ["lastSevenDays", organizationId],
     queryFn: () => {
         return api.lastSevenDays({
             params: {
-                organization: organizationId.value!
+                organization: organizationId.value
             }
         });
     },
@@ -27,7 +26,6 @@ const { data: last7Days, isLoading } = useQuery({
         history: Array(8).fill(0)
     }))
 });
-
 </script>
 
 <template>

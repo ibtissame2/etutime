@@ -32,7 +32,7 @@ provide(THEME_KEY, "dark");
 
 const weekdays = computed(() => {
     const daysOrder = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-    const dayMapping: Record<string, string> = {
+    const dayMapping = {
         monday: "Mon",
         tuesday: "Tue",
         wednesday: "Wed",
@@ -55,7 +55,6 @@ const weekdays = computed(() => {
     }
 });
 
-
 const accentColor = useCssVar("--theme-color-chart", null, { observe: true });
 
 const organizationId = computed(() => getCurrentOrganizationId());
@@ -65,7 +64,7 @@ const { data: weeklyProjectOverview } = useQuery({
     queryFn: () => {
         return api.weeklyProjectOverview({
             params: {
-                organization: organizationId.value!
+                organization: organizationId.value
             }
         });
     },
@@ -77,7 +76,7 @@ const { data: totalWeeklyTime } = useQuery({
     queryFn: () => {
         return api.totalWeeklyTime({
             params: {
-                organization: organizationId.value!
+                organization: organizationId.value
             }
         });
     },
@@ -89,7 +88,7 @@ const { data: totalWeeklyBillableTime } = useQuery({
     queryFn: () => {
         return api.totalWeeklyBillableTime({
             params: {
-                organization: organizationId.value!
+                organization: organizationId.value
             }
         });
     },
@@ -101,7 +100,7 @@ const { data: totalWeeklyBillableAmount } = useQuery({
     queryFn: () => {
         return api.totalWeeklyBillableAmount({
             params: {
-                organization: organizationId.value!
+                organization: organizationId.value
             }
         });
     },
@@ -113,7 +112,7 @@ const { data: weeklyHistory } = useQuery({
     queryFn: () => {
         return api.weeklyHistory({
             params: {
-                organization: organizationId.value!
+                organization: organizationId.value
             }
         });
     },

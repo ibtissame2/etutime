@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import VChart, { THEME_KEY } from 'vue-echarts';
 import { provide } from 'vue';
 import { use } from 'echarts/core';
@@ -25,13 +25,9 @@ use([
 provide(THEME_KEY, 'dark');
 const labelColor = useCssVar('--color-text-secondary', null, { observe: true });
 
-const props = defineProps<{
-    weeklyProjectOverview: {
-        value: number;
-        name: string;
-        color: string;
-    }[];
-}>();
+const props = defineProps({
+    weeklyProjectOverview: Object,
+});
 
 const seriesData = props.weeklyProjectOverview.map((el) => {
     return {
@@ -48,6 +44,7 @@ const seriesData = props.weeklyProjectOverview.map((el) => {
         },
     };
 });
+
 import { computed } from 'vue';
 
 const option = computed(() => ({
@@ -68,7 +65,7 @@ const option = computed(() => ({
                 show: false,
             },
             tooltip: {
-                valueFormatter: (value: number) => {
+                valueFormatter: (value) => {
                     return formatHumanReadableDuration(value);
                 },
             },

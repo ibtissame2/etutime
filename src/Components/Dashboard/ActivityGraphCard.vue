@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup>
 import VChart, { THEME_KEY } from "vue-echarts";
 import { provide, computed } from "vue";
 import { use } from "echarts/core";
@@ -32,7 +32,7 @@ const { data: dailyHoursTracked, isLoading } = useQuery({
     queryFn: () => {
         return api.dailyTrackedHours({
             params: {
-                organization: organizationId.value!
+                organization: organizationId.value
             }
         });
     },
@@ -51,90 +51,86 @@ use([
 provide(THEME_KEY, "dark");
 
 const max = computed(() => {
-        if (!isLoading.value && dailyHoursTracked.value) {
-            return Math.max(
-                Math.max(...dailyHoursTracked.value.map((el) => el.duration)),
-                1
-            );
-        } else {
-            return 1;
-        }
+    if (!isLoading.value && dailyHoursTracked.value) {
+        return Math.max(
+            Math.max(...dailyHoursTracked.value.map((el) => el.duration)),
+            1
+        );
+    } else {
+        return 1;
     }
-);
+});
 
 const backgroundColor = useCssVar('--color-card-background', null, { observe: true });
 const itemBackgroundColor = useCssVar('--color-bg-tertiary', null, { observe: true });
 
 const option = computed(() => {
-        return {
-            tooltip: {},
-            visualMap: {
-                min: 0,
-                max: max.value,
-                type: "piecewise",
-                orient: "horizontal",
-                left: "center",
-                top: "center",
-                inRange: {
-                    color: [itemBackgroundColor.value, "#2DBE45"]
-                },
+    return {
+        tooltip: {},
+        visualMap: {
+            min: 0,
+            max: max.value,
+            type: "piecewise",
+            orient: "horizontal",
+            left: "center",
+            top: "center",
+            inRange: {
+                color: [itemBackgroundColor.value, "#2DBE45"]
+            },
+            show: false
+        },
+        calendar: {
+            top: 40,
+            bottom: 20,
+            left: 40,
+            right: 10,
+            cellSize: [40, 40],
+            dayLabel: {
+                firstDay: firstDayIndex.value
+            },
+            splitLine: {
                 show: false
             },
-            calendar: {
-                top: 40,
-                bottom: 20,
-                left: 40,
-                right: 10,
-                cellSize: [40, 40],
-                dayLabel: {
-                    firstDay: firstDayIndex.value
-                },
-                splitLine: {
-                    show: false
-                },
-                range: [
-                    dayjs().format("YYYY-MM-DD"),
-                    getDayJsInstance()()
-                        .subtract(50, "day")
-                        .startOf("week")
-                        .format("YYYY-MM-DD")
-                ],
-                itemStyle: {
-                    color: "transparent",
-                    borderWidth: 8,
-                    borderColor: backgroundColor.value
-                },
-                yearLabel: { show: false }
+            range: [
+                dayjs().format("YYYY-MM-DD"),
+                getDayJsInstance()()
+                    .subtract(50, "day")
+                    .startOf("week")
+                    .format("YYYY-MM-DD")
+            ],
+            itemStyle: {
+                color: "transparent",
+                borderWidth: 8,
+                borderColor: backgroundColor.value
             },
-            series: {
-                type: "heatmap",
-                coordinateSystem: "calendar",
-                data: dailyHoursTracked?.value?.map((el) => [el.date, el.duration]) ?? [],
-                itemStyle: {
-                    borderRadius: 5,
-                    borderColor: "rgba(255,255,255,0.05)",
-                    borderWidth: 1
-                },
-                tooltip: {
-                    valueFormatter: (value: number, dataIndex: number) => {
-                        if(dailyHoursTracked?.value){
-                            return (
-                                formatDate(dailyHoursTracked?.value[dataIndex].date) +
-                                ": " +
-                                formatHumanReadableDuration(value)
-                            );
-                        }
-                        else {
-                            return "";
-                        }
-
+            yearLabel: { show: false }
+        },
+        series: {
+            type: "heatmap",
+            coordinateSystem: "calendar",
+            data: dailyHoursTracked?.value?.map((el) => [el.date, el.duration]) ?? [],
+            itemStyle: {
+                borderRadius: 5,
+                borderColor: "rgba(255,255,255,0.05)",
+                borderWidth: 1
+            },
+            tooltip: {
+                valueFormatter: (value, dataIndex) => {
+                    if (dailyHoursTracked?.value) {
+                        return (
+                            formatDate(dailyHoursTracked?.value[dataIndex].date) +
+                            ": " +
+                            formatHumanReadableDuration(value)
+                        );
+                    } else {
+                        return "";
                     }
                 }
-            },
-            backgroundColor: "transparent"
-        };
-    });
-
+            }
+        },
+        backgroundColor: "transparent"
+    };
+});
 </script>
 
 <template>

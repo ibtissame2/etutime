@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import ProjectBadge from '@/packages/ui/src/Project/ProjectBadge.vue';
 import TimeTrackerStartStop from '@/packages/ui/src/TimeTrackerStartStop.vue';
 import { useProjectsStore } from '@/utils/useProjects';
@@ -6,13 +6,12 @@ import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import { useCurrentTimeEntryStore } from '@/utils/useCurrentTimeEntry';
 import { getDayJsInstance } from '@/packages/ui/src/utils/time';
-import type { TimeEntry } from "@/packages/api/src";
 import { useTasksStore } from "@/utils/useTasks";
 import { ChevronRightIcon } from "@heroicons/vue/16/solid";
 
-const props = defineProps<{
-    timeEntry: TimeEntry
-}>();
+const props = defineProps({
+    timeEntry: Object,
+});
 
 const { projects } = storeToRefs(useProjectsStore());
 
@@ -20,7 +19,7 @@ const project = computed(() => {
     return projects.value.find((project) => project.id === props.timeEntry.project_id);
 });
 
-const {tasks} = storeToRefs(useTasksStore());
+const { tasks } = storeToRefs(useTasksStore());
 
 const task = computed(() => {
     return tasks.value.find((task) => task.id === props.timeEntry.task_id);
@@ -42,7 +41,6 @@ async function startTaskTimer() {
     await setActiveState(true);
     useCurrentTimeEntryStore().fetchCurrentTimeEntry();
 }
-
 </script>
 
 <template>

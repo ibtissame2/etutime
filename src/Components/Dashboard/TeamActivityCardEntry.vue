@@ -1,9 +1,12 @@
-<script lang="ts" setup>
-defineProps<{
-    name: string;
-    description: string | null;
-    working?: boolean;
-}>();
+<script setup>
+defineProps({
+    name: String,
+    description: [String, null],
+    working: {
+        type: Boolean,
+        default: false,
+    },
+});
 </script>
 
 <template>

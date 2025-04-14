@@ -1,11 +1,12 @@
-<script setup lang="ts">
+<script setup>
 import DayOverviewCardChart from '@/Components/Dashboard/DayOverviewCardChart.vue';
 
-defineProps<{
-    date: string;
-    duration: number;
-    history: number[];
-}>();
+defineProps({
+    date: String,
+    duration: Number,
+    history: Array,
+});
+
 import {
     formatHumanReadableDate,
     formatHumanReadableDuration,

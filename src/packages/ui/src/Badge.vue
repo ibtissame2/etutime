@@ -2,7 +2,7 @@
 import { twMerge } from 'tailwind-merge';
 import { computed } from 'vue';
 
-const props = defineProps(
+const props = defineProps({
     size: {
         type: String,
         default: 'base',
@@ -23,7 +23,7 @@ const props = defineProps(
         type: Boolean,
         default: true,
     },
-);
+});
 
 const badgeClasses = {
     base: 'py-1 px-2 space-x-1.5 text-xs',

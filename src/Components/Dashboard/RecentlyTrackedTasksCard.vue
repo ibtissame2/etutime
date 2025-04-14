@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { useQuery } from "@tanstack/vue-query";
 import { computed } from "vue";
 import RecentlyTrackedTasksCardEntry from "@/Components/Dashboard/RecentlyTrackedTasksCardEntry.vue";
@@ -18,7 +18,7 @@ const { data: timeEntriesResponse, isLoading, refetch } = useQuery({
     queryFn: () => {
         return api.getTimeEntries({
             params: {
-                organization: organizationId.value!
+                organization: organizationId.value
             },
             queries: {
                 member_id: getCurrentMembershipId()
