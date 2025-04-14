@@ -1,24 +1,15 @@
-<script setup lang="ts">
+<script setup>
 import { twMerge } from 'tailwind-merge';
 import Badge from '@/packages/ui/src/Badge.vue';
 
-const props = withDefaults(
-	defineProps<{
-		name?: string;
-		size?: 'base' | 'large' | 'xlarge';
-		tag?: string;
-		class?: string;
-		color?: string;
-		border?: boolean;
-	}>(),
-	{
-		name: '',
-		size: 'base',
-		tag: 'div',
-		color: 'var(--theme-color-icon-default)',
-		border: true,
-	}
-);
+const props = defineProps({
+	name: { type: String, default: '' },
+	size: { type: String, default: 'base' },
+	tag: { type: String, default: 'div' },
+	class: { type: String, required: false },
+	color: { type: String, default: 'var(--theme-color-icon-default)' },
+	border: { type: Boolean, default: true },
+});
 
 const indicatorClasses = {
 	base: 'w-2.5 h-2.5',

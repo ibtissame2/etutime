@@ -1,9 +1,9 @@
-<script setup lang="ts">
-defineProps<{
-	name: string;
-	selected: boolean;
-	color: string;
-}>();
+<script setup>
+defineProps({
+	name: String,
+	selected: Boolean,
+	color: String,
+});
 </script>
 
 <template>

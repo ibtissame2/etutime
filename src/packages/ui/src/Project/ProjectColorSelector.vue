@@ -1,8 +1,8 @@
-<script setup lang="ts">
+<script setup>
 import Dropdown from '@/packages/ui/src/Input/Dropdown.vue';
 import { colors } from '@/packages/ui/src/utils/color';
 
-const model = defineModel<string>({ default: '' });
+const model = defineModel({ default: '' });
 </script>
 
 <template>

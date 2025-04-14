@@ -1,9 +1,8 @@
-<script setup lang="ts">
+<script setup>
 import TextInput from '@/packages/ui/src/Input/TextInput.vue';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import DialogModal from '@/packages/ui/src/DialogModal.vue';
 import { computed, ref } from 'vue';
-import type { CreateClientBody, CreateProjectBody, Project } from '@/packages/api/src';
 import { getRandomColor } from '@/packages/ui/src/utils/color';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import { useFocus } from '@vueuse/core';
@@ -14,24 +13,23 @@ import { UserCircleIcon } from '@heroicons/vue/20/solid';
 import EstimatedTimeSection from '@/packages/ui/src/EstimatedTimeSection.vue';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
 import ProjectEditBillableSection from '@/packages/ui/src/Project/ProjectEditBillableSection.vue';
-import type { Client } from '@/packages/api/src';
 
 const show = defineModel('show', { default: false });
 const saving = ref(false);
 
-const props = defineProps<{
-	clients: Client[];
-	createProject: (project: CreateProjectBody) => Promise<Project | undefined>;
-	createClient: (client: CreateClientBody) => Promise<Client | undefined>;
-	currency: string;
-	enableEstimatedTime: boolean;
-}>();
+const props = defineProps({
+	clients: Array,
+	createProject: Function,
+	createClient: Function,
+	currency: string,
+	enableEstimatedTime: boolean,
+});
 
 const activeClients = computed(() => {
 	return props.clients.filter((client) => !client.is_archived);
 });
 
-const project = ref<CreateProjectBody>({
+const project = ref({
 	name: '',
 	color: getRandomColor(),
 	client_id: null,
@@ -53,7 +51,7 @@ async function submit() {
 	};
 }
 
-const projectNameInput = ref<HTMLInputElement | null>(null);
+const projectNameInput = ref(null);
 
 useFocus(projectNameInput, { initialValue: true });
 

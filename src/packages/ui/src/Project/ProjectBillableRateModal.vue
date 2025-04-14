@@ -1,19 +1,20 @@
-<script setup lang="ts">
+<script setup>
 import { formatCents } from '@/packages/ui/src/utils/money';
 import BillableRateModal from '@/packages/ui/src/BillableRateModal.vue';
 
 const show = defineModel('show', { default: false });
 const saving = defineModel('saving', { default: false });
 
-defineProps<{
-	newBillableRate?: number | null;
-	projectName: string;
-	currency: string;
-}>();
+defineProps({
+	newBillableRate: {
+		type: [Number, null],
+		required: false,
+	},
+	projectName: String,
+	currency: String,
+});
 
-defineEmits<{
-	submit: [];
-}>();
+defineEmits(['submit']);
 </script>
 
 <template>

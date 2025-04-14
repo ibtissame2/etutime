@@ -1,19 +1,15 @@
-<script setup lang="ts">
+<script setup>
 import { CheckCircleIcon } from '@heroicons/vue/20/solid';
 import { computed } from 'vue';
 import { twMerge } from 'tailwind-merge';
 
-const props = defineProps<{
-	name: string;
-	selected: boolean;
-}>();
+const props = defineProps({
+	name: String,
+	selected: Boolean,
+});
 
 const iconClasses = computed(() => {
-	if (props.selected) {
-		return 'text-accent-200';
-	} else {
-		return 'text-card-border';
-	}
+	return props.selected ? 'text-accent-200' : 'text-card-border';
 });
 </script>
 

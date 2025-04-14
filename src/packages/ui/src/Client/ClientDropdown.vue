@@ -1,28 +1,29 @@
-<script setup lang="ts">
+<script setup>
 import { PlusCircleIcon } from '@heroicons/vue/20/solid';
 import Dropdown from '@/packages/ui/src/Input/Dropdown.vue';
-import { type Component, computed, nextTick, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import ClientDropdownItem from '@/packages/ui/src/Client/ClientDropdownItem.vue';
-import type { CreateClientBody, Client } from '@/packages/api/src';
 
-const model = defineModel<string | null>({
-	default: null,
+const model = defineModel({ default: null });
+
+const props = defineProps({
+	clients: Array,
+	createClient: Function,
 });
 
-const props = defineProps<{
-	clients: Client[];
-	createClient: (client: CreateClientBody) => Promise<Client | undefined>;
-}>();
-
-const searchInput = ref<HTMLInputElement | null>(null);
+const searchInput = ref(null);
 const open = ref(false);
-const dropdownViewport = ref<Component | null>(null);
-
+const dropdownViewport = ref(null);
+const highlightedItemId = ref(null);
 const searchValue = ref('');
 
-function isClientSelected(id: string) {
+function isClientSelected(id) {
 	return model.value === id;
 }
+
+const highlightedItem = computed(() => {
+	return props.clients.find((client) => client.id === highlightedItemId.value);
+});
 
 watch(open, (isOpen) => {
 	if (isOpen) {
@@ -60,8 +61,8 @@ watch(filteredClients, () => {
 	}
 });
 
-function updateSearchValue(event: Event) {
-	const newInput = (event.target as HTMLInputElement).value;
+function updateSearchValue(event) {
+	const newInput = event.target.value;
 	if (newInput === ' ') {
 		searchValue.value = '';
 		const highlightedClientId = highlightedItemId.value;
@@ -78,7 +79,7 @@ function updateSearchValue(event: Event) {
 
 const emit = defineEmits(['update:modelValue', 'changed']);
 
-function updateClient(newValue: string) {
+function updateClient(newValue) {
 	model.value = newValue;
 	nextTick(() => {
 		emit('changed');
@@ -106,11 +107,6 @@ function moveHighlightDown() {
 		}
 	}
 }
-
-const highlightedItemId = ref<string | null>(null);
-const highlightedItem = computed(() => {
-	return props.clients.find((client) => client.id === highlightedItemId.value);
-});
 </script>
 
 <template>
