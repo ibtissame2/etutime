@@ -1,4 +1,9 @@
 @import url('./tailwind.css');
+@import url('./vendor/filament.css');
+@import url('./vendor/mail-defaults.css');
+@import url('./vendor/support.css');
+@import url('./vendor/telescope.css');
+@import url('./vendor/telescope-dark.css');
 
 :root.dark {
   --color-bg-primary: #0f1011;
