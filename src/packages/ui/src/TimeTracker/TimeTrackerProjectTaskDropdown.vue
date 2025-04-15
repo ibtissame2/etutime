@@ -1,29 +1,37 @@
-<script setup lang="ts">
+<script setup>
 import { ChevronRightIcon, ChevronDownIcon } from '@heroicons/vue/16/solid';
 import Dropdown from '@/packages/ui/src/Input/Dropdown.vue';
 import { computed, nextTick, ref, watch, watchEffect } from 'vue';
 import ProjectDropdownItem from '@/packages/ui/src/Project/ProjectDropdownItem.vue';
-import type { CreateClientBody, CreateProjectBody, Project, Task, Client } from '@/packages/api/src';
 import ProjectBadge from '@/packages/ui/src/Project/ProjectBadge.vue';
 import Badge from '@/packages/ui/src/Badge.vue';
 import { PlusIcon, PlusCircleIcon, MinusIcon, XMarkIcon } from '@heroicons/vue/16/solid';
 import ProjectCreateModal from '@/packages/ui/src/Project/ProjectCreateModal.vue';
 import { twMerge } from 'tailwind-merge';
-
-const task = defineModel<string | null>('task', {
-	default: null,
-});
-
-const project = defineModel<string | null>('project', {
-	default: null,
-});
-
-const searchInput = ref<HTMLInputElement | null>(null);
-const open = ref(false);
-const dropdownViewport = ref<HTMLElement | null>(null);
 import { UseFocusTrap } from '@vueuse/integrations/useFocusTrap/component';
 
+const task = defineModel('task', { default: null });
+const project = defineModel('project', { default: null });
+const searchInput = ref(null);
+const open = ref(false);
+const dropdownViewport = ref(null);
 const searchValue = ref('');
+
+const props = defineProps({
+	showBadgeBorder: { type: Boolean, default: true },
+	size: { type: String, default: 'large' },
+	projects: Array,
+	tasks: Array,
+	clients: Array,
+	createProject: Function,
+	createClient: Function,
+	currency: String,
+	emptyPlaceholder: { type: String, default: 'No Project' },
+	allowReset: { type: Boolean, default: false },
+	enableEstimatedTime: Boolean,
+	canCreateProject: Boolean,
+	class: { type: String, required: false },
+});
 
 watch(open, (isOpen) => {
 	if (isOpen) {
@@ -34,48 +42,13 @@ watch(open, (isOpen) => {
 	}
 });
 
-type ProjectWithTasks = Project & { expanded: boolean; tasks: Task[] };
-
-type ClientWithProjectsWithTasks = Client & { projects: ProjectWithTasks[] };
-
-type ClientsWithProjectsWithTasks = ClientWithProjectsWithTasks[];
-
-const props = withDefaults(
-	defineProps<{
-		showBadgeBorder?: boolean;
-		size?: 'base' | 'large' | 'xlarge';
-		projects: Project[];
-		tasks: Task[];
-		clients: Client[];
-		createProject: (project: CreateProjectBody) => Promise<Project | undefined>;
-		createClient: (client: CreateClientBody) => Promise<Client | undefined>;
-		currency: string;
-		emptyPlaceholder?: string;
-		allowReset?: boolean;
-		enableEstimatedTime: boolean;
-		canCreateProject: boolean;
-		class?: string;
-	}>(),
-	{
-		showBadgeBorder: true,
-		size: 'large',
-		emptyPlaceholder: 'No Project',
-		allowReset: false,
-	}
-);
-
-const filteredResults = ref([] as ClientsWithProjectsWithTasks);
+const filteredResults = ref([]);
 
 const filteredProjects = computed(() => {
 	return filteredResults.value.map((client) => client.projects).flat();
 });
 
-function addProjectToFilterObject(
-	tempFilteredClients: ClientsWithProjectsWithTasks,
-	project: Project,
-	filteredTasks: Task[],
-	expanded = false
-) {
+function addProjectToFilterObject(tempFilteredClients, project, filteredTasks, expanded = false) {
 	const projectClientIndex = tempFilteredClients.findIndex((client) => client.id === project.client_id);
 
 	const client = props.clients.find((client) => client.id === project.client_id);
@@ -129,7 +102,7 @@ function addProjectToFilterObject(
 }
 
 watchEffect(() => {
-	const tempFilteredClients: ClientsWithProjectsWithTasks = [];
+	const tempFilteredClients = [];
 
 	if (searchValue.value.length === 0) {
 		tempFilteredClients.push({
@@ -221,7 +194,7 @@ async function addClientIfNoneExists() {
 	setProjectAndClientBasedOnHighlightedItem();
 }
 
-function isProjectSelected(project: Project) {
+function isProjectSelected(project) {
 	return project.value === project.id;
 }
 
@@ -249,8 +222,8 @@ function setProjectAndClientBasedOnHighlightedItem() {
 	}
 }
 
-function updateSearchValue(event: Event) {
-	const newInput = (event.target as HTMLInputElement).value;
+function updateSearchValue(event) {
+	const newInput = event.target.value;
 	if (newInput === ' ') {
 		searchValue.value = '';
 		setProjectAndClientBasedOnHighlightedItem();
@@ -343,7 +316,7 @@ function moveHighlightDown() {
 	}
 }
 
-const highlightedItemId = ref<string | null>(null);
+const highlightedItemId = ref(null);
 
 watch(highlightedItemId, () => {
 	const highlightedItem = dropdownViewport.value?.querySelector(`[data-project-id="${highlightedItemId.value}"]`);
@@ -409,13 +382,13 @@ const selectedProjectColor = computed(() => {
 
 const mouseEnterHighlightActivated = ref(true);
 
-function setHighlightItemId(newId: string) {
+function setHighlightItemId(newId) {
 	if (mouseEnterHighlightActivated.value) {
 		highlightedItemId.value = newId;
 	}
 }
 
-function selectTask(taskId: string) {
+function selectTask(taskId) {
 	task.value = taskId;
 	project.value = props.tasks.find((task) => task.id === taskId)?.project_id || null;
 	open.value = false;
@@ -423,7 +396,7 @@ function selectTask(taskId: string) {
 	emit('changed', project.value, task.value);
 }
 
-function selectProject(projectId: string) {
+function selectProject(projectId) {
 	project.value = projectId;
 	task.value = null;
 	open.value = false;
@@ -438,7 +411,7 @@ const showCreateProject = ref(false);
 	<div v-if="projects.length === 0 && canCreateProject">
 		<Badge size="large" tag="button" class="cursor-pointer hover:bg-tertiary" @click="showCreateProject = true">
 			<PlusIcon class="-ml-1 w-5"></PlusIcon>
-			<span>Add new project</span>
+			<span>Ajouter un module</span>
 		</Badge>
 	</div>
 	<Dropdown v-else v-model="open" :close-on-content-click="false" :align="'bottom'">

@@ -59,7 +59,6 @@ function checkForConfirmationModal() {
 				:new-billable-rate="organizationBody.billable_rate"
 				@submit="submit"
 			></OrganizationBillableRateModal>
-			<!-- Organization Owner Information -->
 			<div class="col-span-6">
 				<div class="col-span-6 sm:col-span-4">
 					<InputLabel for="organizationBillableRate" class="mb-2" value="Organization Billable Rate" />

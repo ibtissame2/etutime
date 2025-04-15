@@ -80,7 +80,6 @@ route.setCurrent = function (name) {
 const router = {
 	reload: function (options) {},
 	post: function (name) {
-		// redirect to the route
 		route.setCurrent(name);
 	},
 };

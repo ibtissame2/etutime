@@ -2,7 +2,7 @@
 import Dropdown from '@/packages/ui/src/Input/Dropdown.vue';
 import { computed, ref } from 'vue';
 import TimeRangeSelector from '@/packages/ui/src/Input/TimeRangeSelector.vue';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import parse from 'parse-duration';
 import { formatDuration, getDayJsInstance } from '@/packages/ui/src/utils/time';
 

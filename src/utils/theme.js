@@ -4,8 +4,7 @@ import { computed, watch } from 'vue';
 const themeSetting = useStorage('theme', 'system');
 
 watch(themeSetting, () => {
-	// Ibtissame
-	// location.reload();
+	location.reload();
 });
 
 const preferredColor = usePreferredColorScheme();

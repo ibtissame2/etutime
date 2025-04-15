@@ -1,7 +1,7 @@
 <script setup>
 import { ClockIcon } from '@heroicons/vue/20/solid';
 import CardTitle from '@/packages/ui/src/CardTitle.vue';
-import { usePage } from '@inertiajs/vue3';
+import { usePage } from '@/utils/inertia';
 import { computed, onMounted, watch } from 'vue';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -13,9 +13,9 @@ import { switchOrganization } from '@/utils/useOrganization';
 import { useProjectsStore } from '@/utils/useProjects';
 import { useTasksStore } from '@/utils/useTasks';
 import { useTagsStore } from '@/utils/useTags';
+import { useClientsStore } from '@/utils/useClients';
 import TimeTrackerControls from '@/packages/ui/src/TimeTracker/TimeTrackerControls.vue';
 import TimeTrackerRunningInDifferentOrganizationOverlay from '@/packages/ui/src/TimeTracker/TimeTrackerRunningInDifferentOrganizationOverlay.vue';
-import { useClientsStore } from '@/utils/useClients';
 import { getOrganizationCurrencyString } from '@/utils/money';
 import { isAllowedToPerformPremiumAction } from '@/utils/billing';
 import { canCreateProjects } from '@/utils/permissions';
