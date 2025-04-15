@@ -1,26 +1,33 @@
-<script setup lang="ts">
+<script setup>
 import parse from 'parse-duration';
 import { onMounted, ref, watch } from 'vue';
 import { formatHumanReadableDuration, getDayJsInstance } from '@/packages/ui/src/utils/time';
 import dayjs from 'dayjs';
 import { twMerge } from 'tailwind-merge';
 import { TextInput } from '@/packages/ui/src';
-const temporaryCustomTimerEntry = ref<string>('');
 
-const start = defineModel('start', {
-	default: '',
+const temporaryCustomTimerEntry = ref('');
+const start = defineModel('start', { default: '' });
+const end = defineModel('end', { default: '' });
+const HHMMtimeRegex = /^([0-9]{1,2}):([0-5]?[0-9])$/;
+
+const props = defineProps({
+	class: {
+		type: String,
+		required: false,
+	},
 });
 
-const end = defineModel('end', {
-	default: '',
-});
-
-function isHHMM(value: string): boolean {
+function isHHMM(value) {
 	return HHMMtimeRegex.test(value);
 }
 
-function parseHHMM(value: string): string[] | null {
+function parseHHMM(value) {
 	return value.match(HHMMtimeRegex);
+}
+
+function isNumeric(value) {
+	return /^-?\d+$/.test(value);
 }
 
 function updateDuration() {
@@ -44,19 +51,6 @@ function updateDuration() {
 	updateTimeEntryInputValue();
 }
 
-function isNumeric(value: string) {
-	return /^-?\d+$/.test(value);
-}
-
-const props = defineProps<{
-	class?: string;
-}>();
-
-const HHMMtimeRegex = /^([0-9]{1,2}):([0-5]?[0-9])$/;
-
-watch([start, end], updateTimeEntryInputValue);
-onMounted(() => updateTimeEntryInputValue());
-
 function updateTimeEntryInputValue() {
 	if (start.value && end.value) {
 		const startTime = dayjs(start.value);
@@ -64,6 +58,9 @@ function updateTimeEntryInputValue() {
 		temporaryCustomTimerEntry.value = formatHumanReadableDuration(diff);
 	}
 }
+
+watch([start, end], updateTimeEntryInputValue);
+onMounted(() => updateTimeEntryInputValue());
 </script>
 
 <template>

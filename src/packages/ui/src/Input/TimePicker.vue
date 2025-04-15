@@ -1,27 +1,32 @@
-<script setup lang="ts">
+<script setup>
 import { computed, ref, watch } from 'vue';
 import { getDayJsInstance, getLocalizedDayJs } from '@/packages/ui/src/utils/time';
 import { useFocus } from '@vueuse/core';
 import { SelectDropdown, TextInput } from '@/packages/ui/src';
 import { twMerge } from 'tailwind-merge';
 
-const model = defineModel<string | null>({
-	default: null,
+const model = defineModel({ default: null });
+
+const props = defineProps({
+	size: {
+		type: String,
+		default: 'base',
+	},
+	focus: {
+		type: Boolean,
+		default: false,
+	},
 });
 
-const props = withDefaults(
-	defineProps<{
-		size?: 'base' | 'large';
-		focus?: boolean;
-	}>(),
-	{
-		size: 'base',
-		focus: false,
-	}
-);
+const emit = defineEmits(['changed']);
+const timeInput = ref(null);
+const inputValue = ref(model.value ? getLocalizedDayJs(model.value).format('HH:mm') : null);
+const open = ref(false);
 
-function updateTime(event: Event) {
-	const target = event.target as HTMLInputElement;
+useFocus(timeInput, { initialValue: props.focus });
+
+function updateTime(event) {
+	const target = event.target;
 	const newValue = target.value.trim();
 	if (newValue.split(':').length === 2) {
 		const [hours, minutes] = newValue.split(':');
@@ -69,17 +74,7 @@ watch(model, (value) => {
 	inputValue.value = value ? getLocalizedDayJs(value).format('HH:mm') : null;
 });
 
-const timeInput = ref<HTMLInputElement | null>(null);
-const emit = defineEmits(['changed']);
-
-useFocus(timeInput, { initialValue: props.focus });
-
-type TimeOption = {
-	timestamp: string;
-	name: string;
-};
-
-const getStartOptions = computed<TimeOption[]>(() => {
+const getStartOptions = computed(() => {
 	const options = [];
 	for (let hour = 0; hour < 24; hour++) {
 		for (let minute = 0; minute < 60; minute += 15) {
@@ -90,12 +85,11 @@ const getStartOptions = computed<TimeOption[]>(() => {
 	}
 	return options;
 });
-const inputValue = ref(model.value ? getLocalizedDayJs(model.value).format('HH:mm') : null);
-const open = ref(false);
+
 const closestValue = computed({
 	get() {
 		const target = getDayJsInstance()(model.value);
-		let closestDiff: number | null = null;
+		let closestDiff = null;
 		let closest = target;
 		for (const option of getStartOptions.value) {
 			const diff = Math.abs(getDayJsInstance()(option.timestamp).diff(target));
@@ -106,7 +100,7 @@ const closestValue = computed({
 		}
 		return closest.format();
 	},
-	set(value: string) {
+	set(value) {
 		model.value = value;
 		emit('changed', model.value);
 	},
@@ -119,8 +113,8 @@ const closestValue = computed({
 			v-model="closestValue"
 			v-model:open="open"
 			:class="twMerge('mine-w-0 w-24', size === 'large' && 'w-28')"
-			:get-key-from-item="(item: TimeOption) => item.timestamp"
-			:get-name-for-item="(item: TimeOption) => item.name"
+			:get-key-from-item="(item) => item.timestamp"
+			:get-name-for-item="(item) => item.name"
 			:items="getStartOptions"
 		>
 			<template #trigger>
@@ -136,10 +130,10 @@ const closestValue = computed({
 						open = false;
 					"
 					@keydown.tab="open = false"
-					@focus="($event.target as HTMLInputElement).select()"
-					@mouseup="($event.target as HTMLInputElement).select()"
-					@click="($event.target as HTMLInputElement).select()"
-					@pointerup="($event.target as HTMLInputElement).select()"
+					@focus="$event.target.select()"
+					@mouseup="$event.target.select()"
+					@click="$event.target.select()"
+					@pointerup="$event.target.select()"
 					@focusin="open = true"
 				/>
 			</template>

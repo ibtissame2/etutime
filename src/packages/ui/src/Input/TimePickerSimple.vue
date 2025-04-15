@@ -1,27 +1,31 @@
-<script setup lang="ts">
+<script setup>
 import { ref, watch } from 'vue';
 import { getLocalizedDayJs } from '@/packages/ui/src/utils/time';
 import { useFocus } from '@vueuse/core';
 import { TextInput } from '@/packages/ui/src';
 import { twMerge } from 'tailwind-merge';
 
-const model = defineModel<string | null>({
-	default: null,
+const model = defineModel({ default: null });
+
+const props = defineProps({
+	size: {
+		type: String,
+		default: 'base',
+	},
+	focus: {
+		type: Boolean,
+		default: false,
+	},
 });
 
-const props = withDefaults(
-	defineProps<{
-		size?: 'base' | 'large';
-		focus?: boolean;
-	}>(),
-	{
-		size: 'base',
-		focus: false,
-	}
-);
+const emit = defineEmits(['changed']);
+const timeInput = ref(null);
+const inputValue = ref(model.value ? getLocalizedDayJs(model.value).format('HH:mm') : null);
 
-function updateTime(event: Event) {
-	const target = event.target as HTMLInputElement;
+useFocus(timeInput, { initialValue: props.focus });
+
+function updateTime(event) {
+	const target = event.target;
 	const newValue = target.value.trim();
 	if (newValue.split(':').length === 2) {
 		const [hours, minutes] = newValue.split(':');
@@ -68,13 +72,6 @@ function updateTime(event: Event) {
 watch(model, (value) => {
 	inputValue.value = value ? getLocalizedDayJs(value).format('HH:mm') : null;
 });
-
-const timeInput = ref<HTMLInputElement | null>(null);
-const emit = defineEmits(['changed']);
-
-useFocus(timeInput, { initialValue: props.focus });
-
-const inputValue = ref(model.value ? getLocalizedDayJs(model.value).format('HH:mm') : null);
 </script>
 
 <template>
@@ -86,10 +83,10 @@ const inputValue = ref(model.value ? getLocalizedDayJs(model.value).format('HH:m
 		data-testid="time_picker_input"
 		type="text"
 		@blur="updateTime"
-		@focus="($event.target as HTMLInputElement).select()"
-		@mouseup="($event.target as HTMLInputElement).select()"
-		@click="($event.target as HTMLInputElement).select()"
-		@pointerup="($event.target as HTMLInputElement).select()"
+		@focus="$event.target.select()"
+		@mouseup="$event.target.select()"
+		@click="$event.target.select()"
+		@pointerup="$event.target.select()"
 	/>
 </template>
 

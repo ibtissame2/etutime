@@ -1,27 +1,33 @@
-<script setup lang="ts">
+<script setup>
 import { ref, watch } from 'vue';
 import { getDayJsInstance, getLocalizedDayJs } from '@/packages/ui/src/utils/time';
 import { twMerge } from 'tailwind-merge';
 
-const props = defineProps<{
-	class?: string;
-	tabindex?: string;
-}>();
-
-const model = defineModel<string | null>({
-	default: null,
+const props = defineProps({
+	class: {
+		type: String,
+		required: false,
+	},
+	tabindex: {
+		type: String,
+		required: false,
+	},
 });
 
+const model = defineModel({ default: null });
 const tempDate = ref(getLocalizedDayJs(model.value).format('YYYY-MM-DD'));
+const datePicker = ref(null);
+const emit = defineEmits(['changed']);
 
 watch(model, (value) => {
 	tempDate.value = getLocalizedDayJs(value).format('YYYY-MM-DD');
 });
 
-function updateDate(event: Event) {
-	const target = event.target as HTMLInputElement;
+function updateDate(event) {
+	const target = event.target;
 	const newValue = target.value;
 	const newDate = getDayJsInstance()(newValue);
+
 	if (newDate.isValid()) {
 		model.value = getLocalizedDayJs(model.value)
 			.set('year', newDate.year())
@@ -32,14 +38,10 @@ function updateDate(event: Event) {
 	}
 }
 
-const datePicker = ref<HTMLInputElement | null>(null);
-
-function updateTempValue(event: Event) {
-	const target = event.target as HTMLInputElement;
+function updateTempValue(event) {
+	const target = event.target;
 	tempDate.value = target.value;
 }
-
-const emit = defineEmits(['changed']);
 </script>
 
 <template>
@@ -67,7 +69,6 @@ const emit = defineEmits(['changed']);
 <style scoped>
 input::-webkit-calendar-picker-indicator {
 	filter: invert(1);
-
 	opacity: 0.2;
 }
 </style>

@@ -1,30 +1,30 @@
-<script setup lang="ts" generic="T">
+<script setup>
 import Dropdown from '@/packages/ui/src/Input/Dropdown.vue';
-import { type Component, computed, nextTick, ref, watch } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import MultiselectDropdownItem from '@/packages/ui/src/Input/MultiselectDropdownItem.vue';
 
-const model = defineModel<string[]>({
-	default: [],
+const model = defineModel({ default: [] });
+
+const props = defineProps({
+	items: Array,
+	searchPlaceholder: String,
+	getKeyFromItem: Function,
+	getNameForItem: Function,
 });
 
-const props = defineProps<{
-	items: T[];
-	searchPlaceholder: string;
-	getKeyFromItem: (item: T) => string;
-	getNameForItem: (item: T) => string;
-}>();
-
-const searchInput = ref<HTMLInputElement | null>(null);
+const searchInput = ref(null);
 const open = ref(false);
-const dropdownViewport = ref<Component | null>(null);
-
+const dropdownViewport = ref(null);
 const searchValue = ref('');
+const highlightedItemId = ref(null);
 
-function isItemSelected(id: string) {
+const emit = defineEmits(['update:modelValue', 'changed']);
+
+function isItemSelected(id) {
 	return model.value.includes(id);
 }
 
-function addOrRemoveItemFromSelection(id: string) {
+function addOrRemoveItemFromSelection(id) {
 	if (model.value.includes(id)) {
 		model.value = model.value.filter((itemId) => itemId !== id);
 	} else {
@@ -47,6 +47,7 @@ watch(open, (isOpen) => {
 			}
 			return model.value.includes(props.getKeyFromItem(a)) ? -1 : 1;
 		});
+
 		nextTick(() => {
 			if (filteredItems.value.length > 0) {
 				highlightedItemId.value = props.getKeyFromItem(filteredItems.value[0]);
@@ -55,13 +56,17 @@ watch(open, (isOpen) => {
 	}
 });
 
-const filteredItems = computed<T[]>(() => {
-	return props.items.filter((item: T) => {
+const filteredItems = computed(() => {
+	return props.items.filter((item) => {
 		return props
 			.getNameForItem(item)
 			.toLowerCase()
 			.includes(searchValue.value?.toLowerCase()?.trim() || '');
 	});
+});
+
+const highlightedItem = computed(() => {
+	return props.items.find((item) => props.getKeyFromItem(item) === highlightedItemId.value);
 });
 
 watch(filteredItems, () => {
@@ -70,8 +75,8 @@ watch(filteredItems, () => {
 	}
 });
 
-function updateSearchValue(event: Event) {
-	const newInput = (event.target as HTMLInputElement).value;
+function updateSearchValue(event) {
+	const newInput = event.target.value;
 	if (newInput === ' ') {
 		searchValue.value = '';
 		const highlightedTagId = highlightedItemId.value;
@@ -86,9 +91,7 @@ function updateSearchValue(event: Event) {
 	}
 }
 
-const emit = defineEmits(['update:modelValue', 'changed']);
-
-function toggleItem(newValue: string | null) {
+function toggleItem(newValue) {
 	if (newValue !== null) {
 		if (model.value.includes(newValue)) {
 			model.value = [...model.value].filter((id) => id !== newValue);
@@ -120,11 +123,6 @@ function moveHighlightDown() {
 		}
 	}
 }
-
-const highlightedItemId = ref<string | null>(null);
-const highlightedItem = computed(() => {
-	return props.items.find((item) => props.getKeyFromItem(item) === highlightedItemId.value);
-});
 </script>
 
 <template>
@@ -158,7 +156,7 @@ const highlightedItem = computed(() => {
 						:selected="isItemSelected(props.getKeyFromItem(item))"
 						:name="props.getNameForItem(item)"
 						@click="toggleItem(props.getKeyFromItem(item))"
-					></MultiselectDropdownItem>
+					/>
 				</div>
 			</div>
 		</template>

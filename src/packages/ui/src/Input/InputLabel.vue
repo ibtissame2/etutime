@@ -1,10 +1,16 @@
-<script setup lang="ts">
+<script setup>
 import { twMerge } from 'tailwind-merge';
 
-const props = defineProps<{
-	value?: string;
-	class?: string;
-}>();
+const props = defineProps({
+	value: {
+		type: String,
+		required: false,
+	},
+	class: {
+		type: String,
+		required: false,
+	},
+});
 </script>
 
 <template>

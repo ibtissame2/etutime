@@ -1,13 +1,20 @@
-<script setup lang="ts">
+<script setup>
 import { onMounted, ref } from 'vue';
 import { twMerge } from 'tailwind-merge';
 
-const props = defineProps<{
-	name?: string;
-	class?: string;
-}>();
+const props = defineProps({
+	name: {
+		type: String,
+		required: false,
+	},
+	class: {
+		type: String,
+		required: false,
+	},
+});
 
-const input = ref<HTMLInputElement | null>(null);
+const input = ref(null);
+const model = defineModel();
 
 onMounted(() => {
 	if (input.value?.hasAttribute('autofocus')) {
@@ -16,7 +23,6 @@ onMounted(() => {
 });
 
 defineExpose({ focus: () => input.value?.focus() });
-const model = defineModel();
 </script>
 
 <template>

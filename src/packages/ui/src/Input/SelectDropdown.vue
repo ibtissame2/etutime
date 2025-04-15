@@ -1,11 +1,11 @@
-<script setup lang="ts" generic="T">
+<script setup>
 import Dropdown from '@/packages/ui/src/Input/Dropdown.vue';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import SelectDropdownItem from '@/packages/ui/src/Input/SelectDropdownItem.vue';
 import { onKeyStroke } from '@vueuse/core';
-import { type Placement } from '@floating-ui/vue';
 import { twMerge } from 'tailwind-merge';
-const model = defineModel<string | null>({
+
+const model = defineModel({
 	default: null,
 });
 
@@ -13,25 +13,35 @@ const open = defineModel('open', {
 	default: false,
 });
 
-const props = withDefaults(
-	defineProps<{
-		items: T[];
-		getKeyFromItem: (item: T) => string | null;
-		getNameForItem: (item: T) => string;
-		align?: Placement;
-		class?: string;
-	}>(),
-	{
-		align: 'bottom-start',
-	}
-);
+const props = defineProps({
+	items: {
+		type: Array,
+		required: true,
+	},
+	getKeyFromItem: {
+		type: Function,
+		required: true,
+	},
+	getNameForItem: {
+		type: Function,
+		required: true,
+	},
+	align: {
+		type: String,
+		default: 'bottom-start',
+	},
+	class: {
+		type: String,
+		required: false,
+	},
+});
 
-const dropdownViewport = ref<HTMLDivElement | null>(null);
-
+const dropdownViewport = ref(null);
 const searchValue = ref('');
+const highlightedItemId = ref(model.value);
 
-const filteredItems = computed<T[]>(() => {
-	return props.items.filter((item: T) => {
+const filteredItems = computed(() => {
+	return props.items.filter((item) => {
 		return props
 			.getNameForItem(item)
 			.toLowerCase()
@@ -39,22 +49,8 @@ const filteredItems = computed<T[]>(() => {
 	});
 });
 
-const highlightedItemId = ref<string | null>(model.value);
-
-watch(model, () => {
-	if (model.value) {
-		highlightedItemId.value = model.value;
-	}
-});
-
-onMounted(() => {
-	if (!highlightedItemId.value) {
-		resetHightlightedItem();
-	}
-});
-
-watch(filteredItems, () => {
-	resetHightlightedItem();
+const highlightedItem = computed(() => {
+	return props.items.find((item) => props.getKeyFromItem(item) === highlightedItemId.value);
 });
 
 function resetHightlightedItem() {
@@ -66,12 +62,19 @@ function resetHightlightedItem() {
 	}
 }
 
+watch(model, () => {
+	if (model.value) {
+		highlightedItemId.value = model.value;
+	}
+});
+
+watch(filteredItems, resetHightlightedItem);
+
 watch(highlightedItemId, () => {
 	if (highlightedItemId.value) {
 		const highlightedDomElement = dropdownViewport.value?.querySelector(
 			`[data-select-id="${highlightedItemId.value}"]`
-		) as HTMLElement;
-
+		);
 		highlightedDomElement?.scrollIntoView({
 			block: 'nearest',
 			inline: 'nearest',
@@ -79,9 +82,23 @@ watch(highlightedItemId, () => {
 	}
 });
 
+watch(open, () => {
+	if (open.value === true) {
+		nextTick(() => {
+			const highlightedDomElement = dropdownViewport.value?.querySelector(`[data-select-id="${model.value}"]`);
+			dropdownViewport.value?.scrollTo({
+				top: highlightedDomElement?.offsetTop ?? 0,
+				behavior: 'instant',
+			});
+		});
+	}
+});
+
+onMounted(resetHightlightedItem);
+
 const emit = defineEmits(['update:modelValue', 'changed']);
 
-function setItem(newValue: string | null) {
+function setItem(newValue) {
 	model.value = newValue;
 	emit('changed');
 	open.value = false;
@@ -109,10 +126,6 @@ function moveHighlightDown() {
 	}
 }
 
-const highlightedItem = computed(() => {
-	return props.items.find((item) => props.getKeyFromItem(item) === highlightedItemId.value);
-});
-
 onKeyStroke('ArrowDown', (e) => {
 	if (open.value === true) {
 		moveHighlightDown();
@@ -133,26 +146,12 @@ onKeyStroke('Enter', (e) => {
 		e.preventDefault();
 	}
 });
-
-watch(open, () => {
-	if (open.value === true) {
-		nextTick(() => {
-			const highlightedDomElement = dropdownViewport.value?.querySelector(
-				`[data-select-id="${model.value}"]`
-			) as HTMLElement;
-			dropdownViewport.value?.scrollTo({
-				top: highlightedDomElement?.offsetTop ?? 0,
-				behavior: 'instant',
-			});
-		});
-	}
-});
 </script>
 
 <template>
 	<Dropdown v-model="open" :align="align" :close-on-content-click="false">
 		<template #trigger>
-			<slot name="trigger"> </slot>
+			<slot name="trigger"></slot>
 		</template>
 		<template #content>
 			<div ref="dropdownViewport" :class="twMerge('w-60 py-1.5 max-h-60 overflow-y-scroll', props.class)">
@@ -170,7 +169,7 @@ watch(open, () => {
 						:name="props.getNameForItem(item)"
 						@mouseenter="highlightedItemId = props.getKeyFromItem(item)"
 						@click="setItem(props.getKeyFromItem(item))"
-					></SelectDropdownItem>
+					/>
 				</div>
 			</div>
 		</template>

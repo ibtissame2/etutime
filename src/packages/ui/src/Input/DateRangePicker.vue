@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { CalendarIcon } from '@heroicons/vue/20/solid';
 import Dropdown from '@/packages/ui/src/Input/Dropdown.vue';
 import DatePicker from '@/packages/ui/src/Input/DatePicker.vue';
@@ -7,10 +7,8 @@ import { ref } from 'vue';
 
 const start = defineModel('start', { default: '' });
 const end = defineModel('end', { default: '' });
-
-const emit = defineEmits(['submit']);
-
 const open = ref(false);
+const emit = defineEmits(['submit']);
 
 function setToday() {
 	start.value = getLocalizedDayJs().startOf('day').format();
@@ -87,7 +85,7 @@ function setLastYear() {
 			<button
 				class="px-2 py-1 bg-input-background border border-input-border font-medium rounded-lg flex items-center space-x-2"
 			>
-				<CalendarIcon class="w-5"></CalendarIcon>
+				<CalendarIcon class="w-5" />
 				<div class="text-text-primary">
 					{{ formatDateLocalized(start) }}
 					<span class="px-1.5 text-muted">-</span>
@@ -95,6 +93,7 @@ function setLastYear() {
 				</div>
 			</button>
 		</template>
+
 		<template #content>
 			<div class="overflow-hidden w-[330px] px-3 py-1.5">
 				<div class="flex divide-x divide-border-secondary justify-between">
@@ -113,14 +112,15 @@ function setLastYear() {
 						<button @click="setThisYear">This year</button>
 						<button @click="setLastYear">Last year</button>
 					</div>
+
 					<div class="pl-5">
 						<div class="space-y-1 flex-col flex items-start">
 							<div class="text-xs font-semibold text-muted">Start Date</div>
-							<DatePicker v-model="start"></DatePicker>
+							<DatePicker v-model="start" />
 						</div>
 						<div class="mt-2 space-y-1 flex-col flex items-start">
 							<div class="text-sm font-medium text-muted">End Date</div>
-							<DatePicker v-model="end"></DatePicker>
+							<DatePicker v-model="end" />
 						</div>
 					</div>
 				</div>
@@ -128,5 +128,3 @@ function setLastYear() {
 		</template>
 	</Dropdown>
 </template>
-
-<style scoped></style>

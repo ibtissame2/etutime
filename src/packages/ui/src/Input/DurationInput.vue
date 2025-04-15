@@ -1,16 +1,11 @@
-<script setup lang="ts">
+<script setup>
 import { computed, ref } from 'vue';
 import { TextInput } from '@/packages/ui/src';
 
-const model = defineModel<number | null>({
-	default: null,
-});
+const model = defineModel({ default: null });
+const emit = defineEmits(['submit']);
 
-const emit = defineEmits<{
-	submit: [];
-}>();
-
-const temporaryCustomTimerEntry = ref<string>('');
+const temporaryCustomTimerEntry = ref('');
 
 function updateDuration() {
 	const hours = parseInt(temporaryCustomTimerEntry.value);
@@ -39,8 +34,8 @@ const currentTime = computed({
 	},
 });
 
-function selectInput(event: Event) {
-	const target = event.target as HTMLInputElement;
+function selectInput(event) {
+	const target = event.target;
 	target.select();
 }
 
@@ -59,10 +54,9 @@ function updateAndSubmit() {
 			@focus="selectInput"
 			@blur="updateDuration"
 			@keydown.enter="updateAndSubmit"
-		>
-		</TextInput>
+		/>
 		<div class="absolute top-0 right-0 h-full flex items-center px-4 font-medium">
-			<span> hours </span>
+			<span>hours</span>
 		</div>
 	</div>
 </template>
