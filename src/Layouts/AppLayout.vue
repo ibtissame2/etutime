@@ -131,26 +131,17 @@ onMounted(async () => {
 						<ul>
 							<NavigationSidebarItem
 								v-if="canViewProjects()"
-								title="Projects"
+								title="Modules"
 								:icon="undefined"
-								href="projects"
-								:current="route.isCurrent('projects')"
-							></NavigationSidebarItem>
-							<NavigationSidebarItem
-								v-if="canViewClients()"
-								title="Clients"
-								:icon="undefined"
-								:current="route.isCurrent('clients')"
-								href="clients
-                                    "
+								href="/modules"
+								:current="route.isCurrent('modules')"
 							></NavigationSidebarItem>
 							<NavigationSidebarItem
 								v-if="canViewMembers()"
-								title="Members"
+								title="Etudiants"
 								:icon="undefined"
-								:current="route.isCurrent('members')"
-								href="members
-                                    "
+								:current="route.isCurrent('etudiants')"
+								href="/etudiants"
 							></NavigationSidebarItem>
 							<NavigationSidebarItem
 								v-if="canViewTags()"
@@ -161,31 +152,26 @@ onMounted(async () => {
 							></NavigationSidebarItem>
 						</ul>
 					</nav>
-					<div v-if="canUpdateOrganization()" class="text-text-tertiary text-sm font-semibold pt-5 pb-1.5">Admin</div>
+					<div v-if="canUpdateOrganization()" class="text-text-tertiary text-sm font-semibold pt-5 pb-1.5">
+						Documents
+					</div>
 
 					<nav>
 						<ul>
 							<NavigationSidebarItem
-								v-if="canManageBilling() && isBillingActivated()"
-								title="Billing"
+								v-if="canUpdateOrganization()"
+								title="Notes"
 								:icon="undefined"
-								href="/billing"
-							></NavigationSidebarItem>
+								:current="route.isCurrent('notes')"
+								href="/notes"
+							/>
 							<NavigationSidebarItem
 								v-if="canUpdateOrganization()"
 								title="Import / Export"
 								:icon="undefined"
 								:current="route.isCurrent('import')"
 								href="import"
-							>
-							</NavigationSidebarItem>
-							<NavigationSidebarItem
-								v-if="canUpdateOrganization()"
-								title="Settings"
-								:icon="undefined"
-								:href="'teams.show' + 'page.props.auth.user.current_team.id'"
-								:current="route.isCurrent('teams.show' + 'page.props.auth.user.current_team.id')"
-							></NavigationSidebarItem>
+							/>
 						</ul>
 					</nav>
 				</div>

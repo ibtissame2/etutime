@@ -1,10 +1,10 @@
 import { router } from './inertia';
-// import { initializeStores } from '@/utils/init';
+import { initializeStores } from '@/utils/init';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
-// import { useNotificationsStore } from '@/utils/notification';
+import { useNotificationsStore } from '@/utils/notification';
 import { getCurrentOrganizationId } from '@/utils/useUser';
-// import { api } from '@/packages/api/src';
+import { api } from '@/packages/api/src';
 
 export function switchOrganization(organizationId) {
 	router.put(

@@ -2,10 +2,9 @@
 import TimeTrackerTagDropdown from '@/packages/ui/src/TimeTracker/TimeTrackerTagDropdown.vue';
 import TimeTrackerStartStop from '@/packages/ui/src/TimeTrackerStartStop.vue';
 import TimeTrackerRangeSelector from '@/packages/ui/src/TimeTracker/TimeTrackerRangeSelector.vue';
-import BillableToggleButton from '@/packages/ui/src/Input/BillableToggleButton.vue';
 import TimeTrackerProjectTaskDropdown from '@/packages/ui/src/TimeTracker/TimeTrackerProjectTaskDropdown.vue';
 import { computed, nextTick, ref, watch } from 'vue';
-import { useTimeEntriesStore } from '../../../../utils/useTimeEntries';
+import { useTimeEntriesStore } from '@/utils/useTimeEntries';
 import { storeToRefs } from 'pinia';
 import { useFocus } from '@vueuse/core';
 import { autoUpdate, flip, limitShift, offset, shift, useFloating } from '@floating-ui/vue';
@@ -242,10 +241,6 @@ useSelectEvents(filteredRecentlyTrackedTimeEntries, highlightedDropdownEntryId, 
 						:tags="tags"
 						@changed="$emit('updateTimeEntry')"
 					></TimeTrackerTagDropdown>
-					<BillableToggleButton
-						v-model="currentTimeEntry.billable"
-						@changed="$emit('updateTimeEntry')"
-					></BillableToggleButton>
 				</div>
 				<div class="border-l border-card-border">
 					<TimeTrackerRangeSelector

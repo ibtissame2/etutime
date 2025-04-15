@@ -1,7 +1,7 @@
 <script setup>
 import TagDropdown from '@/packages/ui/src/Tag/TagDropdown.vue';
 import { twMerge } from 'tailwind-merge';
-// import { TagIcon } from '@heroicons/vue/20/solid';
+import { TagIcon } from '@heroicons/vue/20/solid';
 import { computed } from 'vue';
 
 const emit = defineEmits(['changed']);
@@ -34,7 +34,7 @@ defineProps({
 					)
 				"
 			>
-				<!-- <TagIcon class="w-5 h-5 lg:h-6 lg:w-6"></TagIcon> -->
+				<TagIcon class="w-5 h-5 lg:h-6 lg:w-6"></TagIcon>
 				<span
 					v-if="model.length > 1"
 					class="font-extrabold absolute rounded-full text-xs w-3 h-3 block top-[15px] rotate-[45deg] right-[14px] text-card-background"

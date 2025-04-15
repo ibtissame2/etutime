@@ -9,14 +9,14 @@ import TimeTrackerStartStop from './TimeTrackerStartStop.vue';
 import ProjectBadge from './Project/ProjectBadge.vue';
 import LoadingSpinner from './LoadingSpinner.vue';
 import Modal from './Modal.vue';
-// import TextInput from './Input/TextInput.vue';
-// import InputLabel from './Input/InputLabel.vue';
+import TextInput from './Input/TextInput.vue';
+import InputLabel from './Input/InputLabel.vue';
 import TimeTrackerRunningInDifferentOrganizationOverlay from './TimeTracker/TimeTrackerRunningInDifferentOrganizationOverlay.vue';
 import TimeTrackerControls from './TimeTracker/TimeTrackerControls.vue';
 import CardTitle from './CardTitle.vue';
-// import SelectDropdown from './Input/SelectDropdown.vue';
+import SelectDropdown from './Input/SelectDropdown.vue';
 import Badge from './Badge.vue';
-// import Checkbox from './Input/Checkbox.vue';
+import Checkbox from './Input/Checkbox.vue';
 import TimeEntryGroupedTable from './TimeEntry/TimeEntryGroupedTable.vue';
 import TimeEntryMassActionRow from './TimeEntry/TimeEntryMassActionRow.vue';
 import TimeEntryCreateModal from './TimeEntry/TimeEntryCreateModal.vue';
@@ -33,14 +33,14 @@ export {
 	ProjectBadge,
 	LoadingSpinner,
 	Modal,
-	// TextInput,
-	// InputLabel,
+	TextInput,
+	InputLabel,
 	TimeTrackerRunningInDifferentOrganizationOverlay,
 	TimeTrackerControls,
 	CardTitle,
-	// SelectDropdown,
+	SelectDropdown,
 	Badge,
-	// Checkbox,
+	Checkbox,
 	TimeEntryGroupedTable,
 	TimeEntryMassActionRow,
 	MoreOptionsDropdown,

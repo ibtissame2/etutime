@@ -133,7 +133,6 @@ const revokeApiTokenMutation = useMutation({
 
 <template>
 	<div>
-		<!-- Generate API Token -->
 		<FormSection @submitted="createApiToken">
 			<template #title> Create API Token </template>
 
@@ -142,7 +141,6 @@ const revokeApiTokenMutation = useMutation({
 			</template>
 
 			<template #form>
-				<!-- Token Name -->
 				<div class="col-span-6 sm:col-span-4">
 					<InputLabel for="api_key_name" value="API Key Name" />
 					<TextInput id="api_key_name" v-model="createApiTokenForm.name" type="text" class="mt-1 block w-full" />
@@ -169,7 +167,6 @@ const revokeApiTokenMutation = useMutation({
 		<div v-if="tokens.length > 0">
 			<SectionBorder />
 
-			<!-- Manage API Tokens -->
 			<div class="mt-10 sm:mt-0">
 				<ActionSection>
 					<template #title> Manage API Tokens </template>
@@ -178,7 +175,6 @@ const revokeApiTokenMutation = useMutation({
 						You may delete or revoke any of your existing tokens if they are no longer needed.
 					</template>
 
-					<!-- API Token List -->
 					<template #content>
 						<div class="divide-border-secondary divide-y">
 							<div v-for="token in tokens" :key="token.id" class="flex items-center py-2.5 justify-between">
@@ -218,7 +214,6 @@ const revokeApiTokenMutation = useMutation({
 			</div>
 		</div>
 
-		<!-- Token Value Modal -->
 		<DialogModal :show="displayingToken" @close="displayingToken = false">
 			<template #title> API Token created successfully </template>
 
@@ -243,7 +238,6 @@ const revokeApiTokenMutation = useMutation({
 			</template>
 		</DialogModal>
 
-		<!-- Delete Token Confirmation Modal -->
 		<ConfirmationModal :show="apiTokenBeingDeleted != null" @close="apiTokenBeingDeleted = null">
 			<template #title> Delete API Token </template>
 

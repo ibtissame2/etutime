@@ -37,7 +37,6 @@ const updateTeamName = () => {
 		<template #description> The organization's name and owner information. </template>
 
 		<template #form>
-			<!-- Organization Owner Information -->
 			<div class="col-span-6 flex items-center justify-between">
 				<div class="">
 					<InputLabel value="Organization Owner" />
@@ -66,7 +65,6 @@ const updateTeamName = () => {
 				</div>
 			</div>
 
-			<!-- Organization Name -->
 			<div class="col-span-6 sm:col-span-4">
 				<InputLabel for="name" value="Organization Name" />
 
@@ -81,7 +79,6 @@ const updateTeamName = () => {
 				<InputError :message="form.errors.name" class="mt-2" />
 			</div>
 
-			<!-- Currency -->
 			<div class="col-span-6 sm:col-span-4">
 				<InputLabel for="currency" value="Currency" />
 				<select

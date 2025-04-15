@@ -21,8 +21,8 @@ const props = defineProps({
 	clients: Array,
 	createProject: Function,
 	createClient: Function,
-	currency: string,
-	enableEstimatedTime: boolean,
+	currency: String,
+	enableEstimatedTime: Boolean,
 });
 
 const activeClients = computed(() => {
@@ -67,7 +67,7 @@ const currentClientName = computed(() => {
 	<DialogModal closeable :show="show" @close="show = false">
 		<template #title>
 			<div class="flex space-x-2">
-				<span> Create Project </span>
+				<span>Créer un module</span>
 			</div>
 		</template>
 
@@ -79,49 +79,20 @@ const currentClientName = computed(() => {
 						<ProjectColorSelector v-model="project.color" class="mt-2.5"></ProjectColorSelector>
 					</div>
 					<div class="w-full">
-						<InputLabel for="projectName" value="Project name" />
+						<InputLabel for="projectName" value="Nom du module" />
 						<TextInput
 							id="projectName"
 							ref="projectNameInput"
 							v-model="project.name"
 							name="projectName"
 							type="text"
-							placeholder="The next big thing"
+							placeholder="Nom du module"
 							class="mt-2 block w-full"
 							required
 							autocomplete="projectName"
 							@keydown.enter="submit()"
 						/>
 					</div>
-				</div>
-				<div>
-					<InputLabel for="client" value="Client" />
-					<ClientDropdown
-						v-model="project.client_id"
-						:create-client="createClient"
-						:clients="activeClients"
-						class="mt-2"
-					>
-						<template #trigger>
-							<Badge tag="button" class="bg-input-background cursor-pointer hover:bg-tertiary" size="xlarge">
-								<div class="flex items-center space-x-2">
-									<UserCircleIcon class="w-5 text-icon-default"></UserCircleIcon>
-									<span>
-										{{ currentClientName }}
-									</span>
-								</div>
-							</Badge>
-						</template>
-					</ClientDropdown>
-				</div>
-			</div>
-			<div class="lg:grid grid-cols-2 gap-12">
-				<div>
-					<ProjectEditBillableSection
-						v-model:is-billable="project.is_billable"
-						v-model:billable-rate="project.billable_rate"
-						:currency="currency"
-					></ProjectEditBillableSection>
 				</div>
 				<div>
 					<EstimatedTimeSection
@@ -131,11 +102,14 @@ const currentClientName = computed(() => {
 					></EstimatedTimeSection>
 				</div>
 			</div>
+			<div class="lg:grid grid-cols-2 gap-12">
+				<div></div>
+			</div>
 		</template>
 		<template #footer>
-			<SecondaryButton @click="show = false"> Cancel</SecondaryButton>
+			<SecondaryButton @click="show = false">Annuler</SecondaryButton>
 			<PrimaryButton class="ms-3" :class="{ 'opacity-25': saving }" :disabled="saving" @click="submit">
-				Create Project
+				Créer
 			</PrimaryButton>
 		</template>
 	</DialogModal>
