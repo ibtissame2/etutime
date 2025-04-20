@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import ActionMessage from '@/Components/ActionMessage.vue';
@@ -8,14 +8,16 @@ import InputError from '@/packages/ui/src/Input/InputError.vue';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import TextInput from '@/packages/ui/src/Input/TextInput.vue';
-import type { Session } from '@/types/jetstream';
 
-defineProps<{
-	sessions: Session[];
-}>();
+defineProps({
+	sessions: {
+		type: Array,
+		required: true,
+	},
+});
 
 const confirmingLogout = ref(false);
-const passwordInput = ref<HTMLElement | null>(null);
+const passwordInput = ref(null);
 
 const form = useForm({
 	password: '',
@@ -23,7 +25,6 @@ const form = useForm({
 
 const confirmLogout = () => {
 	confirmingLogout.value = true;
-
 	setTimeout(() => passwordInput.value?.focus(), 250);
 };
 
@@ -38,14 +39,13 @@ const logoutOtherBrowserSessions = () => {
 
 const closeModal = () => {
 	confirmingLogout.value = false;
-
 	form.reset();
 };
 </script>
 
 <template>
 	<ActionSection>
-		<template #title> Browser Sessions </template>
+		<template #title>Browser Sessions</template>
 
 		<template #description> Manage and log out your active sessions on other browsers and devices. </template>
 
@@ -103,8 +103,8 @@ const closeModal = () => {
 							<div class="text-xs text-muted">
 								{{ session.ip_address }},
 
-								<span v-if="session.is_current_device" class="text-green-500 font-semibold">This device</span>
-								<span v-else>Last active {{ session.last_active }}</span>
+								<span v-if="session.is_current_device" class="text-green-500 font-semibold"> This device </span>
+								<span v-else> Last active {{ session.last_active }} </span>
 							</div>
 						</div>
 					</div>

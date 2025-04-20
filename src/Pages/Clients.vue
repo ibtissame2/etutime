@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import MainContainer from '@/packages/ui/src/MainContainer.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { PlusIcon } from '@heroicons/vue/16/solid';
@@ -18,9 +18,9 @@ onMounted(() => {
 	useClientsStore().fetchClients();
 });
 
-const activeTab = ref<'active' | 'archived'>('active');
+const activeTab = ref('active');
 
-function isActiveTab(tab: string) {
+function isActiveTab(tab) {
 	return activeTab.value === tab;
 }
 

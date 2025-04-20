@@ -1,9 +1,9 @@
-<script setup lang="ts">
+<script setup>
 import FormSection from '@/Components/FormSection.vue';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import { computed, ref } from 'vue';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
-import { api, type ApiToken, type CreateApiTokenBody } from '@/packages/api/src';
+import { api } from '@/packages/api/src';
 import SectionBorder from '@/Components/SectionBorder.vue';
 import DangerButton from '@/packages/ui/src/Buttons/DangerButton.vue';
 import TextInput from '../../../packages/ui/src/Input/TextInput.vue';
@@ -22,12 +22,10 @@ import { ClockIcon } from '@heroicons/vue/20/solid';
 
 const queryClient = useQueryClient();
 
-const apiTokenBeingDeleted = ref<ApiToken | null>(null);
-const apiTokenBeingRevoked = ref<ApiToken | null>(null);
-
+const apiTokenBeingDeleted = ref(null);
+const apiTokenBeingRevoked = ref(null);
 const { handleApiRequestNotifications } = useNotificationsStore();
 const newToken = ref('');
-
 const { copy, copied, isSupported } = useClipboard();
 
 async function createApiToken() {
@@ -50,11 +48,11 @@ const createApiTokenForm = useForm({
 	name: '',
 });
 
-function confirmApiTokenDeletion(token: ApiToken) {
+function confirmApiTokenDeletion(token) {
 	apiTokenBeingDeleted.value = token;
 }
 
-function confirmApiTokenRevocation(token: ApiToken) {
+function confirmApiTokenRevocation(token) {
 	apiTokenBeingRevoked.value = token;
 }
 
@@ -63,7 +61,7 @@ const displayingToken = ref(false);
 async function deleteApiToken() {
 	if (apiTokenBeingDeleted.value) {
 		await handleApiRequestNotifications(
-			() => deleteApiTokenMutation.mutateAsync(apiTokenBeingDeleted.value!.id),
+			() => deleteApiTokenMutation.mutateAsync(apiTokenBeingDeleted.value.id),
 			'API Token successfully deleted',
 			'There was an error while deleting the API Token',
 			() => {
@@ -76,7 +74,7 @@ async function deleteApiToken() {
 async function revokeApiToken() {
 	if (apiTokenBeingRevoked.value) {
 		await handleApiRequestNotifications(
-			() => revokeApiTokenMutation.mutateAsync(apiTokenBeingRevoked.value!.id),
+			() => revokeApiTokenMutation.mutateAsync(apiTokenBeingRevoked.value.id),
 			'API Token successfully revoked',
 			'There was an error while revoking the API Token',
 			() => {
@@ -96,7 +94,7 @@ const tokens = computed(() => {
 });
 
 const createApiTokenMutation = useMutation({
-	mutationFn: async (apiToken: CreateApiTokenBody) => {
+	mutationFn: async (apiToken) => {
 		return await api.createApiToken(apiToken);
 	},
 	onSuccess: () => {
@@ -105,7 +103,7 @@ const createApiTokenMutation = useMutation({
 });
 
 const deleteApiTokenMutation = useMutation({
-	mutationFn: async (apiTokenId: string) => {
+	mutationFn: async (apiTokenId) => {
 		return await api.deleteApiToken(undefined, {
 			params: {
 				apiToken: apiTokenId,
@@ -118,7 +116,7 @@ const deleteApiTokenMutation = useMutation({
 });
 
 const revokeApiTokenMutation = useMutation({
-	mutationFn: async (apiTokenId: string) => {
+	mutationFn: async (apiTokenId) => {
 		return await api.revokeApiToken(undefined, {
 			params: {
 				apiToken: apiTokenId,
@@ -134,7 +132,7 @@ const revokeApiTokenMutation = useMutation({
 <template>
 	<div>
 		<FormSection @submitted="createApiToken">
-			<template #title> Create API Token </template>
+			<template #title>Create API Token</template>
 
 			<template #description>
 				API tokens allow third-party services to authenticate with our application on your behalf.
@@ -146,8 +144,8 @@ const revokeApiTokenMutation = useMutation({
 					<TextInput id="api_key_name" v-model="createApiTokenForm.name" type="text" class="mt-1 block w-full" />
 					<InputError :message="createApiTokenForm.errors.name" class="mt-2" />
 					<div class="text-text-tertiary text-sm pt-3 flex space-x-1.5 font-medium items-center">
-						<ClockIcon class="w-4"></ClockIcon>
-						<span> API Tokens are valid for 1 year </span>
+						<ClockIcon class="w-4" />
+						<span>API Tokens are valid for 1 year</span>
 					</div>
 				</div>
 			</template>
@@ -169,7 +167,7 @@ const revokeApiTokenMutation = useMutation({
 
 			<div class="mt-10 sm:mt-0">
 				<ActionSection>
-					<template #title> Manage API Tokens </template>
+					<template #title>Manage API Tokens</template>
 
 					<template #description>
 						You may delete or revoke any of your existing tokens if they are no longer needed.
@@ -183,7 +181,7 @@ const revokeApiTokenMutation = useMutation({
 									<div class="text-sm text-text-tertiary space-x-3">
 										<span v-if="token.created_at"> Created at {{ formatDateTimeLocalized(token.created_at) }} </span>
 										<span v-if="token.expires_at"> Expires at {{ formatDateTimeLocalized(token.expires_at) }} </span>
-										<span v-if="token.revoked"> Revoked </span>
+										<span v-if="token.revoked">Revoked</span>
 									</div>
 								</div>
 
@@ -215,7 +213,7 @@ const revokeApiTokenMutation = useMutation({
 		</div>
 
 		<DialogModal :show="displayingToken" @close="displayingToken = false">
-			<template #title> API Token created successfully </template>
+			<template #title>API Token created successfully</template>
 
 			<template #content>
 				<div>
@@ -226,10 +224,10 @@ const revokeApiTokenMutation = useMutation({
 				<div></div>
 
 				<div class="flex gap-2 pt-6 w-full">
-					<TextInput v-if="newToken" disabled :model-value="newToken" class="flex-1 text-gray-500"></TextInput>
-					<PrimaryButton v-if="isSupported" @click="copy(newToken)">{{
-						copied ? 'Copied!' : 'Copy Token'
-					}}</PrimaryButton>
+					<TextInput v-if="newToken" disabled :model-value="newToken" class="flex-1 text-gray-500" />
+					<PrimaryButton v-if="isSupported" @click="copy(newToken)">
+						{{ copied ? 'Copied!' : 'Copy Token' }}
+					</PrimaryButton>
 				</div>
 			</template>
 
@@ -239,9 +237,9 @@ const revokeApiTokenMutation = useMutation({
 		</DialogModal>
 
 		<ConfirmationModal :show="apiTokenBeingDeleted != null" @close="apiTokenBeingDeleted = null">
-			<template #title> Delete API Token </template>
+			<template #title>Delete API Token</template>
 
-			<template #content> Are you sure you would like to delete this API token? </template>
+			<template #content>Are you sure you would like to delete this API token?</template>
 
 			<template #footer>
 				<SecondaryButton @click="apiTokenBeingDeleted = null"> Cancel </SecondaryButton>
@@ -258,9 +256,9 @@ const revokeApiTokenMutation = useMutation({
 		</ConfirmationModal>
 
 		<ConfirmationModal :show="apiTokenBeingRevoked != null" @close="apiTokenBeingRevoked = null">
-			<template #title> Revoke API Token </template>
+			<template #title>Revoke API Token</template>
 
-			<template #content> Are you sure you would like to revoke this API token? </template>
+			<template #content>Are you sure you would like to revoke this API token?</template>
 
 			<template #footer>
 				<SecondaryButton @click="apiTokenBeingRevoked = null"> Cancel </SecondaryButton>

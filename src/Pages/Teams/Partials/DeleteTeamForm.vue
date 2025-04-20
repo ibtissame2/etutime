@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import ActionSection from '@/Components/ActionSection.vue';
@@ -7,7 +7,10 @@ import DangerButton from '@/packages/ui/src/Buttons/DangerButton.vue';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 
 const props = defineProps({
-	team: Object,
+	team: {
+		type: Object,
+		required: true,
+	},
 });
 
 const confirmingTeamDeletion = ref(false);
@@ -32,8 +35,8 @@ const deleteTeam = () => {
 
 		<template #content>
 			<div class="max-w-xl text-sm text-muted">
-				Once a organization is deleted, all of its resources and data will be permanently deleted. Before deleting this
-				organization, please download any data or information regarding this organization that you wish to retain.
+				Once an organization is deleted, all of its resources and data will be permanently deleted. Before deleting this
+				organization, please download any data you wish to retain.
 			</div>
 
 			<div class="mt-5">
@@ -43,10 +46,7 @@ const deleteTeam = () => {
 			<ConfirmationModal :show="confirmingTeamDeletion" @close="confirmingTeamDeletion = false">
 				<template #title> Delete Organization </template>
 
-				<template #content>
-					Are you sure you want to delete this organization? Once a organization is deleted, all of its resources and
-					data will be permanently deleted.
-				</template>
+				<template #content> Are you sure you want to delete this organization? This action cannot be undone. </template>
 
 				<template #footer>
 					<SecondaryButton @click="confirmingTeamDeletion = false"> Cancel </SecondaryButton>

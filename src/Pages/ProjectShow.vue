@@ -1,12 +1,18 @@
-<script setup lang="ts">
+<script setup>
 import MainContainer from '@/packages/ui/src/MainContainer.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { FolderIcon, PlusIcon } from '@heroicons/vue/16/solid';
+import {
+	FolderIcon,
+	PlusIcon,
+	ChevronRightIcon,
+	CheckCircleIcon,
+	UserGroupIcon,
+	PencilSquareIcon,
+} from '@heroicons/vue/20/solid';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import { computed, onMounted, ref } from 'vue';
 import { useProjectsStore } from '@/utils/useProjects';
 import { storeToRefs } from 'pinia';
-import { ChevronRightIcon, CheckCircleIcon, UserGroupIcon, PencilSquareIcon } from '@heroicons/vue/20/solid';
 import { Link } from '@inertiajs/vue3';
 import TaskCreateModal from '@/Components/Common/Task/TaskCreateModal.vue';
 import TaskTable from '@/Components/Common/Task/TaskTable.vue';
@@ -29,9 +35,10 @@ const { projects } = storeToRefs(useProjectsStore());
 const project = computed(() => {
 	return projects.value.find((project) => project.id === route().params.project) ?? null;
 });
+
 const createTask = ref(false);
 const createProjectMember = ref(false);
-const projectId = route()?.params?.project as string;
+const projectId = route()?.params?.project;
 
 const { projectMembers } = storeToRefs(useProjectMembersStore());
 
@@ -43,10 +50,9 @@ onMounted(() => {
 });
 
 const showEditProjectModal = ref(false);
+const activeTab = ref('active');
 
-const activeTab = ref<'active' | 'done'>('active');
-
-function isActiveTab(tab: string) {
+function isActiveTab(tab) {
 	return activeTab.value === tab;
 }
 

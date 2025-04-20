@@ -1,11 +1,10 @@
-<script setup lang="ts">
+<script setup>
 import { useForm, usePage } from '@inertiajs/vue3';
 import FormSection from '@/Components/FormSection.vue';
 import InputError from '@/packages/ui/src/Input/InputError.vue';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import TextInput from '@/packages/ui/src/Input/TextInput.vue';
-import type { User } from '@/types/models';
 import { initializeStores } from '@/utils/init';
 
 const form = useForm({
@@ -21,18 +20,15 @@ const createTeam = () => {
 		},
 	});
 };
-const page = usePage<{
-	auth: {
-		user: User;
-	};
-}>();
+
+const page = usePage();
 </script>
 
 <template>
 	<FormSection @submitted="createTeam">
-		<template #title> Organization Details</template>
+		<template #title>Organization Details</template>
 
-		<template #description> Create a new organization to collaborate with others on projects. </template>
+		<template #description>Create a new organization to collaborate with others on projects.</template>
 
 		<template #form>
 			<div class="col-span-6">

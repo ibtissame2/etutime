@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import InputLabel from '../../../packages/ui/src/Input/InputLabel.vue';
 import FormSection from '@/Components/FormSection.vue';
 import { usePreferredColorScheme } from '@vueuse/core';
@@ -9,7 +9,7 @@ const preferredColor = usePreferredColorScheme();
 
 <template>
 	<FormSection>
-		<template #title> Theme</template>
+		<template #title>Theme</template>
 
 		<template #description> Choose how you want solidtime to look on your device </template>
 

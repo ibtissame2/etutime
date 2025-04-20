@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
@@ -26,17 +26,7 @@ const submit = () => {
 	});
 };
 
-const page = usePage<{
-	terms_url: string | null;
-	privacy_policy_url: string | null;
-	newsletter_consent: boolean;
-	jetstream: {
-		hasTermsAndPrivacyPolicyFeature: boolean;
-	};
-	flash: {
-		message: string;
-	};
-}>();
+const page = usePage();
 </script>
 
 <template>
@@ -114,7 +104,7 @@ const page = usePage<{
 
 			<div
 				v-if="
-					page.props.jetstream.hasTermsAndPrivacyPolicyFeature &&
+					page.props.jetstream?.hasTermsAndPrivacyPolicyFeature &&
 					page.props.terms_url !== null &&
 					page.props.privacy_policy_url !== null
 				"

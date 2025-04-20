@@ -1,18 +1,17 @@
-<script setup lang="ts">
+<script setup>
 import MainContainer from '@/packages/ui/src/MainContainer.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { FolderIcon } from '@heroicons/vue/16/solid';
+import { FolderIcon, ChartBarIcon, UserGroupIcon, CheckCircleIcon, TagIcon } from '@heroicons/vue/20/solid';
 import PageTitle from '@/Components/Common/PageTitle.vue';
-import { ChartBarIcon, UserGroupIcon, CheckCircleIcon, TagIcon } from '@heroicons/vue/20/solid';
 import DateRangePicker from '@/packages/ui/src/Input/DateRangePicker.vue';
 import ReportingChart from '@/Components/Common/Reporting/ReportingChart.vue';
 import BillableIcon from '@/packages/ui/src/Icons/BillableIcon.vue';
 import { computed, onMounted, ref } from 'vue';
 import { formatHumanReadableDuration, getDayJsInstance, getLocalizedDayJs } from '@/packages/ui/src/utils/time';
-import { type GroupingOption, useReportingStore } from '@/utils/useReporting';
+import { useReportingStore } from '@/utils/useReporting';
 import { storeToRefs } from 'pinia';
 import TagDropdown from '@/packages/ui/src/Tag/TagDropdown.vue';
-import { type AggregatedTimeEntriesQueryParams, type CreateReportBodyProperties, api } from '@/packages/api/src';
+import { api } from '@/packages/api/src';
 import ReportingFilterBadge from '@/Components/Common/Reporting/ReportingFilterBadge.vue';
 import ProjectMultiselectDropdown from '@/Components/Common/Project/ProjectMultiselectDropdown.vue';
 import MemberMultiselectDropdown from '@/Components/Common/Member/MemberMultiselectDropdown.vue';
@@ -30,41 +29,37 @@ import { useSessionStorage, useStorage } from '@vueuse/core';
 import ReportingTabNavbar from '@/Components/Common/Reporting/ReportingTabNavbar.vue';
 import { useNotificationsStore } from '@/utils/notification';
 import ReportingExportButton from '@/Components/Common/Reporting/ReportingExportButton.vue';
-import type { ExportFormat } from '@/types/reporting';
 import ReportSaveButton from '@/Components/Common/Report/ReportSaveButton.vue';
 import { getRandomColorWithSeed } from '@/packages/ui/src/utils/color';
+
 const { handleApiRequestNotifications } = useNotificationsStore();
 
-const startDate = useSessionStorage<string>(
+const startDate = useSessionStorage(
 	'reporting-start-date',
 	getLocalizedDayJs(getDayJsInstance()().format()).subtract(14, 'd').format()
 );
-const endDate = useSessionStorage<string>(
-	'reporting-end-date',
-	getLocalizedDayJs(getDayJsInstance()().format()).format()
-);
-const selectedTags = ref<string[]>([]);
-const selectedProjects = ref<string[]>([]);
-const selectedMembers = ref<string[]>([]);
-const selectedTasks = ref<string[]>([]);
-const selectedClients = ref<string[]>([]);
+const endDate = useSessionStorage('reporting-end-date', getLocalizedDayJs(getDayJsInstance()().format()).format());
 
-const billable = ref<'true' | 'false' | null>(null);
+const selectedTags = ref([]);
+const selectedProjects = ref([]);
+const selectedMembers = ref([]);
+const selectedTasks = ref([]);
+const selectedClients = ref([]);
+const billable = ref(null);
 
-const group = useStorage<GroupingOption>('reporting-group', 'project');
-const subGroup = useStorage<GroupingOption>('reporting-sub-group', 'task');
+const group = useStorage('reporting-group', 'project');
+const subGroup = useStorage('reporting-sub-group', 'task');
 
 const reportingStore = useReportingStore();
-
 const { aggregatedGraphTimeEntries, aggregatedTableTimeEntries } = storeToRefs(reportingStore);
-
 const { groupByOptions } = reportingStore;
 
-function getFilterAttributes(): AggregatedTimeEntriesQueryParams {
-	let params: AggregatedTimeEntriesQueryParams = {
+function getFilterAttributes() {
+	let params = {
 		start: getLocalizedDayJs(startDate.value).startOf('day').utc().format(),
 		end: getLocalizedDayJs(endDate.value).endOf('day').utc().format(),
 	};
+
 	params = {
 		...params,
 		member_ids: selectedMembers.value.length > 0 ? selectedMembers.value : undefined,
@@ -74,6 +69,7 @@ function getFilterAttributes(): AggregatedTimeEntriesQueryParams {
 		tag_ids: selectedTags.value.length > 0 ? selectedTags.value : undefined,
 		billable: billable.value !== null ? billable.value : undefined,
 	};
+
 	return params;
 }
 
@@ -108,7 +104,7 @@ function updateReporting() {
 	updateTableReporting();
 }
 
-function getOptimalGroupingOption(startDate: string, endDate: string): 'day' | 'week' | 'month' {
+function getOptimalGroupingOption(startDate, endDate) {
 	const diffInDays = getDayJsInstance()(endDate).diff(getDayJsInstance()(startDate), 'd');
 
 	if (diffInDays <= 31) {
@@ -126,7 +122,7 @@ onMounted(() => {
 });
 
 const { tags } = storeToRefs(useTagsStore());
-async function createTag(tag: string) {
+async function createTag(tag) {
 	return await useTagsStore().createTag(tag);
 }
 
@@ -136,10 +132,10 @@ const reportProperties = computed(() => {
 		group: group.value,
 		sub_group: subGroup.value,
 		history_group: getOptimalGroupingOption(startDate.value, endDate.value),
-	} as CreateReportBodyProperties;
+	};
 });
 
-async function downloadExport(format: ExportFormat) {
+async function downloadExport(format) {
 	const organizationId = getCurrentOrganizationId();
 	if (organizationId) {
 		const response = await handleApiRequestNotifications(
@@ -162,17 +158,18 @@ async function downloadExport(format: ExportFormat) {
 
 		if (response?.download_url) {
 			showExportModal.value = true;
-			exportUrl.value = response.download_url as string;
+			exportUrl.value = response.download_url;
 		}
 	}
 }
+
 const { getNameForReportingRowEntry, emptyPlaceholder } = useReportingStore();
 import { useProjectsStore } from '@/utils/useProjects';
 import ReportingExportModal from '@/Components/Common/Reporting/ReportingExportModal.vue';
 const projectsStore = useProjectsStore();
 const { projects } = storeToRefs(projectsStore);
 const showExportModal = ref(false);
-const exportUrl = ref<string | null>(null);
+const exportUrl = ref(null);
 
 const groupedPieChartData = computed(() => {
 	return (

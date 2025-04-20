@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import ActionMessage from '@/Components/ActionMessage.vue';
@@ -8,8 +8,8 @@ import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import TextInput from '@/packages/ui/src/Input/TextInput.vue';
 
-const passwordInput = ref<HTMLElement | null>(null);
-const currentPasswordInput = ref<HTMLElement | null>(null);
+const passwordInput = ref(null);
+const currentPasswordInput = ref(null);
 
 const form = useForm({
 	current_password: '',
@@ -39,7 +39,7 @@ const updatePassword = () => {
 
 <template>
 	<FormSection @submitted="updatePassword">
-		<template #title> Update Password </template>
+		<template #title>Update Password</template>
 
 		<template #description> Ensure your account is using a long, random password to stay secure. </template>
 

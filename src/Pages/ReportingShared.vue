@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import MainContainer from '@/packages/ui/src/MainContainer.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageTitle from '@/Components/Common/PageTitle.vue';
@@ -12,8 +12,7 @@ import {
 	UserGroupIcon,
 } from '@heroicons/vue/20/solid';
 import { computed, ref, watch } from 'vue';
-
-import { api, type ReportIndexResponse } from '@/packages/api/src';
+import { api } from '@/packages/api/src';
 import {
 	PaginationEllipsis,
 	PaginationFirst,
@@ -36,7 +35,7 @@ import { Link } from '@inertiajs/vue3';
 const pageLimit = 15;
 const currentPage = ref(1);
 
-const { data: reportsResponse } = useQuery<ReportIndexResponse>({
+const { data: reportsResponse } = useQuery({
 	queryKey: ['reports', currentPage],
 	enabled: !!getCurrentOrganizationId(),
 	queryFn: () =>
@@ -61,6 +60,7 @@ async function updateFilteredTimeEntries() {
 		queryKey: ['reports'],
 	});
 }
+
 watch(currentPage, () => {
 	updateFilteredTimeEntries();
 });
@@ -144,6 +144,7 @@ watch(currentPage, () => {
 		</PaginationRoot>
 	</AppLayout>
 </template>
+
 <style lang="postcss">
 .navigation-item {
 	@apply bg-quaternary h-8 w-8 flex items-center justify-center rounded border border-border-primary text-text-tertiary hover:text-text-primary transition cursor-pointer hover:border-border-secondary hover:bg-secondary focus-visible:text-text-primary focus-visible:outline-0 focus-visible:ring-2 focus-visible:ring-ring;

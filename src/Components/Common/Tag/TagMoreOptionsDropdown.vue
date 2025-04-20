@@ -1,14 +1,15 @@
-<script setup lang="ts">
+<script setup>
 import { TrashIcon } from '@heroicons/vue/20/solid';
-import type { Tag } from '@/packages/api/src';
 import MoreOptionsDropdown from '@/packages/ui/src/MoreOptionsDropdown.vue';
 
-const emit = defineEmits<{
-	delete: [];
-}>();
-const props = defineProps<{
-	tag: Tag;
-}>();
+const emit = defineEmits(['delete']);
+
+const props = defineProps({
+	tag: {
+		type: Object,
+		required: true,
+	},
+});
 </script>
 
 <template>

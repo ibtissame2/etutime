@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import MainContainer from '@/packages/ui/src/MainContainer.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { FolderIcon, PlusIcon } from '@heroicons/vue/16/solid';
@@ -13,7 +13,6 @@ import TabBarItem from '@/Components/Common/TabBar/TabBarItem.vue';
 import TabBar from '@/Components/Common/TabBar/TabBar.vue';
 import { storeToRefs } from 'pinia';
 import { useClientsStore } from '@/utils/useClients';
-import type { CreateClientBody, Client, CreateProjectBody, Project } from '@/packages/api/src';
 import { getOrganizationCurrencyString } from '@/utils/money';
 import { getCurrentRole } from '@/utils/useUser';
 import { useOrganizationStore } from '@/utils/useOrganization';
@@ -23,14 +22,13 @@ onMounted(() => {
 	useProjectsStore().fetchProjects();
 	useOrganizationStore().fetchOrganization();
 });
+
 const { clients } = storeToRefs(useClientsStore());
 const showCreateProjectModal = ref(false);
-
 const { organization } = storeToRefs(useOrganizationStore());
+const activeTab = ref('active');
 
-const activeTab = ref<'active' | 'archived'>('active');
-
-function isActiveTab(tab: string) {
+function isActiveTab(tab) {
 	return activeTab.value === tab;
 }
 
@@ -44,10 +42,12 @@ const shownProjects = computed(() => {
 		return project.is_archived;
 	});
 });
-async function createProject(project: CreateProjectBody): Promise<Project | undefined> {
+
+async function createProject(project) {
 	return await useProjectsStore().createProject(project);
 }
-async function createClient(client: CreateClientBody): Promise<Client | undefined> {
+
+async function createClient(client) {
 	return await useClientsStore().createClient(client);
 }
 
@@ -71,9 +71,9 @@ const showBillableRate = computed(() => {
 			</SecondaryButton>
 			<ProjectCreateModal
 				v-model:show="showCreateProjectModal"
-				:create-project
+				:create-project="createProject"
 				:enable-estimated-time="isAllowedToPerformPremiumAction"
-				:create-client
+				:create-client="createClient"
 				:currency="getOrganizationCurrencyString()"
 				:clients="clients"
 				@submit="createProject"

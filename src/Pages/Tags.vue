@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import MainContainer from '@/packages/ui/src/MainContainer.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { TagIcon, PlusIcon } from '@heroicons/vue/16/solid';
@@ -12,7 +12,7 @@ import { useTagsStore } from '@/utils/useTags';
 
 const showCreateTagModal = ref(false);
 
-async function createTag(tag: string) {
+async function createTag(tag) {
 	return await useTagsStore().createTag(tag);
 }
 </script>

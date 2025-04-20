@@ -1,18 +1,10 @@
-<script setup lang="ts">
+<script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import TimeTracker from '@/Components/TimeTracker.vue';
 import { onMounted, ref, watch } from 'vue';
 import MainContainer from '@/packages/ui/src/MainContainer.vue';
 import { useTimeEntriesStore } from '@/utils/useTimeEntries';
 import { storeToRefs } from 'pinia';
-import type {
-	CreateClientBody,
-	CreateProjectBody,
-	CreateTimeEntryBody,
-	Project,
-	TimeEntry,
-	Client,
-} from '@/packages/api/src';
 import { useElementVisibility } from '@vueuse/core';
 import { ClockIcon } from '@heroicons/vue/20/solid';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
@@ -27,7 +19,6 @@ import { useClientsStore } from '@/utils/useClients';
 import TimeEntryCreateModal from '@/packages/ui/src/TimeEntry/TimeEntryCreateModal.vue';
 import { getOrganizationCurrencyString } from '@/utils/money';
 import TimeEntryMassActionRow from '@/packages/ui/src/TimeEntry/TimeEntryMassActionRow.vue';
-import type { UpdateMultipleTimeEntriesChangeset } from '@/packages/api/src';
 import { isAllowedToPerformPremiumAction } from '@/utils/billing';
 import { canCreateProjects } from '@/utils/permissions';
 
@@ -35,20 +26,20 @@ const timeEntriesStore = useTimeEntriesStore();
 const { timeEntries, allTimeEntriesLoaded } = storeToRefs(timeEntriesStore);
 const { updateTimeEntry, fetchTimeEntries, createTimeEntry } = useTimeEntriesStore();
 
-async function updateTimeEntries(ids: string[], changes: UpdateMultipleTimeEntriesChangeset) {
+async function updateTimeEntries(ids, changes) {
 	await useTimeEntriesStore().updateTimeEntries(ids, changes);
 	fetchTimeEntries();
 }
 
 const loading = ref(false);
-const loadMoreContainer = ref<HTMLDivElement | null>(null);
+const loadMoreContainer = ref(null);
 const isLoadMoreVisible = useElementVisibility(loadMoreContainer);
 const currentTimeEntryStore = useCurrentTimeEntryStore();
 const { currentTimeEntry } = storeToRefs(currentTimeEntryStore);
 const { setActiveState } = currentTimeEntryStore;
 const { tags } = storeToRefs(useTagsStore());
 
-async function startTimeEntry(timeEntry: Omit<CreateTimeEntryBody, 'member_id'>) {
+async function startTimeEntry(timeEntry) {
 	if (currentTimeEntry.value.id) {
 		await setActiveState(false);
 	}
@@ -57,7 +48,7 @@ async function startTimeEntry(timeEntry: Omit<CreateTimeEntryBody, 'member_id'>)
 	useCurrentTimeEntryStore().fetchCurrentTimeEntry();
 }
 
-function deleteTimeEntries(timeEntries: TimeEntry[]) {
+function deleteTimeEntries(timeEntries) {
 	useTimeEntriesStore().deleteTimeEntries(timeEntries);
 	fetchTimeEntries();
 }
@@ -81,17 +72,19 @@ const { tasks } = storeToRefs(taskStore);
 const clientStore = useClientsStore();
 const { clients } = storeToRefs(clientStore);
 
-async function createTag(name: string) {
+async function createTag(name) {
 	return await useTagsStore().createTag(name);
 }
-async function createProject(project: CreateProjectBody): Promise<Project | undefined> {
+
+async function createProject(project) {
 	return await useProjectsStore().createProject(project);
 }
-async function createClient(body: CreateClientBody): Promise<Client | undefined> {
+
+async function createClient(body) {
 	return await useClientsStore().createClient(body);
 }
 
-const selectedTimeEntries = ref([] as TimeEntry[]);
+const selectedTimeEntries = ref([]);
 
 async function clearSelectionAndState() {
 	selectedTimeEntries.value = [];
@@ -112,10 +105,10 @@ function deleteSelected() {
 		:create-client="createClient"
 		:create-tag="createTag"
 		:create-time-entry="createTimeEntry"
-		:projects
-		:tasks
-		:tags
-		:clients
+		:projects="projects"
+		:tasks="tasks"
+		:tags="tags"
+		:clients="clients"
 	></TimeEntryCreateModal>
 	<AppLayout title="Dashboard" data-testid="time_view">
 		<MainContainer class="pt-5 lg:pt-8 pb-4 lg:pb-6">
@@ -162,16 +155,16 @@ function deleteSelected() {
 		></TimeEntryMassActionRow>
 		<TimeEntryGroupedTable
 			v-model:selected="selectedTimeEntries"
-			:create-project
+			:create-project="createProject"
 			:enable-estimated-time="isAllowedToPerformPremiumAction()"
 			:can-create-project="canCreateProjects()"
-			:clients
-			:create-client
-			:update-time-entry
-			:update-time-entries
-			:delete-time-entries
+			:clients="clients"
+			:create-client="createClient"
+			:update-time-entry="updateTimeEntry"
+			:update-time-entries="updateTimeEntries"
+			:delete-time-entries="deleteTimeEntries"
 			:create-time-entry="startTimeEntry"
-			:create-tag
+			:create-tag="createTag"
 			:projects="projects"
 			:tasks="tasks"
 			:currency="getOrganizationCurrencyString()"

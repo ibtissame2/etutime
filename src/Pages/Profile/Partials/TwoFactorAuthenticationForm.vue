@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { ref, computed, watch } from 'vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import ActionSection from '@/Components/ActionSection.vue';
@@ -10,17 +10,15 @@ import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import TextInput from '@/packages/ui/src/Input/TextInput.vue';
 import axios from 'axios';
-import type { JetstreamUser } from '@/types/jetstream';
 
-const props = defineProps<{
-	requiresConfirmation: boolean;
-}>();
+const props = defineProps({
+	requiresConfirmation: {
+		type: Boolean,
+		default: false,
+	},
+});
 
-const page = usePage<{
-	auth: {
-		user: JetstreamUser;
-	};
-}>();
+const page = usePage();
 const enabling = ref(false);
 const confirming = ref(false);
 const disabling = ref(false);
@@ -108,7 +106,7 @@ const disableTwoFactorAuthentication = () => {
 
 <template>
 	<ActionSection>
-		<template #title> Two Factor Authentication </template>
+		<template #title>Two Factor Authentication</template>
 
 		<template #description> Add additional security to your account using two factor authentication. </template>
 

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import ActionMessage from '@/Components/ActionMessage.vue';
@@ -14,38 +14,38 @@ import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import SectionBorder from '@/Components/SectionBorder.vue';
 import TextInput from '@/packages/ui/src/Input/TextInput.vue';
-import type { Token } from '@/types/jetstream';
 
-const props = defineProps<{
-	tokens: Token[];
-	availablePermissions: string[];
-	defaultPermissions: string[];
-}>();
+const props = defineProps({
+	tokens: {
+		type: Array,
+		required: true,
+	},
+	availablePermissions: {
+		type: Array,
+		required: true,
+	},
+	defaultPermissions: {
+		type: Array,
+		required: true,
+	},
+});
 
 const createApiTokenForm = useForm({
 	name: '',
 	permissions: props.defaultPermissions,
 });
 
-const page = usePage<{
-	jetstream: {
-		flash: {
-			token: string;
-		};
-	};
-}>();
+const page = usePage();
 
-const updateApiTokenForm = useForm<{
-	permissions: string[];
-}>({
+const updateApiTokenForm = useForm({
 	permissions: [],
 });
 
 const deleteApiTokenForm = useForm({});
 
 const displayingToken = ref(false);
-const managingPermissionsFor = ref<Token | null>(null);
-const apiTokenBeingDeleted = ref<Token | null>(null);
+const managingPermissionsFor = ref(null);
+const apiTokenBeingDeleted = ref(null);
 
 const createApiToken = () => {
 	createApiTokenForm.post(route('api-tokens.store'), {
@@ -57,7 +57,7 @@ const createApiToken = () => {
 	});
 };
 
-const manageApiTokenPermissions = (token: Token) => {
+const manageApiTokenPermissions = (token) => {
 	updateApiTokenForm.permissions = token.abilities;
 	managingPermissionsFor.value = token;
 };
@@ -70,7 +70,7 @@ const updateApiToken = () => {
 	});
 };
 
-const confirmApiTokenDeletion = (token: Token) => {
+const confirmApiTokenDeletion = (token) => {
 	apiTokenBeingDeleted.value = token;
 };
 
@@ -86,7 +86,7 @@ const deleteApiToken = () => {
 <template>
 	<div>
 		<FormSection @submitted="createApiToken">
-			<template #title> Create API Token </template>
+			<template #title>Create API Token</template>
 
 			<template #description>
 				API tokens allow third-party services to authenticate with our application on your behalf.
@@ -130,7 +130,7 @@ const deleteApiToken = () => {
 
 			<div class="mt-10 sm:mt-0">
 				<ActionSection>
-					<template #title> Manage API Tokens </template>
+					<template #title>Manage API Tokens</template>
 
 					<template #description> You may delete any of your existing tokens if they are no longer needed. </template>
 
@@ -166,14 +166,14 @@ const deleteApiToken = () => {
 		</div>
 
 		<DialogModal :show="displayingToken" @close="displayingToken = false">
-			<template #title> API Token </template>
+			<template #title>API Token</template>
 
 			<template #content>
 				<div>Please copy your new API token. For your security, it won't be shown again.</div>
 
 				<div
 					v-if="page.props.jetstream.flash.token"
-					class="mt-4 bg-card-backgroundpx-4 py-2 rounded font-mono text-sm text-gray-500 break-all"
+					class="mt-4 bg-card-background px-4 py-2 rounded font-mono text-sm text-gray-500 break-all"
 				>
 					{{ page.props.jetstream.flash.token }}
 				</div>
@@ -185,7 +185,7 @@ const deleteApiToken = () => {
 		</DialogModal>
 
 		<DialogModal :show="managingPermissionsFor != null" @close="managingPermissionsFor = null">
-			<template #title> API Token Permissions </template>
+			<template #title>API Token Permissions</template>
 
 			<template #content>
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -213,7 +213,7 @@ const deleteApiToken = () => {
 		</DialogModal>
 
 		<ConfirmationModal :show="apiTokenBeingDeleted != null" @close="apiTokenBeingDeleted = null">
-			<template #title> Delete API Token </template>
+			<template #title>Delete API Token</template>
 
 			<template #content> Are you sure you would like to delete this API token? </template>
 

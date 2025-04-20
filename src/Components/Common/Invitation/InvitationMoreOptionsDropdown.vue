@@ -1,20 +1,8 @@
-<script>
+<script setup>
 import { TrashIcon, ArrowPathIcon } from '@heroicons/vue/20/solid';
 import MoreOptionsDropdown from '@/packages/ui/src/MoreOptionsDropdown.vue';
 
-export default {
-	components: {
-		TrashIcon,
-		ArrowPathIcon,
-		MoreOptionsDropdown,
-	},
-	emits: ['delete', 'resend'],
-	setup(props, { emit }) {
-		return {
-			emit,
-		};
-	},
-};
+const emit = defineEmits(['delete', 'resend']);
 </script>
 
 <template>

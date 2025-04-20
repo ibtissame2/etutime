@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import { computed, onMounted, ref } from 'vue';
 import { useNotificationsStore } from '@/utils/notification';
@@ -8,14 +8,13 @@ import { DocumentIcon } from '@heroicons/vue/24/solid';
 import { ArrowDownOnSquareIcon, InformationCircleIcon } from '@heroicons/vue/24/outline';
 
 import { getCurrentOrganizationId } from '@/utils/useUser';
-import type { ImportReport, ImportType } from '@/packages/api/src';
 import DialogModal from '@/packages/ui/src/DialogModal.vue';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import { initializeStores } from '@/utils/init';
 import { CardTitle } from '@/packages/ui/src';
 import Card from '@/Components/Common/Card.vue';
 
-const importTypeOptions = ref<ImportType[]>([]);
+const importTypeOptions = ref([]);
 
 const { addNotification } = useNotificationsStore();
 
@@ -34,8 +33,8 @@ onMounted(async () => {
 	}
 });
 
-const reportResult = ref<ImportReport | null>();
-const files = ref<FileList | null>(null);
+const reportResult = ref(null);
+const files = ref(null);
 
 async function importData() {
 	if (importType.value === null) {
@@ -47,7 +46,7 @@ async function importData() {
 		return;
 	}
 	const rawBase64String = await toBase64(files.value[0]);
-	const base64String = rawBase64String.split(';')[1].replace('base64,', '') as string;
+	const base64String = rawBase64String.split(';')[1].replace('base64,', '');
 	const organizationId = getCurrentOrganizationId();
 	if (organizationId !== null) {
 		const { handleApiRequestNotifications } = useNotificationsStore();
@@ -81,9 +80,9 @@ async function importData() {
 	}
 }
 
-const importFile = ref<HTMLInputElement | null>();
+const importFile = ref(null);
 
-function toBase64(file: File): Promise<string> {
+function toBase64(file) {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
 		reader.readAsDataURL(file);
@@ -115,7 +114,7 @@ const filenames = computed(() => {
 	return files.value?.item(0)?.name ?? 'Import File selected';
 });
 
-const importType = ref<ImportType | null>(null);
+const importType = ref(null);
 
 const showResultModal = ref(false);
 </script>

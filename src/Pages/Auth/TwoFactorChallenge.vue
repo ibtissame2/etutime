@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { nextTick, ref } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
@@ -15,8 +15,8 @@ const form = useForm({
 	recovery_code: '',
 });
 
-const recoveryCodeInput = ref<HTMLInputElement | null>(null);
-const codeInput = ref<HTMLInputElement | null>(null);
+const recoveryCodeInput = ref(null);
+const codeInput = ref(null);
 
 const toggleRecovery = async () => {
 	recovery.value = !recovery.value;
@@ -91,9 +91,8 @@ const submit = () => {
 					class="text-sm text-muted hover:text-text-primary underline cursor-pointer"
 					@click.prevent="toggleRecovery"
 				>
-					<template v-if="!recovery"> Use a recovery code</template>
-
-					<template v-else> Use an authentication code</template>
+					<template v-if="!recovery">Use a recovery code</template>
+					<template v-else>Use an authentication code</template>
 				</button>
 
 				<PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">

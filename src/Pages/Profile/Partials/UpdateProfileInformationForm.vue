@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue';
 import { Link, router, useForm, usePage } from '@inertiajs/vue3';
 import ActionMessage from '@/Components/ActionMessage.vue';
@@ -8,24 +8,23 @@ import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import TextInput from '@/packages/ui/src/Input/TextInput.vue';
-import type { User } from '@/types/models';
 
-const props = defineProps<{
-	user: User;
-}>();
+const props = defineProps({
+	user: Object,
+});
 
 const form = useForm({
 	_method: 'PUT',
 	name: props.user.name,
 	email: props.user.email,
-	photo: null as File | null,
+	photo: null,
 	timezone: props.user.timezone,
 	week_start: props.user.week_start,
 });
 
-const verificationLinkSent = ref<boolean | null>(null);
-const photoPreview = ref<ArrayBuffer | undefined | string | null>(null);
-const photoInput = ref<HTMLInputElement | null>(null);
+const verificationLinkSent = ref(null);
+const photoPreview = ref(null);
+const photoInput = ref(null);
 
 const updateProfileInformation = () => {
 	if (photoInput.value && photoInput.value.files && photoInput.value.files?.length > 0) {
@@ -78,12 +77,7 @@ const clearPhotoFileInput = () => {
 	}
 };
 
-const page = usePage<{
-	jetstream: {
-		managesProfilePhotos: boolean;
-		hasEmailVerification: boolean;
-	};
-}>();
+const page = usePage();
 </script>
 
 <template>

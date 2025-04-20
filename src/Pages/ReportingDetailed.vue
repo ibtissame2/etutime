@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import MainContainer from '@/packages/ui/src/MainContainer.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { FolderIcon } from '@heroicons/vue/16/solid';
@@ -20,15 +20,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import { getDayJsInstance, getLocalizedDayJs } from '@/packages/ui/src/utils/time';
 import { storeToRefs } from 'pinia';
 import TagDropdown from '@/packages/ui/src/Tag/TagDropdown.vue';
-import {
-	api,
-	type Client,
-	type CreateClientBody,
-	type CreateProjectBody,
-	type Project,
-	type TimeEntry,
-	type TimeEntryResponse,
-} from '@/packages/api/src';
+import { api } from '@/packages/api/src';
 import ReportingFilterBadge from '@/Components/Common/Reporting/ReportingFilterBadge.vue';
 import ProjectMultiselectDropdown from '@/Components/Common/Project/ProjectMultiselectDropdown.vue';
 import MemberMultiselectDropdown from '@/Components/Common/Member/MemberMultiselectDropdown.vue';
@@ -59,27 +51,24 @@ import { getCurrentOrganizationId, getCurrentMembershipId } from '@/utils/useUse
 import { useTimeEntriesStore } from '../utils/useTimeEntries';
 import ReportingTabNavbar from '@/Components/Common/Reporting/ReportingTabNavbar.vue';
 import ReportingExportButton from '@/Components/Common/Reporting/ReportingExportButton.vue';
-import type { ExportFormat } from '@/types/reporting';
 import { useNotificationsStore } from '@/utils/notification';
 import TimeEntryMassActionRow from '@/packages/ui/src/TimeEntry/TimeEntryMassActionRow.vue';
 import { isAllowedToPerformPremiumAction } from '@/utils/billing';
 import { canCreateProjects, canViewAllTimeEntries } from '@/utils/permissions';
 import ReportingExportModal from '@/Components/Common/Reporting/ReportingExportModal.vue';
 
-const startDate = useSessionStorage<string>(
+const startDate = useSessionStorage(
 	'reporting-start-date',
 	getLocalizedDayJs(getDayJsInstance()().format()).subtract(14, 'd').format()
 );
-const endDate = useSessionStorage<string>(
-	'reporting-end-date',
-	getLocalizedDayJs(getDayJsInstance()().format()).format()
-);
-const selectedTags = ref<string[]>([]);
-const selectedProjects = ref<string[]>([]);
-const selectedMembers = ref<string[]>([]);
-const selectedTasks = ref<string[]>([]);
-const selectedClients = ref<string[]>([]);
-const billable = ref<'true' | 'false' | null>(null);
+const endDate = useSessionStorage('reporting-end-date', getLocalizedDayJs(getDayJsInstance()().format()).format());
+
+const selectedTags = ref([]);
+const selectedProjects = ref([]);
+const selectedMembers = ref([]);
+const selectedTasks = ref([]);
+const selectedClients = ref([]);
+const billable = ref(null);
 
 const { members } = storeToRefs(useMembersStore());
 const pageLimit = 15;
@@ -89,7 +78,7 @@ function getFilterAttributes() {
 	const defaultParams = {
 		start: getLocalizedDayJs(startDate.value).startOf('day').utc().format(),
 		end: getLocalizedDayJs(endDate.value).endOf('day').utc().format(),
-		active: 'false' as 'true' | 'false',
+		active: 'false',
 		limit: pageLimit,
 		offset: currentPage.value * pageLimit - pageLimit,
 	};
@@ -114,7 +103,7 @@ const { createTimeEntry, updateTimeEntry, updateTimeEntries } = useTimeEntriesSt
 
 const { tags } = storeToRefs(useTagsStore());
 
-const { data: timeEntryResponse } = useQuery<TimeEntryResponse>({
+const { data: timeEntryResponse } = useQuery({
 	queryKey: ['timeEntry', 'detailed-report'],
 	enabled: !!getCurrentOrganizationId(),
 	queryFn: () =>
@@ -132,7 +121,7 @@ const totalPages = computed(() => {
 
 const timeEntriesStore = useTimeEntriesStore();
 
-async function deleteTimeEntries(timeEntries: TimeEntry[]) {
+async function deleteTimeEntries(timeEntries) {
 	await timeEntriesStore.deleteTimeEntries(timeEntries);
 	selectedTimeEntries.value = [];
 	await updateFilteredTimeEntries();
@@ -153,24 +142,24 @@ const { tasks } = storeToRefs(taskStore);
 const clientStore = useClientsStore();
 const { clients } = storeToRefs(clientStore);
 
-const selectedTimeEntries = ref<TimeEntry[]>([]);
+const selectedTimeEntries = ref([]);
 
 const showExportModal = ref(false);
-const exportUrl = ref<string | null>(null);
+const exportUrl = ref(null);
 
-async function createTag(name: string) {
+async function createTag(name) {
 	return await useTagsStore().createTag(name);
 }
 
-async function createProject(project: CreateProjectBody): Promise<Project | undefined> {
+async function createProject(project) {
 	return await useProjectsStore().createProject(project);
 }
 
-async function createClient(body: CreateClientBody): Promise<Client | undefined> {
+async function createClient(body) {
 	return await useClientsStore().createClient(body);
 }
 
-async function startTimeEntryFromExisting(entry: TimeEntry) {
+async function startTimeEntryFromExisting(entry) {
 	if (currentTimeEntry.value.id) {
 		await setActiveState(false);
 	}
@@ -186,15 +175,18 @@ async function startTimeEntryFromExisting(entry: TimeEntry) {
 	updateFilteredTimeEntries();
 	useCurrentTimeEntryStore().fetchCurrentTimeEntry();
 }
+
 const queryClient = useQueryClient();
 async function updateFilteredTimeEntries() {
 	await queryClient.invalidateQueries({
 		queryKey: ['timeEntry', 'detailed-report'],
 	});
 }
+
 watch(currentPage, () => {
 	updateFilteredTimeEntries();
 });
+
 function deleteSelected() {
 	deleteTimeEntries(selectedTimeEntries.value);
 }
@@ -203,7 +195,8 @@ async function clearSelectionAndState() {
 	selectedTimeEntries.value = [];
 	await updateFilteredTimeEntries();
 }
-async function downloadExport(format: ExportFormat) {
+
+async function downloadExport(format) {
 	const organizationId = getCurrentOrganizationId();
 	if (organizationId) {
 		const response = await handleApiRequestNotifications(
@@ -222,7 +215,7 @@ async function downloadExport(format: ExportFormat) {
 		);
 		if (response?.download_url) {
 			showExportModal.value = true;
-			exportUrl.value = response.download_url as string;
+			exportUrl.value = response.download_url;
 		}
 	}
 }
@@ -423,6 +416,7 @@ async function downloadExport(format: ExportFormat) {
 		</PaginationRoot>
 	</AppLayout>
 </template>
+
 <style lang="postcss">
 .navigation-item {
 	@apply bg-quaternary h-8 w-8 flex items-center justify-center rounded border border-border-primary text-text-tertiary hover:text-text-primary transition cursor-pointer hover:border-border-secondary hover:bg-secondary focus-visible:text-text-primary focus-visible:outline-0 focus-visible:ring-2 focus-visible:ring-ring;

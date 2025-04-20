@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { computed } from 'vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
@@ -8,6 +8,7 @@ import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 const props = defineProps({
 	status: String,
 });
+
 const form = useForm({});
 
 const submit = () => {

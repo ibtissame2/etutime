@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { Link, useForm } from '@inertiajs/vue3';
 import ActionMessage from '@/Components/ActionMessage.vue';
 import FormSection from '@/Components/FormSection.vue';
@@ -6,16 +6,14 @@ import InputError from '@/packages/ui/src/Input/InputError.vue';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import TextInput from '@/packages/ui/src/Input/TextInput.vue';
-import type { Organization } from '@/types/models';
-import type { Permissions } from '@/types/jetstream';
 import { CreditCardIcon } from '@heroicons/vue/20/solid';
 import { isBillingActivated } from '@/utils/billing';
 import { canManageBilling } from '@/utils/permissions';
 
-const props = defineProps<{
-	team: Organization;
-	permissions: Permissions;
-}>();
+const props = defineProps({
+	team: Object,
+	permissions: Object,
+});
 
 const form = useForm({
 	name: props.team.name,

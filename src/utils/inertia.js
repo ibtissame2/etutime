@@ -1,15 +1,28 @@
 export const usePage = () => {
 	return {
 		props: {
+			terms_url: '',
+			privacy_policy_url: '',
+			newsletter_consent: true,
 			jetstream: {
+				canUpdateProfileInformation: true,
+				canUpdatePassword: true,
+				canManageTwoFactorAuthentication: true,
+				hasAccountDeletionFeatures: true,
+				hasTermsAndPrivacyPolicyFeature: true,
 				canCreateTeams: true,
 				hasTeamFeatures: true,
 				managesProfilePhotos: true,
+				hasEmailVerification: true,
 				hasApiFeatures: true,
 				flash: {
-					bannerStyle: '',
+					bannerStyle: 'success',
 					banner: '',
+					token: '',
 				},
+			},
+			flash: {
+				message: '',
 			},
 			auth: {
 				user: {

@@ -1,13 +1,21 @@
-<script setup lang="ts">
+<script setup>
 import ApiTokenManager from '@/Pages/API/Partials/ApiTokenManager.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import type { Token } from '@/types/jetstream';
 
-defineProps<{
-	tokens: Token[];
-	availablePermissions: string[];
-	defaultPermissions: string[];
-}>();
+defineProps({
+	tokens: {
+		type: Array,
+		required: true,
+	},
+	availablePermissions: {
+		type: Array,
+		required: true,
+	},
+	defaultPermissions: {
+		type: Array,
+		required: true,
+	},
+});
 </script>
 
 <template>

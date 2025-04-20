@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import DeleteUserForm from '@/Pages/Profile/Partials/DeleteUserForm.vue';
 import LogoutOtherBrowserSessionsForm from '@/Pages/Profile/Partials/LogoutOtherBrowserSessionsForm.vue';
@@ -7,27 +7,15 @@ import TwoFactorAuthenticationForm from '@/Pages/Profile/Partials/TwoFactorAuthe
 import UpdatePasswordForm from '@/Pages/Profile/Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from '@/Pages/Profile/Partials/UpdateProfileInformationForm.vue';
 import { usePage } from '@inertiajs/vue3';
-import type { User } from '@/types/models';
-import type { Session } from '@/types/jetstream';
 import ApiTokensForm from '@/Pages/Profile/Partials/ApiTokensForm.vue';
 import ThemeForm from '@/Pages/Profile/Partials/ThemeForm.vue';
 
-defineProps<{
-	confirmsTwoFactorAuthentication: boolean;
-	sessions: Session[];
-}>();
+defineProps({
+	confirmsTwoFactorAuthentication: Boolean,
+	sessions: Array,
+});
 
-const page = usePage<{
-	jetstream: {
-		canUpdateProfileInformation: boolean;
-		canUpdatePassword: boolean;
-		canManageTwoFactorAuthentication: boolean;
-		hasAccountDeletionFeatures: boolean;
-	};
-	auth: {
-		user: User;
-	};
-}>();
+const page = usePage();
 </script>
 
 <template>

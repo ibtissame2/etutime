@@ -1,9 +1,8 @@
-<script setup lang="ts">
+<script setup>
 import FormSection from '@/Components/FormSection.vue';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import { onMounted, ref } from 'vue';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
-import type { UpdateOrganizationBody } from '@/packages/api/src';
 import BillableRateInput from '@/packages/ui/src/Input/BillableRateInput.vue';
 import { useOrganizationStore } from '@/utils/useOrganization';
 import { storeToRefs } from 'pinia';
@@ -15,9 +14,9 @@ const store = useOrganizationStore();
 const { fetchOrganization, updateOrganization } = store;
 const { organization } = storeToRefs(store);
 const saving = ref(false);
-const organizationBody = ref<UpdateOrganizationBody>({
+const organizationBody = ref({
 	name: '',
-	billable_rate: null as number | null,
+	billable_rate: null,
 	employees_can_see_billable_rates: false,
 });
 
@@ -29,6 +28,7 @@ onMounted(async () => {
 		employees_can_see_billable_rates: organization.value?.employees_can_see_billable_rates ?? false,
 	};
 });
+
 const showConfirmationModal = ref(false);
 
 async function submit() {

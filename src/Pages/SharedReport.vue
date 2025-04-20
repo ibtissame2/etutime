@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import MainContainer from '@/packages/ui/src/MainContainer.vue';
 import PageTitle from '@/Components/Common/PageTitle.vue';
 import { ChartBarIcon } from '@heroicons/vue/20/solid';
@@ -15,7 +15,7 @@ import { getRandomColorWithSeed } from '@/packages/ui/src/utils/color';
 import { useReportingStore } from '@/utils/useReporting';
 import { Head } from '@inertiajs/vue3';
 
-const sharedSecret = ref<string | null>(null);
+const sharedSecret = ref(null);
 
 const hasSharedSecret = computed(() => {
 	return sharedSecret.value !== null;
@@ -50,6 +50,7 @@ const aggregatedTableTimeEntries = computed(() => {
 		cost: 0,
 	};
 });
+
 const aggregatedGraphTimeEntries = computed(() => {
 	if (sharedReportResponseData.value) {
 		return sharedReportResponseData.value?.history_data;
@@ -75,6 +76,7 @@ const subGroup = computed(() => {
 	}
 	return 'project';
 });
+
 const { emptyPlaceholder } = useReportingStore();
 
 const groupedPieChartData = computed(() => {
@@ -116,7 +118,7 @@ const tableData = computed(() => {
 });
 
 const { groupByOptions } = useReportingStore();
-function getGroupLabel(key: string) {
+function getGroupLabel(key) {
 	return groupByOptions.find((option) => {
 		return option.value === key;
 	})?.label;

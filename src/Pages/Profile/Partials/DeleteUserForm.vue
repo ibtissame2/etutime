@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import ActionSection from '@/Components/ActionSection.vue';
@@ -9,7 +9,7 @@ import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import TextInput from '@/packages/ui/src/Input/TextInput.vue';
 
 const confirmingUserDeletion = ref(false);
-const passwordInput = ref<HTMLElement | null>(null);
+const passwordInput = ref(null);
 
 const form = useForm({
 	password: '',
@@ -31,16 +31,15 @@ const deleteUser = () => {
 
 const closeModal = () => {
 	confirmingUserDeletion.value = false;
-
 	form.reset();
 };
 </script>
 
 <template>
 	<ActionSection>
-		<template #title> Delete Account </template>
+		<template #title>Delete Account</template>
 
-		<template #description> Permanently delete your account. </template>
+		<template #description>Permanently delete your account.</template>
 
 		<template #content>
 			<div class="max-w-xl text-sm text-muted">
@@ -53,7 +52,7 @@ const closeModal = () => {
 			</div>
 
 			<DialogModal :show="confirmingUserDeletion" @close="closeModal">
-				<template #title> Delete Account </template>
+				<template #title>Delete Account</template>
 
 				<template #content>
 					Are you sure you want to delete your account? Once your account is deleted, all of its resources and data will

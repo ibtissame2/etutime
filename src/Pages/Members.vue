@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import MainContainer from '@/packages/ui/src/MainContainer.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { PlusIcon } from '@heroicons/vue/16/solid';
@@ -9,19 +9,18 @@ import TabBarItem from '@/Components/Common/TabBar/TabBarItem.vue';
 import { ref } from 'vue';
 import MemberTable from '@/Components/Common/Member/MemberTable.vue';
 import MemberInviteModal from '@/Components/Common/Member/MemberInviteModal.vue';
-import type { Role } from '@/types/jetstream';
 import PageTitle from '@/Components/Common/PageTitle.vue';
 import InvitationTable from '@/Components/Common/Invitation/InvitationTable.vue';
 import { canCreateInvitations } from '@/utils/permissions';
 
 const inviteMember = ref(false);
 
-defineProps<{
-	availableRoles: Role[];
-}>();
+defineProps({
+	availableRoles: Array,
+});
 
-const activeTab = ref<'all' | 'invitations'>('all');
-function isActiveTab(tab: string) {
+const activeTab = ref('all');
+function isActiveTab(tab) {
 	return activeTab.value === tab;
 }
 </script>
