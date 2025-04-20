@@ -1,11 +1,40 @@
 @import url('./tailwind.css');
 @import url('./vendor/filament.css');
+@import url('./vendor/filament-2.css');
 @import url('./vendor/filament-styles.css');
 @import url('./vendor/mail-defaults.css');
 @import url('./vendor/support.css');
 @import url('./vendor/telescope.css');
 @import url('./vendor/telescope-dark.css');
-@import url('./vendor/form.css');
+@import url('./vendor/forms.css');
+@import url('./vendor/index.css');
+@import url('./vendor/ConfigForm.css');
+@import url('./vendor/theme.css');
+@import url('./symfony/error.css');
+/* @import url('./symfony/exception.css'); */
+@import url('./symfony/exception_full.css');
+/* @import url('./symfony/htmlDescriptor.css'); */
+/* @import url('./symfony/ignition.css'); */
+@import url('./phpunit/app.css');
+/* @import url('./phpunit/bootstrap.min.css'); */
+@import url('./phpunit/custom.css');
+@import url('./phpunit/dark-mode.css');
+@import url('./phpunit/light-mode.css');
+@import url('./phpunit/nv.d3.min.css');
+@import url('./phpunit/octicons.css');
+@import url('./phpunit/style.css');
+@import url('./phpunit/styles.css');
+/* @import url('./phpunit/php-styles.css'); */
+@import url('./components/date-time-picker.css');
+@import url('./components/file-upload.css');
+@import url('./components/markdown-editor.css');
+@import url('./components/pagination.css');
+@import url('./components/prism.css');
+@import url('./components/rich-editor.css');
+@import url('./components/select.css');
+@import url('./components/sortable.css');
+@import url('./components/tags-input.css');
+@import url('./components/whoops.base.css');
 
 @layer base {
 	:root.dark {
