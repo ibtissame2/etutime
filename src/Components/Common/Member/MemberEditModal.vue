@@ -1,128 +1,96 @@
-<script>
+<script setup>
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import DialogModal from '@/packages/ui/src/DialogModal.vue';
-import { computed, ref, onMounted, watch } from 'vue';
+import { computed, ref } from 'vue';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import { useMembersStore } from '@/utils/useMembers';
 import BillableRateInput from '@/packages/ui/src/Input/BillableRateInput.vue';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
 import MemberBillableRateModal from '@/Components/Common/Member/MemberBillableRateModal.vue';
 import MemberBillableSelect from '@/Components/Common/Member/MemberBillableSelect.vue';
+import { onMounted, watch } from 'vue';
 import MemberRoleSelect from '@/Components/Common/Member/MemberRoleSelect.vue';
 import MemberOwnershipTransferConfirmModal from '@/Components/Common/Member/MemberOwnershipTransferConfirmModal.vue';
 import { getOrganizationCurrencyString } from '@/utils/money';
 
-export default {
-	components: {
-		SecondaryButton,
-		DialogModal,
-		PrimaryButton,
-		BillableRateInput,
-		InputLabel,
-		MemberBillableRateModal,
-		MemberBillableSelect,
-		MemberRoleSelect,
-		MemberOwnershipTransferConfirmModal,
-	},
-	props: {
-		member: {
-			type: Object,
-			required: true,
-		},
-	},
-	emits: ['update:show'],
-	setup(props, { emit }) {
-		const { updateMember } = useMembersStore();
-		const show = ref(false);
-		const saving = ref(false);
-		const showBillableRateModal = ref(false);
-		const showOwnershipTransferConfirmModal = ref(false);
-		const billableRateSelect = ref('default-rate');
+const { updateMember } = useMembersStore();
+const show = defineModel('show', { default: false });
+const saving = ref(false);
 
-		const memberBody = ref({
-			role: props.member.role,
-			billable_rate: props.member.billable_rate,
-		});
+const props = defineProps({
+	member: Object,
+});
 
-		const roleDescriptionTexts = {
-			owner:
-				'The owner has full access of the organization. The owner is the only role that can: delete the organization, transfer the ownership to another user and access to the billing settings',
-			admin: 'The admin has full access to the organization, except for the stuff that only the owner can do.',
-			manager:
-				'The manager has full access to projects, clients, tags, time entries, and reports, but can not manage the organization or the users.',
-			employee:
-				'An employee is a user that is only using the application to track time, but has no administrative rights.',
-			placeholder:
-				'Placeholder users can not do anything in the organization. They are not billed and can be used to remove users from the organization without deleting their time entries.',
-		};
+const memberBody = ref({
+	role: props.member.role,
+	billable_rate: props.member.billable_rate,
+});
 
-		const roleDescription = computed(() => {
-			if (memberBody.value.role && memberBody.value.role in roleDescriptionTexts) {
-				return roleDescriptionTexts[memberBody.value.role];
-			}
-			return '';
-		});
+async function submitBillableRate() {
+	if (memberBody.value.role === 'owner' && props.member.role !== 'owner') {
+		show.value = false;
+		showOwnershipTransferConfirmModal.value = true;
+	} else {
+		await submit();
+	}
+}
 
-		async function submitBillableRate() {
-			if (memberBody.value.role === 'owner' && props.member.role !== 'owner') {
-				show.value = false;
-				showOwnershipTransferConfirmModal.value = true;
-			} else {
-				await submit();
-			}
-		}
+async function submit() {
+	await updateMember(props.member.id, memberBody.value);
+	show.value = false;
+	showBillableRateModal.value = false;
+	showOwnershipTransferConfirmModal.value = false;
+}
 
-		async function submit() {
-			await updateMember(props.member.id, memberBody.value);
-			show.value = false;
-			showBillableRateModal.value = false;
-			showOwnershipTransferConfirmModal.value = false;
-		}
+const showBillableRateModal = ref(false);
+const showOwnershipTransferConfirmModal = ref(false);
 
-		function saveWithChecks() {
-			if (memberBody.value.billable_rate !== props.member.billable_rate) {
-				showBillableRateModal.value = true;
-				show.value = false;
-			} else if (memberBody.value.role === 'owner' && props.member.role !== 'owner') {
-				show.value = false;
-				showOwnershipTransferConfirmModal.value = true;
-			} else {
-				submitBillableRate();
-			}
-		}
+function saveWithChecks() {
+	if (memberBody.value.billable_rate !== props.member.billable_rate) {
+		showBillableRateModal.value = true;
+		show.value = false;
+	} else if (memberBody.value.role === 'owner' && props.member.role !== 'owner') {
+		show.value = false;
+		showOwnershipTransferConfirmModal.value = true;
+	} else {
+		submitBillableRate();
+	}
+}
 
-		onMounted(() => {
-			if (props.member.billable_rate !== null) {
-				billableRateSelect.value = 'custom-rate';
-			} else {
-				billableRateSelect.value = 'default-rate';
-			}
-		});
+const billableRateSelect = ref < MemberBillableKey > 'default-rate';
 
-		watch(billableRateSelect, () => {
-			if (billableRateSelect.value === 'default-rate') {
-				memberBody.value.billable_rate = null;
-			} else if (billableRateSelect.value === 'custom-rate') {
-				memberBody.value.billable_rate = props.member.billable_rate ?? 0;
-			}
-		});
+onMounted(() => {
+	if (props.member.billable_rate !== null) {
+		billableRateSelect.value = 'custom-rate';
+	} else {
+		billableRateSelect.value = 'default-rate';
+	}
+});
+watch(billableRateSelect, () => {
+	if (billableRateSelect.value === 'default-rate') {
+		memberBody.value.billable_rate = null;
+	} else if (billableRateSelect.value === 'custom-rate') {
+		memberBody.value.billable_rate = props.member.billable_rate ?? 0;
+	}
+});
 
-		return {
-			show,
-			saving,
-			memberBody,
-			showBillableRateModal,
-			showOwnershipTransferConfirmModal,
-			billableRateSelect,
-			roleDescription,
-			submitBillableRate,
-			submit,
-			saveWithChecks,
-			getOrganizationCurrencyString,
-			emit,
-		};
-	},
+const roleDescriptionTexts = {
+	owner:
+		'The owner has full access of the organization. The owner is the only role that can: delete the organization, transfer the ownership to another user and access to the billing settings',
+	admin: 'The admin has full access to the organization, except for the stuff that only the owner can do.',
+	manager:
+		'The manager has full access to projects, clients, tags, time entries, and reports, but can not manage the organization or the users.',
+	employee: 'An employee is a user that is only using the application to track time, but has no administrative rights.',
+	placeholder:
+		'Placeholder users can not do anything in the organization. They are not billed and can be used to remove users from the organization without deleting their time entries.',
 };
+
+const roleDescription = computed(() => {
+	if (memberBody.value.role && memberBody.value.role in roleDescriptionTexts) {
+		return roleDescriptionTexts[memberBody.value.role];
+	}
+	return '';
+});
 </script>
 
 <template>

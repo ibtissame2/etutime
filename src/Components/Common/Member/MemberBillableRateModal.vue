@@ -1,36 +1,17 @@
-<script>
+<script setup>
 import { getOrganizationCurrencyString } from '@/utils/money';
 import BillableRateModal from '@/packages/ui/src/BillableRateModal.vue';
 import { formatCents } from '@/packages/ui/src/utils/money';
 
-export default {
-	components: {
-		BillableRateModal,
-	},
-	props: {
-		newBillableRate: {
-			type: Number,
-			default: null,
-		},
-		memberName: {
-			type: String,
-			required: true,
-		},
-	},
-	emits: ['submit', 'update:show', 'update:saving'],
-	setup(props, { emit }) {
-		const show = ref(false);
-		const saving = ref(false);
+const show = defineModel('show', { default: false });
+const saving = defineModel('saving', { default: false });
 
-		return {
-			show,
-			saving,
-			getOrganizationCurrencyString,
-			formatCents,
-			emit,
-		};
-	},
-};
+defineProps({
+	newBillableRate: { type: [Number | null], required: false },
+	memberName: String,
+});
+
+defineEmits(['submit']);
 </script>
 
 <template>

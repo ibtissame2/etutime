@@ -1,56 +1,19 @@
-<script>
-import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
-import { UserCircleIcon, PlusIcon } from '@heroicons/vue/24/solid';
-import { ref } from 'vue';
-import ClientTableRow from '@/Components/Common/Client/ClientTableRow.vue';
-import ClientCreateModal from '@/Components/Common/Client/ClientCreateModal.vue';
-import ClientTableHeading from '@/Components/Common/Client/ClientTableHeading.vue';
-import { canCreateClients } from '@/utils/permissions';
-
-export default {
-	components: {
-		SecondaryButton,
-		UserCircleIcon,
-		PlusIcon,
-		ClientTableRow,
-		ClientCreateModal,
-		ClientTableHeading,
-	},
-	props: {
-		clients: {
-			type: Array,
-			required: true,
-		},
-	},
-	setup() {
-		const createClient = ref(false);
-
-		return {
-			createClient,
-			canCreateClients,
-		};
-	},
-};
+<script setup lang="ts">
+import TableHeading from '@/Components/Common/TableHeading.vue';
 </script>
 
 <template>
-	<ClientCreateModal v-model:show="createClient"></ClientCreateModal>
-	<div class="flow-root max-w-[100vw] overflow-x-auto">
-		<div class="inline-block min-w-full align-middle">
-			<div data-testid="client_table" class="grid min-w-full" style="grid-template-columns: 1fr 150px 200px 80px">
-				<ClientTableHeading></ClientTableHeading>
-				<div v-if="clients.length === 0" class="col-span-2 py-24 text-center">
-					<UserCircleIcon class="w-8 text-icon-default inline pb-2"></UserCircleIcon>
-					<h3 class="text-text-primary font-semibold">No clients found</h3>
-					<p v-if="canCreateClients()" class="pb-5">Create your first client now!</p>
-					<SecondaryButton v-if="canCreateClients()" :icon="PlusIcon" @click="createClient = true"
-						>Create your First Client
-					</SecondaryButton>
-				</div>
-				<template v-for="client in clients" :key="client.id">
-					<ClientTableRow :client="client"></ClientTableRow>
-				</template>
-			</div>
-		</div>
-	</div>
+    <TableHeading>
+        <div
+            class="py-1.5 pr-3 text-left font-semibold text-text-primary pl-4 sm:pl-6 lg:pl-8 3xl:pl-12">
+            Name
+        </div>
+        <div class="px-3 py-1.5 text-left font-semibold text-text-primary"></div>
+        <div class="px-3 py-1.5 text-left font-semibold text-text-primary">Status</div>
+        <div class="relative py-1.5 pl-3 pr-4 sm:pr-6 lg:pr-8 3xl:pr-12">
+            <span class="sr-only">Edit</span>
+        </div>
+    </TableHeading>
 </template>
+
+<style scoped></style>
