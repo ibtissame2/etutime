@@ -17,7 +17,6 @@ import TimeEntryGroupedTable from '@/packages/ui/src/TimeEntry/TimeEntryGroupedT
 import { useTagsStore } from '@/utils/useTags';
 import { useClientsStore } from '@/utils/useClients';
 import TimeEntryCreateModal from '@/packages/ui/src/TimeEntry/TimeEntryCreateModal.vue';
-import { getOrganizationCurrencyString } from '@/utils/money';
 import TimeEntryMassActionRow from '@/packages/ui/src/TimeEntry/TimeEntryMassActionRow.vue';
 import { isAllowedToPerformPremiumAction } from '@/utils/billing';
 import { canCreateProjects } from '@/utils/permissions';
@@ -137,7 +136,7 @@ function deleteSelected() {
 			:projects="projects"
 			:tasks="tasks"
 			:tags="tags"
-			:currency="getOrganizationCurrencyString()"
+			:currency="'MAD'"
 			:clients="clients"
 			:update-time-entries="
 				(args) =>
@@ -167,7 +166,7 @@ function deleteSelected() {
 			:create-tag="createTag"
 			:projects="projects"
 			:tasks="tasks"
-			:currency="getOrganizationCurrencyString()"
+			:currency="'MAD'"
 			:time-entries="timeEntries"
 			:tags="tags"
 		></TimeEntryGroupedTable>

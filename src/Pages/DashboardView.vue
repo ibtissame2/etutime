@@ -8,21 +8,21 @@ import ThisWeekOverview from '@/Components/Dashboard/ThisWeekOverview.vue';
 import ActivityGraphCard from '@/Components/Dashboard/ActivityGraphCard.vue';
 import MainContainer from '@/packages/ui/src/MainContainer.vue';
 import { canViewMembers } from '@/utils/permissions';
-// import { useQueryClient } from '@tanstack/vue-query';
+import { useQueryClient } from '@/utils/tanstack';
 
-// const queryClient = useQueryClient();
+const queryClient = useQueryClient();
 
 const refreshDashboardData = () => {
-	//     queryClient.invalidateQueries({ queryKey: ["latestTasks"] });
-	//     queryClient.invalidateQueries({ queryKey: ["lastSevenDays"] });
-	//     queryClient.invalidateQueries({ queryKey: ["dailyTrackedHours"] });
-	//     queryClient.invalidateQueries({ queryKey: ["latestTeamActivity"] });
-	//     queryClient.invalidateQueries({ queryKey: ["weeklyProjectOverview"] });
-	//     queryClient.invalidateQueries({ queryKey: ["totalWeeklyTime"] });
-	//     queryClient.invalidateQueries({ queryKey: ["totalWeeklyBillableTime"] });
-	//     queryClient.invalidateQueries({ queryKey: ["totalWeeklyBillableAmount"] });
-	//     queryClient.invalidateQueries({ queryKey: ["weeklyHistory"] });
-	//     queryClient.invalidateQueries({ queryKey: ["timeEntries"] });
+	queryClient.invalidateQueries({ queryKey: ['latestTasks'] });
+	queryClient.invalidateQueries({ queryKey: ['lastSevenDays'] });
+	queryClient.invalidateQueries({ queryKey: ['dailyTrackedHours'] });
+	queryClient.invalidateQueries({ queryKey: ['latestTeamActivity'] });
+	queryClient.invalidateQueries({ queryKey: ['weeklyProjectOverview'] });
+	queryClient.invalidateQueries({ queryKey: ['totalWeeklyTime'] });
+	queryClient.invalidateQueries({ queryKey: ['totalWeeklyBillableTime'] });
+	queryClient.invalidateQueries({ queryKey: ['totalWeeklyBillableAmount'] });
+	queryClient.invalidateQueries({ queryKey: ['weeklyHistory'] });
+	queryClient.invalidateQueries({ queryKey: ['timeEntries'] });
 };
 </script>
 

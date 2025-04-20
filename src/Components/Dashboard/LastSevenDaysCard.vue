@@ -1,5 +1,5 @@
 <script setup>
-// import { useQuery } from "@tanstack/vue-query";
+import { useQuery } from '@/utils/tanstack';
 import { computed } from 'vue';
 import DashboardCard from '@/Components/Dashboard/DashboardCard.vue';
 import DayOverviewCardEntry from '@/Components/Dashboard/DayOverviewCardEntry.vue';
@@ -10,22 +10,22 @@ import { LoadingSpinner } from '@/packages/ui/src';
 
 const organizationId = computed(() => getCurrentOrganizationId());
 
-// const { data: last7Days, isLoading } = useQuery({
-//     queryKey: ["lastSevenDays", organizationId],
-//     queryFn: () => {
-//         return api.lastSevenDays({
-//             params: {
-//                 organization: organizationId.value
-//             }
-//         });
-//     },
-//     enabled: computed(() => !!organizationId.value),
-//     placeholderData: Array.from({ length: 7 }, (_, i) => ({
-//         date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
-//         duration: 0,
-//         history: Array(8).fill(0)
-//     }))
-// });
+const { data: last7Days, isLoading } = useQuery({
+	queryKey: ['lastSevenDays', organizationId],
+	queryFn: () => {
+		return api.lastSevenDays({
+			params: {
+				organization: organizationId.value,
+			},
+		});
+	},
+	enabled: computed(() => !!organizationId.value),
+	placeholderData: Array.from({ length: 7 }, (_, i) => ({
+		date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+		duration: 0,
+		history: Array(8).fill(0),
+	})),
+});
 </script>
 
 <template>

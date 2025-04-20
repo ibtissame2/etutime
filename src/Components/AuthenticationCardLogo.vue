@@ -1,9 +1,7 @@
-<script setup>
-import { Link } from '@inertiajs/vue3';
-</script>
+<script setup></script>
 
 <template>
-	<Link :href="'/'">
+	<router-link :to="'/'">
 		<svg class="h-12 py-2 text-text-primary" viewBox="0 0 168 30" fill="none" xmlns="http://www.w3.org/2000/svg">
 			<path
 				d="M54.4081 6.78783C55.0812 7.46093 55.9225 7.79748 56.9322 7.79748C57.9936 7.79748 58.8479 7.46093 59.4951 6.78783C60.1682 6.08885 60.5048 5.22159 60.5048 4.18606C60.5048 3.17642 60.1682 2.3221 59.4951 1.62312C58.8479 0.924138 57.9936 0.574646 56.9322 0.574646C55.9225 0.574646 55.0812 0.924138 54.4081 1.62312C53.735 2.3221 53.3984 3.17642 53.3984 4.18606C53.3984 5.22159 53.735 6.08885 54.4081 6.78783Z"
@@ -41,5 +39,5 @@ import { Link } from '@inertiajs/vue3';
 				fill="currentColor"
 			/>
 		</svg>
-	</Link>
+	</router-link>
 </template>

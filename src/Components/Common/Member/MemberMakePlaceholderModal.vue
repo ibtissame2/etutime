@@ -4,7 +4,7 @@ import DialogModal from '@/packages/ui/src/DialogModal.vue';
 import { ref } from 'vue';
 import { api } from '@/packages/api/src';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
-import { useMutation } from '@tanstack/vue-query';
+import { useMutation } from '@/utils/tanstack';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { useNotificationsStore } from '@/utils/notification';
 import { useMembersStore } from '@/utils/useMembers';

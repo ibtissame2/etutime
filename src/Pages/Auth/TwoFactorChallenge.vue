@@ -1,6 +1,6 @@
 <script setup>
 import { nextTick, ref } from 'vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm } from '@/utils/inertia';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import InputError from '@/packages/ui/src/Input/InputError.vue';
@@ -10,10 +10,7 @@ import TextInput from '@/packages/ui/src/Input/TextInput.vue';
 
 const recovery = ref(false);
 
-const form = useForm({
-	code: '',
-	recovery_code: '',
-});
+const form = useForm({ code: '', recovery_code: '' });
 
 const recoveryCodeInput = ref(null);
 const codeInput = ref(null);
@@ -38,7 +35,7 @@ const submit = () => {
 </script>
 
 <template>
-	<Head title="Two-factor Confirmation" />
+	<!-- <Head title="Two-factor Confirmation" /> -->
 
 	<AuthenticationCard>
 		<template #logo>

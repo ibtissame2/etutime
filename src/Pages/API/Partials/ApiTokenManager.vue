@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { useForm, usePage } from '@inertiajs/vue3';
+import { useForm, usePage } from '@/utils/inertia';
 import ActionMessage from '@/Components/ActionMessage.vue';
 import ActionSection from '@/Components/ActionSection.vue';
 import Checkbox from '@/packages/ui/src/Input/Checkbox.vue';
@@ -30,17 +30,10 @@ const props = defineProps({
 	},
 });
 
-const createApiTokenForm = useForm({
-	name: '',
-	permissions: props.defaultPermissions,
-});
-
 const page = usePage();
 
-const updateApiTokenForm = useForm({
-	permissions: [],
-});
-
+const createApiTokenForm = useForm({ name: '', permissions: props.defaultPermissions });
+const updateApiTokenForm = useForm({ permissions: [] });
 const deleteApiTokenForm = useForm({});
 
 const displayingToken = ref(false);

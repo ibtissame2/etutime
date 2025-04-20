@@ -1,5 +1,5 @@
 <script setup>
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm } from '@/utils/inertia';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import InputError from '@/packages/ui/src/Input/InputError.vue';
@@ -27,7 +27,7 @@ const submit = () => {
 </script>
 
 <template>
-	<Head title="Reset Password" />
+	<!-- <Head title="Reset Password" /> -->
 
 	<AuthenticationCard>
 		<template #logo>

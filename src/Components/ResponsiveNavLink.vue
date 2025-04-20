@@ -1,6 +1,5 @@
 <script setup>
 import { computed } from 'vue';
-import { Link } from '@inertiajs/vue3';
 
 const props = defineProps({
 	active: {
@@ -30,8 +29,8 @@ const classes = computed(() => {
 			<slot />
 		</button>
 
-		<Link v-else :href="href" :class="classes">
+		<router-link v-else :href="href" :class="classes">
 			<slot />
-		</Link>
+		</router-link>
 	</div>
 </template>

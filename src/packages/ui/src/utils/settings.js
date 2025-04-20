@@ -3,5 +3,5 @@ export function getWeekStart() {
 }
 
 export function getUserTimezone() {
-	return 'GMT+1';
+	return 'Africa/Casablanca';
 }

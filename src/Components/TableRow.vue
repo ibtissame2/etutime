@@ -1,5 +1,4 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
 import { twMerge } from 'tailwind-merge';
 
 defineProps({
@@ -12,7 +11,7 @@ defineProps({
 
 <template>
 	<Component
-		:is="href ? Link : 'div'"
+		:is="href ? 'router-link' : 'div'"
 		:href="href"
 		role="row"
 		:class="

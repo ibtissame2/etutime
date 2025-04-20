@@ -11,11 +11,9 @@ import CardTitle from '@/packages/ui/src/CardTitle.vue';
 import LinearGradient from 'zrender/lib/graphic/LinearGradient';
 import ProjectsChartCard from '@/Components/Dashboard/ProjectsChartCard.vue';
 import { formatHumanReadableDuration } from '@/packages/ui/src/utils/time';
-import { formatCents } from '@/packages/ui/src/utils/money';
 import { getWeekStart } from '@/packages/ui/src/utils/settings';
 import { useCssVar } from '@vueuse/core';
-import { getOrganizationCurrencyString } from '@/utils/money';
-// import { useQuery } from '@tanstack/vue-query';
+import { useQuery } from '@/utils/tanstack';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { api } from '@/packages/api/src';
 
@@ -52,65 +50,41 @@ const accentColor = useCssVar('--theme-color-chart', null, { observe: true });
 
 const organizationId = computed(() => getCurrentOrganizationId());
 
-// const { data: weeklyProjectOverview } = useQuery({
-//     queryKey: ["weeklyProjectOverview", organizationId],
-//     queryFn: () => {
-//         return api.weeklyProjectOverview({
-//             params: {
-//                 organization: organizationId.value
-//             }
-//         });
-//     },
-//     enabled: computed(() => !!organizationId.value)
-// });
+const { data: weeklyProjectOverview } = useQuery({
+	queryKey: ['weeklyProjectOverview', organizationId],
+	queryFn: () => {
+		return api.weeklyProjectOverview({
+			params: {
+				organization: organizationId.value,
+			},
+		});
+	},
+	enabled: computed(() => !!organizationId.value),
+});
 
-// const { data: totalWeeklyTime } = useQuery({
-//     queryKey: ["totalWeeklyTime", organizationId],
-//     queryFn: () => {
-//         return api.totalWeeklyTime({
-//             params: {
-//                 organization: organizationId.value
-//             }
-//         });
-//     },
-//     enabled: computed(() => !!organizationId.value)
-// });
+const { data: totalWeeklyTime } = useQuery({
+	queryKey: ['totalWeeklyTime', organizationId],
+	queryFn: () => {
+		return api.totalWeeklyTime({
+			params: {
+				organization: organizationId.value,
+			},
+		});
+	},
+	enabled: computed(() => !!organizationId.value),
+});
 
-// const { data: totalWeeklyBillableTime } = useQuery({
-//     queryKey: ["totalWeeklyBillableTime", organizationId],
-//     queryFn: () => {
-//         return api.totalWeeklyBillableTime({
-//             params: {
-//                 organization: organizationId.value
-//             }
-//         });
-//     },
-//     enabled: computed(() => !!organizationId.value)
-// });
-
-// const { data: totalWeeklyBillableAmount } = useQuery({
-//     queryKey: ["totalWeeklyBillableAmount", organizationId],
-//     queryFn: () => {
-//         return api.totalWeeklyBillableAmount({
-//             params: {
-//                 organization: organizationId.value
-//             }
-//         });
-//     },
-//     enabled: computed(() => !!organizationId.value)
-// });
-
-// const { data: weeklyHistory } = useQuery({
-//     queryKey: ["weeklyHistory", organizationId],
-//     queryFn: () => {
-//         return api.weeklyHistory({
-//             params: {
-//                 organization: organizationId.value
-//             }
-//         });
-//     },
-//     enabled: computed(() => !!organizationId.value)
-// });
+const { data: weeklyHistory } = useQuery({
+	queryKey: ['weeklyHistory', organizationId],
+	queryFn: () => {
+		return api.weeklyHistory({
+			params: {
+				organization: organizationId.value,
+			},
+		});
+	},
+	enabled: computed(() => !!organizationId.value),
+});
 
 const seriesData = computed(() => {
 	if (!weeklyHistory.value) {
@@ -122,37 +96,19 @@ const seriesData = computed(() => {
 			...{
 				itemStyle: {
 					borderColor: new LinearGradient(0, 0, 0, 1, [
-						{
-							offset: 0,
-							color: 'rgba(' + accentColor.value + ',0.7)',
-						},
-						{
-							offset: 1,
-							color: 'rgba(' + accentColor.value + ',0.5)',
-						},
+						{ offset: 0, color: 'rgba(' + accentColor.value + ',0.7)' },
+						{ offset: 1, color: 'rgba(' + accentColor.value + ',0.5)' },
 					]),
 					emphasis: {
 						color: new LinearGradient(0, 0, 0, 1, [
-							{
-								offset: 0,
-								color: 'rgba(' + accentColor.value + ',0.9)',
-							},
-							{
-								offset: 1,
-								color: 'rgba(' + accentColor.value + ',0.7)',
-							},
+							{ offset: 0, color: 'rgba(' + accentColor.value + ',0.9)' },
+							{ offset: 1, color: 'rgba(' + accentColor.value + ',0.7)' },
 						]),
 					},
 					borderRadius: [12, 12, 0, 0],
 					color: new LinearGradient(0, 0, 0, 1, [
-						{
-							offset: 0,
-							color: 'rgba(' + accentColor.value + ',0.7)',
-						},
-						{
-							offset: 1,
-							color: 'rgba(' + accentColor.value + ',0.5)',
-						},
+						{ offset: 0, color: 'rgba(' + accentColor.value + ',0.7)' },
+						{ offset: 1, color: 'rgba(' + accentColor.value + ',0.5)' },
 					]),
 				},
 			},

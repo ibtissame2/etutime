@@ -23,15 +23,12 @@ import {
 	canViewTags,
 } from '@/utils/permissions';
 import { isBillingActivated } from '@/utils/billing';
-import { route, usePage } from '../utils/inertia';
-// import { Head } from '@inertiajs/vue3';
+import { Head, route } from '@/utils/inertia';
 import { fetchToken, isTokenValid } from '@/utils/session';
 
 defineProps({
 	title: String,
 });
-
-const page = usePage();
 
 const showSidebarMenu = ref(false);
 const isUnloading = ref(false);
@@ -86,40 +83,20 @@ onMounted(async () => {
 					<nav class="pt-2">
 						<ul>
 							<NavigationSidebarItem
-								title="Dashboard"
+								title="Accueil"
 								:icon="undefined"
-								href="dashboard"
+								href="/dashboard"
 								:current="route.isCurrent('dashboard')"
 							></NavigationSidebarItem>
-							<NavigationSidebarItem title="Time" :icon="undefined" :current="route.isCurrent('time')" href="time">
+
+							<NavigationSidebarItem title="Tempt" :icon="undefined" :current="route.isCurrent('time')" href="/time">
 							</NavigationSidebarItem>
 
 							<NavigationSidebarItem
-								title="Reporting"
+								title="Rapport"
 								:icon="undefined"
-								:sub-items="[
-									{
-										title: 'Overview',
-										route: 'reporting',
-										show: true,
-									},
-									{
-										title: 'Detailed',
-										route: 'reporting.detailed',
-										show: true,
-									},
-									{
-										title: 'Shared',
-										route: 'reporting.shared',
-										show: canViewReport(),
-									},
-								]"
-								:current="
-									route.isCurrent('reporting') ||
-									route.isCurrent('reporting.detailed') ||
-									route.isCurrent('reporting.shared')
-								"
-								href="reporting"
+								:current="route.isCurrent('reporting')"
+								href="/reporting"
 							>
 							</NavigationSidebarItem>
 						</ul>

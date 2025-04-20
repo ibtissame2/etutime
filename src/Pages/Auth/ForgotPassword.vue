@@ -1,5 +1,5 @@
 <script setup>
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm } from '@/utils/inertia';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import InputError from '@/packages/ui/src/Input/InputError.vue';
@@ -9,14 +9,12 @@ import TextInput from '@/packages/ui/src/Input/TextInput.vue';
 
 defineProps({
 	status: {
-		type: String,
+		type: [String, null],
 		default: null,
 	},
 });
 
-const form = useForm({
-	email: '',
-});
+const form = useForm({ email: '' });
 
 const submit = () => {
 	form.post(route('password.email'));
@@ -24,7 +22,7 @@ const submit = () => {
 </script>
 
 <template>
-	<Head title="Forgot Password" />
+	<!-- <Head title="Forgot Password" /> -->
 
 	<AuthenticationCard>
 		<template #logo>

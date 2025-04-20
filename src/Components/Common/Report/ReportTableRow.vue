@@ -7,7 +7,7 @@ import ReportEditModal from '@/Components/Common/Report/ReportEditModal.vue';
 import { SecondaryButton } from '@/packages/ui/src';
 import { useClipboard } from '@vueuse/core';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/vue/24/solid';
-import { useMutation, useQueryClient } from '@tanstack/vue-query';
+import { useMutation, useQueryClient } from '@/utils/tanstack';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { useNotificationsStore } from '@/utils/notification';
 

@@ -1,5 +1,5 @@
 <script setup>
-import { Link, useForm } from '@inertiajs/vue3';
+import { useForm } from '@/utils/inertia';
 import ActionMessage from '@/Components/ActionMessage.vue';
 import FormSection from '@/Components/FormSection.vue';
 import InputError from '@/packages/ui/src/Input/InputError.vue';
@@ -57,9 +57,9 @@ const updateTeamName = () => {
 					</div>
 				</div>
 				<div>
-					<Link v-if="isBillingActivated() && canManageBilling()" href="/billing">
+					<router-link v-if="isBillingActivated() && canManageBilling()" href="/billing">
 						<PrimaryButton :icon="CreditCardIcon" type="button"> Go to Billing </PrimaryButton>
-					</Link>
+					</router-link>
 				</div>
 			</div>
 

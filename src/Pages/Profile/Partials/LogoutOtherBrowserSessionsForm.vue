@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm } from '@/utils/inertia';
 import ActionMessage from '@/Components/ActionMessage.vue';
 import ActionSection from '@/Components/ActionSection.vue';
 import DialogModal from '@/packages/ui/src/DialogModal.vue';
@@ -19,9 +19,7 @@ defineProps({
 const confirmingLogout = ref(false);
 const passwordInput = ref(null);
 
-const form = useForm({
-	password: '',
-});
+const form = useForm({ password: '' });
 
 const confirmLogout = () => {
 	confirmingLogout.value = true;

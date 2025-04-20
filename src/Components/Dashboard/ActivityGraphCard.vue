@@ -10,7 +10,7 @@ import { CanvasRenderer } from 'echarts/renderers';
 import dayjs from 'dayjs';
 import { firstDayIndex, formatDate, formatHumanReadableDuration, getDayJsInstance } from '@/packages/ui/src/utils/time';
 import { useCssVar } from '@vueuse/core';
-// import { useQuery } from "@tanstack/vue-query";
+import { useQuery } from '@/utils/tanstack';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { api } from '@/packages/api/src';
 import { LoadingSpinner } from '@/packages/ui/src';
@@ -19,19 +19,17 @@ use([TitleComponent, TooltipComponent, VisualMapComponent, CalendarComponent, He
 
 const organizationId = computed(() => getCurrentOrganizationId());
 
-const dailyHoursTracked = {},
-	isLoading = {};
-// const { data: dailyHoursTracked, isLoading } = useQuery({
-//     queryKey: ["dailyTrackedHours", organizationId],
-//     queryFn: () => {
-//         return api.dailyTrackedHours({
-//             params: {
-//                 organization: organizationId.value
-//             }
-//         });
-//     },
-//     enabled: computed(() => !!organizationId.value)
-// });
+const { data: dailyHoursTracked, isLoading } = useQuery({
+	queryKey: ['dailyTrackedHours', organizationId],
+	queryFn: () => {
+		return api.dailyTrackedHours({
+			params: {
+				organization: organizationId.value,
+			},
+		});
+	},
+	enabled: computed(() => !!organizationId.value),
+});
 
 provide(THEME_KEY, 'dark');
 

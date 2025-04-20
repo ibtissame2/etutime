@@ -1,5 +1,5 @@
 <script setup>
-// import { useQuery } from '@tanstack/vue-query';
+import { useQuery } from '@/utils/tanstack';
 import { computed } from 'vue';
 import DashboardCard from '@/Components/Dashboard/DashboardCard.vue';
 import TeamActivityCardEntry from '@/Components/Dashboard/TeamActivityCardEntry.vue';
@@ -12,17 +12,17 @@ import { router } from '@/utils/inertia';
 
 const organizationId = computed(() => getCurrentOrganizationId());
 
-// const { data: latestTeamActivity, isLoading } = useQuery({
-//   queryKey: ['latestTeamActivity', organizationId],
-//   queryFn: () => {
-//       return api.latestTeamActivity({
-//           params: {
-//               organization: organizationId.value
-//           }
-//       });
-//   },
-//   enabled: computed(() => !!organizationId.value),
-// });
+const { data: latestTeamActivity, isLoading } = useQuery({
+	queryKey: ['latestTeamActivity', organizationId],
+	queryFn: () => {
+		return api.latestTeamActivity({
+			params: {
+				organization: organizationId.value,
+			},
+		});
+	},
+	enabled: computed(() => !!organizationId.value),
+});
 </script>
 
 <template>

@@ -2,7 +2,7 @@
 import SelectDropdown from '@/packages/ui/src/Input/SelectDropdown.vue';
 import Badge from '@/packages/ui/src/Badge.vue';
 import { ChevronDownIcon } from '@heroicons/vue/20/solid';
-import { usePage } from '@inertiajs/vue3';
+import { usePage } from '@/utils/inertia';
 
 const model = defineModel({
 	default: 'employee',

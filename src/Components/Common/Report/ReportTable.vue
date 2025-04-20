@@ -6,7 +6,7 @@ import { computed } from 'vue';
 import { canCreateProjects } from '@/utils/permissions';
 import ReportTableHeading from '@/Components/Common/Report/ReportTableHeading.vue';
 import ReportTableRow from '@/Components/Common/Report/ReportTableRow.vue';
-import { router } from '@inertiajs/vue3';
+import { router } from '@/utils/inertia';
 
 defineProps({
 	reports: {

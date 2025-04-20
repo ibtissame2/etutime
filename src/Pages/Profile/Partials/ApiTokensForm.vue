@@ -13,8 +13,8 @@ import InputError from '@/packages/ui/src/Input/InputError.vue';
 import ActionMessage from '@/Components/ActionMessage.vue';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
 import ActionSection from '@/Components/ActionSection.vue';
-import { useForm } from '@inertiajs/vue3';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
+import { useForm } from '@/utils/inertia';
+import { useMutation, useQuery, useQueryClient } from '@/utils/tanstack';
 import { useNotificationsStore } from '@/utils/notification';
 import { useClipboard } from '@vueuse/core';
 import { formatDateTimeLocalized } from '../../../packages/ui/src/utils/time';
@@ -27,6 +27,7 @@ const apiTokenBeingRevoked = ref(null);
 const { handleApiRequestNotifications } = useNotificationsStore();
 const newToken = ref('');
 const { copy, copied, isSupported } = useClipboard();
+const createApiTokenForm = useForm({ name: '' });
 
 async function createApiToken() {
 	await handleApiRequestNotifications(
@@ -43,10 +44,6 @@ async function createApiToken() {
 		}
 	);
 }
-
-const createApiTokenForm = useForm({
-	name: '',
-});
 
 function confirmApiTokenDeletion(token) {
 	apiTokenBeingDeleted.value = token;
