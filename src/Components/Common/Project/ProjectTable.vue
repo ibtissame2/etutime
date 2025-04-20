@@ -10,7 +10,6 @@ import { canCreateProjects } from '@/utils/permissions';
 import { useProjectsStore } from '@/utils/useProjects';
 import { useClientsStore } from '@/utils/useClients';
 import { storeToRefs } from 'pinia';
-import { getOrganizationCurrencyString } from '@/utils/money';
 import { isAllowedToPerformPremiumAction } from '@/utils/billing';
 
 const props = defineProps({
@@ -48,7 +47,7 @@ const gridTemplate = computed(() => {
 		v-model:show="showCreateProjectModal"
 		:create-project="createProject"
 		:create-client="createClient"
-		:currency="getOrganizationCurrencyString()"
+		:currency="'MAD'"
 		:clients="clients"
 		:enable-estimated-time="isAllowedToPerformPremiumAction"
 	></ProjectCreateModal>

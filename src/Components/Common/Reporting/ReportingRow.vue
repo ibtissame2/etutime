@@ -4,7 +4,6 @@ import { formatCents } from '@/packages/ui/src/utils/money';
 import GroupedItemsCountButton from '@/packages/ui/src/GroupedItemsCountButton.vue';
 import { ref } from 'vue';
 import { twMerge } from 'tailwind-merge';
-import { getOrganizationCurrencyString } from '@/utils/money';
 
 const props = defineProps({
 	entry: {
@@ -40,7 +39,7 @@ const expanded = ref(false);
 			{{ formatHumanReadableDuration(entry.seconds) }}
 		</div>
 		<div class="justify-end pr-6 flex items-center">
-			{{ entry.cost ? formatCents(entry.cost, getOrganizationCurrencyString()) : '--' }}
+			{{ entry.cost ? formatCents(entry.cost, 'MAD') : '--' }}
 		</div>
 	</div>
 	<div

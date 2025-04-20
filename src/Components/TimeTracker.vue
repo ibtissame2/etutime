@@ -16,7 +16,6 @@ import { useTagsStore } from '@/utils/useTags';
 import { useClientsStore } from '@/utils/useClients';
 import TimeTrackerControls from '@/packages/ui/src/TimeTracker/TimeTrackerControls.vue';
 import TimeTrackerRunningInDifferentOrganizationOverlay from '@/packages/ui/src/TimeTracker/TimeTrackerRunningInDifferentOrganizationOverlay.vue';
-import { getOrganizationCurrencyString } from '@/utils/money';
 import { isAllowedToPerformPremiumAction } from '@/utils/billing';
 import { canCreateProjects } from '@/utils/permissions';
 
@@ -47,7 +46,7 @@ watch(isActive, () => {
 });
 
 onMounted(async () => {
-	if (page.props.auth.user.current_team_id) {
+	if (page.props.auth.user.current_team.id) {
 		await currentTimeEntryStore.fetchCurrentTimeEntry();
 		now.value = dayjs().utc();
 	}
@@ -114,7 +113,7 @@ const { tags } = storeToRefs(useTagsStore());
 			:projects="projects"
 			:create-tag="createTag"
 			:is-active="isActive"
-			:currency="getOrganizationCurrencyString()"
+			:currency="'MAD'"
 			@start-live-timer="startLiveTimer"
 			@stop-live-timer="stopLiveTimer"
 			@start-timer="setActiveState(true)"

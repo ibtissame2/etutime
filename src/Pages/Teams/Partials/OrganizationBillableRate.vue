@@ -7,7 +7,6 @@ import BillableRateInput from '@/packages/ui/src/Input/BillableRateInput.vue';
 import { useOrganizationStore } from '@/utils/useOrganization';
 import { storeToRefs } from 'pinia';
 import OrganizationBillableRateModal from '@/Components/Common/Organization/OrganizationBillableRateModal.vue';
-import { getOrganizationCurrencyString } from '@/utils/money';
 import { Checkbox } from '@/packages/ui/src';
 
 const store = useOrganizationStore();
@@ -65,7 +64,7 @@ function checkForConfirmationModal() {
 					<BillableRateInput
 						v-if="organization"
 						v-model="organizationBody.billable_rate"
-						:currency="getOrganizationCurrencyString()"
+						:currency="'MAD'"
 						name="organizationBillableRate"
 					></BillableRateInput>
 				</div>

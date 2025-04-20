@@ -1,5 +1,4 @@
 <script setup>
-import { getOrganizationCurrencyString } from '@/utils/money';
 import BillableRateModal from '@/packages/ui/src/BillableRateModal.vue';
 import { formatCents } from '@/packages/ui/src/utils/money';
 
@@ -25,7 +24,7 @@ defineEmits(['submit']);
 	>
 		<p class="py-0.5 text-center">
 			The organization billable rate will be updated to
-			<strong>{{ newBillableRate ? formatCents(newBillableRate, getOrganizationCurrencyString()) : ' none.' }}</strong
+			<strong>{{ newBillableRate ? formatCents(newBillableRate, 'MAD') : ' none.' }}</strong
 			>.
 		</p>
 		<p class="py-0.5 text-center font-semibold">

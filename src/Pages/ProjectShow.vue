@@ -13,7 +13,6 @@ import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import { computed, onMounted, ref } from 'vue';
 import { useProjectsStore } from '@/utils/useProjects';
 import { storeToRefs } from 'pinia';
-import { Link } from '@inertiajs/vue3';
 import TaskCreateModal from '@/Components/Common/Task/TaskCreateModal.vue';
 import TaskTable from '@/Components/Common/Task/TaskTable.vue';
 import CardTitle from '@/packages/ui/src/CardTitle.vue';
@@ -28,7 +27,6 @@ import { useTasksStore } from '@/utils/useTasks';
 import ProjectEditModal from '@/Components/Common/Project/ProjectEditModal.vue';
 import { Badge } from '@/packages/ui/src';
 import { formatCents } from '../packages/ui/src/utils/money';
-import { getOrganizationCurrencyString } from '../utils/money';
 
 const { projects } = storeToRefs(useProjectsStore());
 
@@ -75,10 +73,10 @@ const shownTasks = computed(() => {
 				<ol role="list" class="flex items-center space-x-2">
 					<li>
 						<div class="flex items-center space-x-6">
-							<Link :href="route('projects')" class="flex items-center space-x-2.5">
+							<router-link :href="route('projects')" class="flex items-center space-x-2.5">
 								<FolderIcon class="w-6 text-icon-default"></FolderIcon>
 								<span class="font-medium">Projects</span>
-							</Link>
+							</router-link>
 						</div>
 					</li>
 					<li>
@@ -99,7 +97,7 @@ const shownTasks = computed(() => {
 				</ol>
 				<div class="px-4">
 					<Badge v-if="project?.billable_rate">
-						{{ formatCents(project?.billable_rate ?? 0, getOrganizationCurrencyString()) }}
+						{{ formatCents(project?.billable_rate ?? 0, 'MAD') }}
 						/ h
 					</Badge>
 					<Badge v-if="project?.is_billable && !project?.billable_rate"> Default Rate </Badge>

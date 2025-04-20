@@ -8,7 +8,6 @@ import ProjectMemberMoreOptionsDropdown from '@/Components/Common/ProjectMember/
 import { formatCents } from '@/packages/ui/src/utils/money';
 import { capitalizeFirstLetter } from '@/utils/format';
 import ProjectMemberEditModal from '@/Components/Common/ProjectMember/ProjectMemberEditModal.vue';
-import { getOrganizationCurrencyString } from '@/utils/money';
 
 const props = defineProps({
 	projectMember: {
@@ -48,9 +47,7 @@ const showEditModal = ref(false);
 			</span>
 		</div>
 		<div class="whitespace-nowrap px-3 py-4 text-sm text-muted">
-			{{
-				projectMember.billable_rate ? formatCents(projectMember.billable_rate, getOrganizationCurrencyString()) : '--'
-			}}
+			{{ projectMember.billable_rate ? formatCents(projectMember.billable_rate, 'MAD') : '--' }}
 		</div>
 		<div class="whitespace-nowrap px-3 py-4 text-sm text-muted">
 			{{ capitalizeFirstLetter(member?.role ?? '') }}
