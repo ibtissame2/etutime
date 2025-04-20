@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { Link, router, useForm, usePage } from '@inertiajs/vue3';
+import { router, route, useForm, usePage } from '@/utils/inertia';
 import ActionMessage from '@/Components/ActionMessage.vue';
 import FormSection from '@/Components/FormSection.vue';
 import InputError from '@/packages/ui/src/Input/InputError.vue';
@@ -142,7 +142,7 @@ const page = usePage();
 					<p class="text-sm mt-2 text-text-primary">
 						Your email address is unverified.
 
-						<Link
+						<router-link
 							:href="route('verification.send')"
 							method="post"
 							as="button"
@@ -150,7 +150,7 @@ const page = usePage();
 							@click.prevent="sendEmailVerification"
 						>
 							Click here to re-send the verification email.
-						</Link>
+						</router-link>
 					</p>
 
 					<div v-show="verificationLinkSent" class="mt-2 font-medium text-sm text-green-400">
@@ -171,7 +171,7 @@ const page = usePage();
 				>
 					<option value="" disabled>Select a Timezone</option>
 					<option
-						v-for="(timezoneTranslated, timezoneKey) in $page.props.timezones"
+						v-for="(timezoneTranslated, timezoneKey) in page.props.timezones"
 						:key="timezoneKey"
 						:value="timezoneKey"
 					>
@@ -192,7 +192,7 @@ const page = usePage();
 					class="mt-1 block w-full border-input-border bg-input-background text-text-primary focus:border-input-border-active rounded-md shadow-sm"
 				>
 					<option value="" disabled>Select a week day</option>
-					<option v-for="(weekdayTranslated, weekdayKey) in $page.props.weekdays" :key="weekdayKey" :value="weekdayKey">
+					<option v-for="(weekdayTranslated, weekdayKey) in page.props.weekdays" :key="weekdayKey" :value="weekdayKey">
 						{{ weekdayTranslated }}
 					</option>
 				</select>
@@ -208,7 +208,7 @@ const page = usePage();
 					class="mt-1 block w-full border-input-border bg-input-background text-text-primary focus:border-input-border-active rounded-md shadow-sm"
 				>
 					<option value="" disabled>Select a week day</option>
-					<option v-for="(weekdayTranslated, weekdayKey) in $page.props.weekdays" :key="weekdayKey" :value="weekdayKey">
+					<option v-for="(weekdayTranslated, weekdayKey) in page.props.weekdays" :key="weekdayKey" :value="weekdayKey">
 						{{ weekdayTranslated }}
 					</option>
 				</select>

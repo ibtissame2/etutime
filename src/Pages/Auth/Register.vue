@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm, usePage } from '@/utils/inertia';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import Checkbox from '@/packages/ui/src/Input/Checkbox.vue';
@@ -30,7 +30,7 @@ const page = usePage();
 </script>
 
 <template>
-	<Head title="Register" />
+	<!-- <Head title="Register" /> -->
 
 	<AuthenticationCard>
 		<template #logo>
@@ -38,14 +38,17 @@ const page = usePage();
 		</template>
 
 		<template #actions>
-			<Link class="py-8 text-muted text-sm font-medium opacity-90 hover:opacity-100 transition" :href="route('login')">
+			<router-link
+				class="py-8 text-muted text-sm font-medium opacity-90 hover:opacity-100 transition"
+				:href="route('login')"
+			>
 				Already have an account?
 				<span class="text-text-primary">Login here!</span>
-			</Link>
+			</router-link>
 		</template>
 
 		<div v-if="page.props.flash?.message" class="bg-red-400 text-black text-center w-full px-3 py-1 mb-4 rounded-lg">
-			{{ page.props.flash?.message }}
+			{{ page.props.flash.message }}
 		</div>
 
 		<form @submit.prevent="submit">
@@ -147,12 +150,12 @@ const page = usePage();
 			</div>
 
 			<div class="flex items-center justify-end mt-4">
-				<Link
+				<router-link
 					:href="route('login')"
 					class="underline text-sm text-muted hover:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
 				>
 					Already registered?
-				</Link>
+				</router-link>
 
 				<PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
 					Register

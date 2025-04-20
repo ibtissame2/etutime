@@ -1,5 +1,5 @@
 <script setup>
-// import { useQuery } from "@tanstack/vue-query";
+import { useQuery } from '@/utils/tanstack';
 import { computed } from 'vue';
 import RecentlyTrackedTasksCardEntry from '@/Components/Dashboard/RecentlyTrackedTasksCardEntry.vue';
 import DashboardCard from '@/Components/Dashboard/DashboardCard.vue';
@@ -13,43 +13,47 @@ import { LoadingSpinner } from '@/packages/ui/src';
 
 const organizationId = computed(() => getCurrentOrganizationId());
 
-// const { data: timeEntriesResponse, isLoading, refetch } = useQuery({
-//     queryKey: ["timeEntries", organizationId],
-//     queryFn: () => {
-//         return api.getTimeEntries({
-//             params: {
-//                 organization: organizationId.value
-//             },
-//             queries: {
-//                 member_id: getCurrentMembershipId()
-//             }
-//         });
-//     },
-//     enabled: computed(() => !!organizationId.value)
-// });
+const {
+	data: timeEntriesResponse,
+	isLoading,
+	refetch,
+} = useQuery({
+	queryKey: ['timeEntries', organizationId],
+	queryFn: () => {
+		return api.getTimeEntries({
+			params: {
+				organization: organizationId.value,
+			},
+			queries: {
+				member_id: getCurrentMembershipId(),
+			},
+		});
+	},
+	enabled: computed(() => !!organizationId.value),
+});
 
-// const latestTasks = computed(() => {
-//     if (!timeEntriesResponse.value) {
-//         return [];
-//     }
+const latestTasks = computed(() => timeEntriesResponse.value || []);
 
-//     return timeEntriesResponse.value.data;
-// });
+const filteredLatestTasks = computed(() => {
+	const finishedTimeEntries = latestTasks.value.filter((item) => item.end !== null);
 
-// const filteredLatestTasks = computed(() => {
-//     const finishedTimeEntries = latestTasks.value.filter((item) => item.end !== null);
-
-//     return finishedTimeEntries.filter((item, index, self) => {
-//         return index === self.findIndex((t) => (
-//             t.description === item.description &&
-//             t.task_id === item.task_id &&
-//             t.project_id === item.project_id &&
-//             t.tags.length === item.tags.length &&
-//             t.tags.every((tag) => item.tags.includes(tag)) &&
-//             t.billable === item.billable
-//         ));
-//     }).slice(0, 4);
-// });
+	return finishedTimeEntries
+		.filter((item, index, self) => {
+			return (
+				index ===
+				self.findIndex(
+					(t) =>
+						t.description === item.description &&
+						t.task_id === item.task_id &&
+						t.project_id === item.project_id &&
+						t.tags.length === item.tags.length &&
+						t.tags.every((tag) => item.tags.includes(tag)) &&
+						t.billable === item.billable
+				)
+			);
+		})
+		.slice(0, 4);
+});
 
 window.addEventListener('dashboard:refresh', () => {
 	refetch();

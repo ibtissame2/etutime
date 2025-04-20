@@ -5,7 +5,7 @@ import DialogModal from '@/packages/ui/src/DialogModal.vue';
 import { ref, watch } from 'vue';
 import PrimaryButton from '../../../packages/ui/src/Buttons/PrimaryButton.vue';
 import InputLabel from '../../../packages/ui/src/Input/InputLabel.vue';
-import { useMutation, useQueryClient } from '@tanstack/vue-query';
+import { useMutation, useQueryClient } from '@/utils/tanstack';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { api } from '@/packages/api/src';
 import { Checkbox } from '@/packages/ui/src';

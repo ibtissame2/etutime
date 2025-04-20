@@ -1,5 +1,5 @@
 <script setup>
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { Head, useForm, route, usePage } from '@/utils/inertia';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import InputError from '@/packages/ui/src/Input/InputError.vue';
@@ -33,7 +33,7 @@ const page = usePage();
 </script>
 
 <template>
-	<Head title="Log in" />
+	<!-- <Head title="Log in" /> -->
 
 	<AuthenticationCard>
 		<template #logo>
@@ -41,19 +41,19 @@ const page = usePage();
 		</template>
 
 		<template #actions>
-			<Link
+			<router-link
 				class="py-8 text-muted text-sm font-medium opacity-90 hover:opacity-100 transition"
 				:href="route('register')"
 			>
 				No account yet? <span class="text-text-primary">Register here!</span>
-			</Link>
+			</router-link>
 		</template>
 
 		<div v-if="status" class="mb-4 font-medium text-sm text-green-400">
 			{{ status }}
 		</div>
 		<div v-if="page.props.flash?.message" class="bg-red-400 text-black text-center w-full px-3 py-1 mb-4 rounded-lg">
-			{{ page.props.flash?.message }}
+			{{ page.props.flash.message }}
 		</div>
 
 		<form @submit.prevent="submit">
@@ -85,13 +85,13 @@ const page = usePage();
 			</div>
 
 			<div class="flex items-center justify-end mt-4">
-				<Link
+				<router-link
 					v-if="canResetPassword"
 					:href="route('password.request')"
 					class="underline text-sm text-muted hover:text-text-primary rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
 				>
 					Forgot your password?
-				</Link>
+				</router-link>
 
 				<PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
 					Log in

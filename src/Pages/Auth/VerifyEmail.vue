@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, useForm } from '@/utils/inertia';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
@@ -19,7 +19,7 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
 </script>
 
 <template>
-	<Head title="Email Verification" />
+	<!-- <Head title="Email Verification" /> -->
 
 	<AuthenticationCard>
 		<template #logo>
@@ -42,14 +42,14 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
 				</PrimaryButton>
 
 				<div>
-					<Link
+					<router-link
 						:href="route('logout')"
 						method="post"
 						as="button"
 						class="underline text-sm text-muted hover:text-text-secondary rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800 ms-2"
 					>
 						Log Out
-					</Link>
+					</router-link>
 				</div>
 			</div>
 		</form>

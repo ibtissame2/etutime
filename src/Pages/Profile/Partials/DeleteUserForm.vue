@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { useForm } from '@inertiajs/vue3';
+import { useForm } from '@/utils/inertia';
 import ActionSection from '@/Components/ActionSection.vue';
 import DangerButton from '@/packages/ui/src/Buttons/DangerButton.vue';
 import DialogModal from '@/packages/ui/src/DialogModal.vue';
@@ -11,9 +11,7 @@ import TextInput from '@/packages/ui/src/Input/TextInput.vue';
 const confirmingUserDeletion = ref(false);
 const passwordInput = ref(null);
 
-const form = useForm({
-	password: '',
-});
+const form = useForm({ password: '' });
 
 const confirmUserDeletion = () => {
 	confirmingUserDeletion.value = true;

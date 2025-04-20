@@ -19,7 +19,6 @@ import TaskMultiselectDropdown from '@/Components/Common/Task/TaskMultiselectDro
 import SelectDropdown from '@/packages/ui/src/Input/SelectDropdown.vue';
 import ReportingGroupBySelect from '@/Components/Common/Reporting/ReportingGroupBySelect.vue';
 import ReportingRow from '@/Components/Common/Reporting/ReportingRow.vue';
-import { getOrganizationCurrencyString } from '@/utils/money';
 import ReportingPieChart from '@/Components/Common/Reporting/ReportingPieChart.vue';
 import { getCurrentMembershipId, getCurrentOrganizationId, getCurrentRole } from '@/utils/useUser';
 import ClientMultiselectDropdown from '@/Components/Common/Client/ClientMultiselectDropdown.vue';
@@ -362,11 +361,7 @@ const tableData = computed(() => {
 									{{ formatHumanReadableDuration(aggregatedTableTimeEntries.seconds) }}
 								</div>
 								<div class="justify-end pr-6 flex items-center font-medium">
-									{{
-										aggregatedTableTimeEntries.cost
-											? formatCents(aggregatedTableTimeEntries.cost, getOrganizationCurrencyString())
-											: '--'
-									}}
+									{{ aggregatedTableTimeEntries.cost ? formatCents(aggregatedTableTimeEntries.cost, 'MAD') : '--' }}
 								</div>
 							</div>
 						</template>

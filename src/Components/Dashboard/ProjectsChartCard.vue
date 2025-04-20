@@ -1,86 +1,61 @@
 <script setup>
 import VChart, { THEME_KEY } from 'vue-echarts';
-import { provide } from 'vue';
+import { computed, provide } from 'vue';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { PieChart } from 'echarts/charts';
-import {
-    GridComponent,
-    LegendComponent,
-    TitleComponent,
-    TooltipComponent,
-} from 'echarts/components';
+import { GridComponent, LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
 import { formatHumanReadableDuration } from '@/packages/ui/src/utils/time';
-import { useCssVar } from "@vueuse/core";
+import { useCssVar } from '@vueuse/core';
 
-use([
-    CanvasRenderer,
-    PieChart,
-    TitleComponent,
-    GridComponent,
-    TooltipComponent,
-    LegendComponent,
-]);
+use([CanvasRenderer, PieChart, TitleComponent, GridComponent, TooltipComponent, LegendComponent]);
 
 provide(THEME_KEY, 'dark');
 const labelColor = useCssVar('--color-text-secondary', null, { observe: true });
 
 const props = defineProps({
-    weeklyProjectOverview: Object,
+	weeklyProjectOverview: Object,
 });
 
-const seriesData = props.weeklyProjectOverview.map((el) => {
-    return {
-        ...el,
-        ...{
-            itemStyle: {
-                color: `${el.color}BB`,
-            },
-            emphasis: {
-                itemStyle: {
-                    color: `${el.color}`,
-                },
-            },
-        },
-    };
+const seriesData = (props.weeklyProjectOverview.value || props.weeklyProjectOverview).map((el) => {
+	return {
+		...el,
+		itemStyle: { color: `${el.color}BB` },
+		emphasis: { itemStyle: { color: `${el.color}` } },
+	};
 });
-
-import { computed } from 'vue';
 
 const option = computed(() => ({
-    tooltip: {
-        trigger: 'item',
-    },
-    legend: {
-        bottom: 'bottom',
-        top: '250px',
-        textStyle: {
-            color: labelColor.value,
-        },
-    },
-    backgroundColor: 'transparent',
-    series: [
-        {
-            label: {
-                show: false,
-            },
-            tooltip: {
-                valueFormatter: (value) => {
-                    return formatHumanReadableDuration(value);
-                },
-            },
-            data: seriesData,
-            top: '-45%',
-            radius: ['30%', '60%'],
-            type: 'pie',
-        },
-    ],
+	tooltip: {
+		trigger: 'item',
+	},
+	legend: {
+		bottom: 'bottom',
+		top: '250px',
+		textStyle: {
+			color: labelColor.value,
+		},
+	},
+	backgroundColor: 'transparent',
+	series: [
+		{
+			label: {
+				show: false,
+			},
+			tooltip: {
+				valueFormatter: (value) => {
+					return formatHumanReadableDuration(value);
+				},
+			},
+			data: seriesData,
+			top: '-45%',
+			radius: ['30%', '60%'],
+			type: 'pie',
+		},
+	],
 }));
 </script>
 
 <template>
-    <v-chart
-        class="h-[420px] max-w-[300px] mx-auto bg-transparent"
-        :autoresize="true"
-        :option="option" />
+	<v-chart class="h-[420px] max-w-[300px] mx-auto bg-transparent" :autoresize="true" :option="option" />
 </template>

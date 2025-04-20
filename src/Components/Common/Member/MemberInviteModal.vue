@@ -7,7 +7,7 @@ import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import { useFocus } from '@vueuse/core';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
 import InputError from '@/packages/ui/src/Input/InputError.vue';
-import { Link, useForm } from '@inertiajs/vue3';
+import { useForm } from '@/utils/inertia';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { filterRoles } from '@/utils/roles';
 import { isAllowedToPerformPremiumAction, isBillingActivated } from '@/utils/billing';
@@ -27,15 +27,8 @@ const props = defineProps({
 	},
 });
 
-const errors = ref({
-	email: '',
-	role: '',
-});
-
-const addTeamMemberForm = useForm({
-	email: '',
-	role: null,
-});
+const addTeamMemberForm = useForm({ email: '', role: null });
+const errors = ref({ email: '', role: '' });
 
 const emit = defineEmits(['close']);
 const { handleApiRequestNotifications } = useNotificationsStore();
@@ -101,12 +94,12 @@ useFocus(clientNameInput, { initialValue: true });
 						<strong>please upgrade to a paid plan</strong>.
 					</p>
 
-					<Link v-if="isBillingActivated() && canManageBilling()" href="/billing">
+					<router-link v-if="isBillingActivated() && canManageBilling()" href="/billing">
 						<PrimaryButton v-if="isBillingActivated() && canUpdateOrganization()" type="button" class="mt-6">
 							<CreditCardIcon class="w-5 h-5 me-2" />
 							Go to Billing
 						</PrimaryButton>
-					</Link>
+					</router-link>
 				</div>
 			</div>
 			<div v-else class="space-y-4">

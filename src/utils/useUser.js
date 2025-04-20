@@ -7,7 +7,7 @@ function getCurrentUserId() {
 }
 
 function getCurrentOrganizationId() {
-	return page.props.auth.user.current_team_id;
+	return page.props.auth.user.current_team.id;
 }
 
 function getCurrentMembershipId() {

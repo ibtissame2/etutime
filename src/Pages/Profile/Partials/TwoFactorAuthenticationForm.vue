@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
-import { router, useForm, usePage } from '@inertiajs/vue3';
+import { router, useForm, usePage } from '@/utils/inertia';
 import ActionSection from '@/Components/ActionSection.vue';
 import ConfirmsPassword from '@/Components/ConfirmsPassword.vue';
 import DangerButton from '@/packages/ui/src/Buttons/DangerButton.vue';
@@ -26,9 +26,7 @@ const qrCode = ref(null);
 const setupKey = ref(null);
 const recoveryCodes = ref([]);
 
-const confirmationForm = useForm({
-	code: '',
-});
+const confirmationForm = useForm({ code: '' });
 
 const twoFactorEnabled = computed(() => !enabling.value && page.props.auth.user?.two_factor_enabled);
 

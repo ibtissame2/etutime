@@ -13,7 +13,6 @@ import TabBarItem from '@/Components/Common/TabBar/TabBarItem.vue';
 import TabBar from '@/Components/Common/TabBar/TabBar.vue';
 import { storeToRefs } from 'pinia';
 import { useClientsStore } from '@/utils/useClients';
-import { getOrganizationCurrencyString } from '@/utils/money';
 import { getCurrentRole } from '@/utils/useUser';
 import { useOrganizationStore } from '@/utils/useOrganization';
 import { isAllowedToPerformPremiumAction } from '@/utils/billing';
@@ -74,7 +73,7 @@ const showBillableRate = computed(() => {
 				:create-project="createProject"
 				:enable-estimated-time="isAllowedToPerformPremiumAction"
 				:create-client="createClient"
-				:currency="getOrganizationCurrencyString()"
+				:currency="'MAD'"
 				:clients="clients"
 				@submit="createProject"
 			></ProjectCreateModal>

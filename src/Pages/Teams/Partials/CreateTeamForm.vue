@@ -1,5 +1,5 @@
 <script setup>
-import { useForm, usePage } from '@inertiajs/vue3';
+import { useForm, usePage } from '@/utils/inertia';
 import FormSection from '@/Components/FormSection.vue';
 import InputError from '@/packages/ui/src/Input/InputError.vue';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
@@ -7,9 +7,7 @@ import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import TextInput from '@/packages/ui/src/Input/TextInput.vue';
 import { initializeStores } from '@/utils/init';
 
-const form = useForm({
-	name: '',
-});
+const form = useForm({ name: '' });
 
 const createTeam = () => {
 	form.post(route('teams.store'), {

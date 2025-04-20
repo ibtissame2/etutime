@@ -1,39 +1,43 @@
 {
-  "name": "etutime",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "start": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@heroicons/vue": "^2.2.0",
-    "@vueuse/core": "^13.1.0",
-    "@vueuse/integrations": "^13.1.0",
-    "@zodios/core": "^10.9.6",
-    "dayjs": "^1.11.13",
-    "echarts": "^5.6.0",
-    "focus-trap": "^7.6.4",
-    "parse-duration": "^2.1.4",
-    "pinia": "^3.0.2",
-    "radix-vue": "^1.9.17",
-    "tailwind-merge": "^3.2.0",
-    "vue": "^3.5.13",
-    "vue-echarts": "^7.0.3",
-    "vue-router": "^4.0.3"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.1",
-    "@vue/cli-plugin-babel": "~5.0.0",
-    "@vue/cli-plugin-router": "~5.0.0",
-    "@vue/cli-service": "~5.0.0",
-    "autoprefixer": "^10.4.21",
-    "axios": "^1.6.4",
-    "postcss": "^8.5.3",
-    "postcss-nesting": "^12.1.5",
-    "tailwindcss": "^3.4.13",
-    "vite": "^6.2.0"
-  }
+	"name": "etutime",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"start": "vite",
+		"build": "vite build",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"@floating-ui/core": "^1.6.0",
+		"@floating-ui/vue": "^1.0.6",
+		"@heroicons/vue": "^2.2.0",
+		"@tanstack": "^5.56.2",
+		"@tanstack-devtools": "^5.58.0",
+		"@vueuse/core": "^13.1.0",
+		"@vueuse/integrations": "^13.1.0",
+		"@zodios/core": "^10.9.6",
+		"dayjs": "^1.11.13",
+		"echarts": "^5.6.0",
+		"focus-trap": "^7.6.4",
+		"parse-duration": "^2.1.4",
+		"pinia": "^3.0.2",
+		"radix-vue": "^1.9.17",
+		"tailwind-merge": "^3.2.0",
+		"vue": "^3.5.13",
+		"vue-echarts": "^7.0.3",
+		"vue-router": "^4.0.3"
+	},
+	"devDependencies": {
+		"@vitejs/plugin-vue": "^5.2.1",
+		"@vue/cli-plugin-babel": "~5.0.0",
+		"@vue/cli-plugin-router": "~5.0.0",
+		"@vue/cli-service": "~5.0.0",
+		"autoprefixer": "^10.4.21",
+		"axios": "^1.6.4",
+		"postcss": "^8.5.3",
+		"postcss-nesting": "^12.1.5",
+		"tailwindcss": "^3.4.13",
+		"vite": "^6.2.0"
+	}
 }

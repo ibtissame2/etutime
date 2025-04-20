@@ -11,7 +11,6 @@ import MemberBillableSelect from '@/Components/Common/Member/MemberBillableSelec
 import { onMounted, watch } from 'vue';
 import MemberRoleSelect from '@/Components/Common/Member/MemberRoleSelect.vue';
 import MemberOwnershipTransferConfirmModal from '@/Components/Common/Member/MemberOwnershipTransferConfirmModal.vue';
-import { getOrganizationCurrencyString } from '@/utils/money';
 
 const { updateMember } = useMembersStore();
 const show = defineModel('show', { default: false });
@@ -140,7 +139,7 @@ const roleDescription = computed(() => {
 								v-model="memberBody.billable_rate"
 								focus
 								class="w-full"
-								:currency="getOrganizationCurrencyString()"
+								:currency="'MAD'"
 								name="memberBillableRate"
 								@keydown.enter="saveWithChecks()"
 							></BillableRateInput>

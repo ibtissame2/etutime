@@ -15,7 +15,6 @@ import { UserCircleIcon } from '@heroicons/vue/20/solid';
 import EstimatedTimeSection from '@/packages/ui/src/EstimatedTimeSection.vue';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
 import ProjectBillableRateModal from '@/packages/ui/src/Project/ProjectBillableRateModal.vue';
-import { getOrganizationCurrencyString } from '@/utils/money';
 import ProjectEditBillableSection from '@/packages/ui/src/Project/ProjectEditBillableSection.vue';
 import { isAllowedToPerformPremiumAction } from '@/utils/billing';
 
@@ -122,7 +121,7 @@ async function submitBillableRate() {
 					<ProjectEditBillableSection
 						v-model:is-billable="project.is_billable"
 						v-model:billable-rate="project.billable_rate"
-						:currency="getOrganizationCurrencyString()"
+						:currency="'MAD'"
 						@submit="submit"
 					></ProjectEditBillableSection>
 				</div>
@@ -145,7 +144,7 @@ async function submitBillableRate() {
 	</DialogModal>
 	<ProjectBillableRateModal
 		v-model:show="showBillableRateModal"
-		:currency="getOrganizationCurrencyString()"
+		:currency="'MAD'"
 		:new-billable-rate="project.billable_rate"
 		:project-name="project.name"
 		@submit="submitBillableRate"

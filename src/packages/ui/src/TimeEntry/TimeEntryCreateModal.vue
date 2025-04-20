@@ -8,7 +8,6 @@ import TimeTrackerProjectTaskDropdown from '@/packages/ui/src/TimeTracker/TimeTr
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
 import { TagIcon } from '@heroicons/vue/20/solid';
 import { getDayJsInstance, getLocalizedDayJs } from '@/packages/ui/src/utils/time';
-import { getOrganizationCurrencyString } from '@/utils/money';
 import { canCreateProjects } from '@/utils/permissions';
 import TagDropdown from '@/packages/ui/src/Tag/TagDropdown.vue';
 import { Badge } from '@/packages/ui/src';
@@ -131,7 +130,7 @@ const billableProxy = computed({
 							:create-project
 							:create-client
 							:can-create-project="canCreateProjects()"
-							:currency="getOrganizationCurrencyString()"
+							:currency="'MAD'"
 							size="xlarge"
 							class="bg-input-background"
 							:projects="projects"

@@ -14,7 +14,7 @@ import {
 import { PlusCircleIcon } from '@heroicons/vue/20/solid';
 import { storeToRefs } from 'pinia';
 import { api } from '@/packages/api/src';
-import { usePage } from '@inertiajs/vue3';
+import { usePage } from '@/utils/inertia';
 import { getRandomColor } from '@/packages/ui/src/utils/color';
 import ProjectDropdownItem from '@/packages/ui/src/Project/ProjectDropdownItem.vue';
 import { UseFocusTrap } from '@vueuse/integrations/useFocusTrap/component';
@@ -53,7 +53,7 @@ async function addProjectIfNoneExists() {
 				color: getRandomColor(),
 				is_billable: false,
 			},
-			{ params: { organization: page.props.auth.user.current_team_id } }
+			{ params: { organization: page.props.auth.user.current_team.id } }
 		);
 		projects.value.unshift(response.data);
 		model.value = response.data.id;

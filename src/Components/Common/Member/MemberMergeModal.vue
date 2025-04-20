@@ -7,7 +7,7 @@ import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import MemberCombobox from '@/Components/Common/Member/MemberCombobox.vue';
 import { UserIcon, ArrowRightIcon } from '@heroicons/vue/24/solid';
 import { Badge } from '@/packages/ui/src';
-import { useMutation } from '@tanstack/vue-query';
+import { useMutation } from '@/utils/tanstack';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { useNotificationsStore } from '@/utils/notification';
 

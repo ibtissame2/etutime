@@ -1,5 +1,5 @@
 <script setup>
-import { Head } from '@inertiajs/vue3';
+import { Head } from '@/utils/inertia';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 
 defineProps({
@@ -8,7 +8,7 @@ defineProps({
 </script>
 
 <template>
-	<Head title="Privacy Policy" />
+	<!-- <Head title="Privacy Policy" /> -->
 
 	<div class="font-sans text-text-secondary antialiased">
 		<div class="pt-4 bg-gray-900">

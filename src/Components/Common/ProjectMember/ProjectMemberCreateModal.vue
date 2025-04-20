@@ -7,7 +7,6 @@ import { useFocus } from '@vueuse/core';
 import { useProjectMembersStore } from '@/utils/useProjectMembers';
 import MemberCombobox from '@/Components/Common/Member/MemberCombobox.vue';
 import BillableRateInput from '@/packages/ui/src/Input/BillableRateInput.vue';
-import { getOrganizationCurrencyString } from '@/utils/money';
 
 const { createProjectMember } = useProjectMembersStore();
 const show = defineModel('show', { default: false });
@@ -60,7 +59,7 @@ useFocus(projectNameInput, { initialValue: true });
 					<BillableRateInput
 						v-model="projectMember.billable_rate"
 						name="billable_rate"
-						:currency="getOrganizationCurrencyString()"
+						:currency="'MAD'"
 					></BillableRateInput>
 				</div>
 			</div>

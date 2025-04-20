@@ -9,7 +9,6 @@ import { useProjectsStore } from '@/utils/useProjects';
 import TableRow from '@/Components/TableRow.vue';
 import ProjectEditModal from '@/Components/Common/Project/ProjectEditModal.vue';
 import { formatCents } from '@/packages/ui/src/utils/money';
-import { getOrganizationCurrencyString } from '@/utils/money';
 import EstimatedTimeProgress from '@/packages/ui/src/EstimatedTimeProgress.vue';
 import UpgradeBadge from '@/Components/Common/UpgradeBadge.vue';
 import { formatHumanReadableDuration } from '../../../packages/ui/src/utils/time';
@@ -51,7 +50,7 @@ function archiveProject() {
 const billableRateInfo = computed(() => {
 	if (props.project.is_billable) {
 		if (props.project.billable_rate) {
-			return formatCents(props.project.billable_rate, getOrganizationCurrencyString());
+			return formatCents(props.project.billable_rate, 'MAD');
 		} else {
 			return 'Default Rate';
 		}

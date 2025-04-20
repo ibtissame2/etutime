@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue';
-import { router, useForm, usePage } from '@inertiajs/vue3';
+import { router, useForm, usePage } from '@/utils/inertia';
 import ActionMessage from '@/Components/ActionMessage.vue';
 import ActionSection from '@/Components/ActionSection.vue';
 import ConfirmationModal from '@/Components/ConfirmationModal.vue';
@@ -27,15 +27,8 @@ const users = computed(() => {
 
 const page = usePage();
 
-const addTeamMemberForm = useForm({
-	email: '',
-	role: null,
-});
-
-const updateRoleForm = useForm({
-	role: null,
-});
-
+const addTeamMemberForm = useForm({ email: '', role: null });
+const updateRoleForm = useForm({ role: null });
 const leaveTeamForm = useForm({});
 const removeTeamMemberForm = useForm({});
 

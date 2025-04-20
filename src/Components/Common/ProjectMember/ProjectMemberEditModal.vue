@@ -9,7 +9,6 @@ import BillableRateInput from '@/packages/ui/src/Input/BillableRateInput.vue';
 import { UserIcon } from '@heroicons/vue/24/solid';
 import ProjectMemberBillableRateModal from '@/Components/Common/ProjectMember/ProjectMemberBillableRateModal.vue';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
-import { getOrganizationCurrencyString } from '@/utils/money';
 
 const { updateProjectMember } = useProjectMembersStore();
 const show = defineModel('show', { default: false });
@@ -89,7 +88,7 @@ useFocus(projectNameInput, { initialValue: true });
 					<InputLabel for="billable_rate" class="mb-2" value="Billable Rate"></InputLabel>
 					<BillableRateInput
 						v-model="projectMemberBody.billable_rate"
-						:currency="getOrganizationCurrencyString()"
+						:currency="'MAD'"
 						name="billable_rate"
 						@keydown.enter="submit"
 					></BillableRateInput>

@@ -6,7 +6,7 @@ import SectionBorder from '@/Components/SectionBorder.vue';
 import TwoFactorAuthenticationForm from '@/Pages/Profile/Partials/TwoFactorAuthenticationForm.vue';
 import UpdatePasswordForm from '@/Pages/Profile/Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from '@/Pages/Profile/Partials/UpdateProfileInformationForm.vue';
-import { usePage } from '@inertiajs/vue3';
+import { usePage } from '@/utils/inertia';
 import ApiTokensForm from '@/Pages/Profile/Partials/ApiTokensForm.vue';
 import ThemeForm from '@/Pages/Profile/Partials/ThemeForm.vue';
 
