@@ -1,9 +1,14 @@
 // import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
+import { ref } from 'vue';
 
 export const useMutation = ({ mutationFn, onSuccess }) => {
+	const isPending = ref(true);
+	setTimeout(() => {
+		isPending.value = false;
+	}, 50);
 	return {
 		mutateAsync: (data) => {},
-		isPending: { value: false },
+		isPending: isPending,
 	};
 };
 
@@ -20,9 +25,19 @@ export const useQuery = ({ queryFn, queryKey, enabled }) => {
 				time_entry_id: '1',
 				name: 'time 1',
 				description: 'Hello',
-				status: 'done',
+				status: true,
 				task_id: '1',
 				project_id: '1',
+				tags: [],
+				billable: false,
+			},
+			{
+				time_entry_id: '2',
+				name: 'time 2',
+				description: 'Hello 2',
+				status: false,
+				task_id: '2',
+				project_id: '2',
 				tags: [],
 				billable: false,
 			},
@@ -34,10 +49,18 @@ export const useQuery = ({ queryFn, queryKey, enabled }) => {
 		];
 	else if (queryKey[0] === 'api-tokens') data = [];
 	else if (queryKey[0] === 'totalWeeklyTime') data = 12;
-	else console.log('Missing case', queryKey);
+
+	const dataRef = ref();
+	const isLoading = ref(true);
+
+	setTimeout(() => {
+		dataRef.value = data;
+		isLoading.value = false;
+	}, 50);
+
 	return {
-		isLoading: { value: false },
-		data: { value: data },
+		isLoading: isLoading,
+		data: dataRef,
 		refetch() {},
 	};
 };

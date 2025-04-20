@@ -17,13 +17,11 @@ const props = defineProps({
 	weeklyProjectOverview: Object,
 });
 
-const seriesData = props.weeklyProjectOverview.map((el) => {
+const seriesData = (props.weeklyProjectOverview.value || props.weeklyProjectOverview).map((el) => {
 	return {
 		...el,
-		...{
-			itemStyle: { color: `${el.color}BB` },
-			emphasis: { itemStyle: { color: `${el.color}` } },
-		},
+		itemStyle: { color: `${el.color}BB` },
+		emphasis: { itemStyle: { color: `${el.color}` } },
 	};
 });
 
