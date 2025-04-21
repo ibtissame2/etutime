@@ -77,6 +77,8 @@ export const usePage = () => {
 					'reports:update',
 					'reports:delete',
 					'time-entries:view:all',
+					'notes:create',
+					'notes:view',
 				],
 			},
 			has_billing_extension: true,

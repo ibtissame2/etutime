@@ -1,4 +1,5 @@
 // import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
+import axios from 'axios';
 import { ref } from 'vue';
 
 export const useMutation = ({ mutationFn, onSuccess }) => {
@@ -13,6 +14,12 @@ export const useMutation = ({ mutationFn, onSuccess }) => {
 };
 
 export const useQuery = ({ queryFn, queryKey, enabled }) => {
+	setTimeout(async () => {
+		const response = await axios.post('http://localhost/etutime/front-end/src/API/index.php?action=users');
+		const data = response.data.data;
+		console.log(data);
+	});
+
 	let data;
 	if (queryKey[0] === 'dailyTrackedHours' || queryKey[0] === 'lastSevenDays' || queryKey[0] === 'weeklyHistory')
 		data = [

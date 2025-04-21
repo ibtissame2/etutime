@@ -66,7 +66,7 @@ const showBillableRate = computed(() => {
 				</TabBar>
 			</div>
 			<SecondaryButton v-if="canCreateProjects()" :icon="PlusIcon" @click="showCreateProjectModal = true"
-				>Create Project
+				>Créer un module
 			</SecondaryButton>
 			<ProjectCreateModal
 				v-model:show="showCreateProjectModal"

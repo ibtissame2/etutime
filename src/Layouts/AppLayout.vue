@@ -16,6 +16,7 @@ import BillingBanner from '@/Components/Billing/BillingBanner.vue';
 import {
 	canManageBilling,
 	canUpdateOrganization,
+	canViewNotes,
 	canViewClients,
 	canViewMembers,
 	canViewProjects,
@@ -89,6 +90,20 @@ onMounted(async () => {
 								:current="route.isCurrent('dashboard')"
 							></NavigationSidebarItem>
 
+							<NavigationSidebarItem
+								title="Emploi du Temps"
+								:icon="undefined"
+								href="/emploi"
+								:current="route.isCurrent('emploi')"
+							></NavigationSidebarItem>
+
+							<NavigationSidebarItem
+								title="Envirenement du travail"
+								:icon="undefined"
+								href="/env"
+								:current="route.isCurrent('env')"
+							></NavigationSidebarItem>
+
 							<NavigationSidebarItem title="Tempt" :icon="undefined" :current="route.isCurrent('time')" href="/time">
 							</NavigationSidebarItem>
 
@@ -96,7 +111,7 @@ onMounted(async () => {
 								title="Rapport"
 								:icon="undefined"
 								:current="route.isCurrent('reporting')"
-								href="/reporting"
+								href="/rapport"
 							>
 							</NavigationSidebarItem>
 						</ul>
@@ -136,7 +151,7 @@ onMounted(async () => {
 					<nav>
 						<ul>
 							<NavigationSidebarItem
-								v-if="canUpdateOrganization()"
+								v-if="canViewNotes()"
 								title="Notes"
 								:icon="undefined"
 								:current="route.isCurrent('notes')"
@@ -144,7 +159,7 @@ onMounted(async () => {
 							/>
 							<NavigationSidebarItem
 								v-if="canUpdateOrganization()"
-								title="Import / Export"
+								title="Import"
 								:icon="undefined"
 								:current="route.isCurrent('import')"
 								href="import"

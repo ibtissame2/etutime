@@ -118,3 +118,11 @@ export function canDeleteReport() {
 export function canViewAllTimeEntries() {
 	return currentUserHasPermission('time-entries:view:all');
 }
+
+export function canCreateNotes() {
+	return currentUserHasPermission('notes:create');
+}
+
+export function canViewNotes() {
+	return currentUserHasPermission('notes:view');
+}

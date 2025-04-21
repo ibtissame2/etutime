@@ -36,7 +36,7 @@ function isActiveTab(tab) {
 				</TabBar>
 			</div>
 			<SecondaryButton v-if="canCreateInvitations()" :icon="PlusIcon" @click="inviteMember = true"
-				>Invite member</SecondaryButton
+				>Inviter un etudiant</SecondaryButton
 			>
 			<MemberInviteModal
 				v-model:show="inviteMember"

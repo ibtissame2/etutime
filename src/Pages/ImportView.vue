@@ -3,8 +3,7 @@ import MainContainer from '@/packages/ui/src/MainContainer.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { ArrowsRightLeftIcon } from '@heroicons/vue/16/solid';
 import PageTitle from '@/Components/Common/PageTitle.vue';
-import ImportData from '@/Pages/Teams/Partials/ImportData.vue';
-import ExportData from '@/Pages/Teams/Partials/ExportData.vue';
+import ImportData from '@/Components/documents/ImportData.vue';
 </script>
 
 <template>
@@ -15,10 +14,7 @@ import ExportData from '@/Pages/Teams/Partials/ExportData.vue';
 			</div>
 		</MainContainer>
 		<MainContainer class="py-6 space-y-4">
-			<div class="grid lg:grid-cols-2 gap-6">
-				<ImportData></ImportData>
-				<ExportData></ExportData>
-			</div>
+			<ImportData></ImportData>
 		</MainContainer>
 	</AppLayout>
 </template>
