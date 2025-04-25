@@ -3,10 +3,7 @@ import Notification from '@/Components/Common/Notification/Notification.vue';
 import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/utils/notification';
 import DialogModal from '@/packages/ui/src/DialogModal.vue';
-import { isBillingActivated } from '@/utils/billing';
-import { canManageBilling } from '@/utils/permissions';
 import { CreditCardIcon, XCircleIcon } from '@heroicons/vue/20/solid';
-import PrimaryButton from '../packages/ui/src/Buttons/PrimaryButton.vue';
 import SecondaryButton from '../packages/ui/src/Buttons/SecondaryButton.vue';
 
 const { notifications, showActionBlockedModal } = storeToRefs(useNotificationsStore());
@@ -50,10 +47,6 @@ const { notifications, showActionBlockedModal } = storeToRefs(useNotificationsSt
 					<strong class="font-semibold">upgrade to a premium plan</strong>
 					or remove all users except the owner.
 				</p>
-
-				<router-link v-if="isBillingActivated() && canManageBilling()" href="/billing">
-					<PrimaryButton :icon="undefined" type="button" class="mt-6">Go to Billing</PrimaryButton>
-				</router-link>
 			</div>
 		</template>
 		<template #footer>

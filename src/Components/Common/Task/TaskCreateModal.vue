@@ -8,7 +8,6 @@ import { useFocus } from '@vueuse/core';
 import { useTasksStore } from '@/utils/useTasks';
 import ProjectDropdown from '@/Components/Common/Project/ProjectDropdown.vue';
 import EstimatedTimeSection from '@/packages/ui/src/EstimatedTimeSection.vue';
-import { isAllowedToPerformPremiumAction } from '@/utils/billing';
 
 const { createTask } = useTasksStore();
 const show = defineModel('show', { default: false });
@@ -79,11 +78,7 @@ useFocus(taskNameInput, { initialValue: true });
 					<ProjectDropdown v-model="taskProjectId"></ProjectDropdown>
 				</div>
 			</div>
-			<EstimatedTimeSection
-				v-if="isAllowedToPerformPremiumAction()"
-				v-model="estimatedTime"
-				@submit="submit()"
-			></EstimatedTimeSection>
+			<EstimatedTimeSection v-model="estimatedTime" @submit="submit()"></EstimatedTimeSection>
 		</template>
 		<template #footer>
 			<SecondaryButton @click="show = false">Cancel</SecondaryButton>

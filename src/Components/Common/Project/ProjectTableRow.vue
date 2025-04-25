@@ -10,9 +10,7 @@ import TableRow from '@/Components/TableRow.vue';
 import ProjectEditModal from '@/Components/Common/Project/ProjectEditModal.vue';
 import { formatCents } from '@/packages/ui/src/utils/money';
 import EstimatedTimeProgress from '@/packages/ui/src/EstimatedTimeProgress.vue';
-import UpgradeBadge from '@/Components/Common/UpgradeBadge.vue';
 import { formatHumanReadableDuration } from '../../../packages/ui/src/utils/time';
-import { isAllowedToPerformPremiumAction } from '@/utils/billing';
 
 const { clients } = storeToRefs(useClientsStore());
 const { tasks } = storeToRefs(useTasksStore());
@@ -20,10 +18,6 @@ const { tasks } = storeToRefs(useTasksStore());
 const props = defineProps({
 	project: {
 		type: Object,
-		required: true,
-	},
-	showBillableRate: {
-		type: Boolean,
 		required: true,
 	},
 });
@@ -46,17 +40,6 @@ function archiveProject() {
 		is_archived: !props.project.is_archived,
 	});
 }
-
-const billableRateInfo = computed(() => {
-	if (props.project.is_billable) {
-		if (props.project.billable_rate) {
-			return formatCents(props.project.billable_rate, 'MAD');
-		} else {
-			return 'Default Rate';
-		}
-	}
-	return '--';
-});
 
 const showEditProjectModal = ref(false);
 </script>
@@ -92,16 +75,12 @@ const showEditProjectModal = ref(false);
 			<div v-else>--</div>
 		</div>
 		<div class="whitespace-nowrap px-3 flex items-center text-sm text-muted">
-			<UpgradeBadge v-if="!isAllowedToPerformPremiumAction()"></UpgradeBadge>
 			<EstimatedTimeProgress
-				v-else-if="project.estimated_time"
+				v-if="project.estimated_time"
 				:estimated="project.estimated_time"
 				:current="project.spent_time"
 			></EstimatedTimeProgress>
 			<span v-else> -- </span>
-		</div>
-		<div v-if="showBillableRate" class="whitespace-nowrap px-3 py-4 text-sm text-muted">
-			{{ billableRateInfo }}
 		</div>
 		<div class="whitespace-nowrap px-3 py-4 text-sm text-muted flex space-x-1 items-center font-medium">
 			<CheckCircleIcon class="w-5"></CheckCircleIcon>

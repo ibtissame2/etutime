@@ -47,8 +47,7 @@ const filteredLatestTasks = computed(() => {
 						t.task_id === item.task_id &&
 						t.project_id === item.project_id &&
 						t.tags.length === item.tags.length &&
-						t.tags.every((tag) => item.tags.includes(tag)) &&
-						t.billable === item.billable
+						t.tags.every((tag) => item.tags.includes(tag))
 				)
 			);
 		})

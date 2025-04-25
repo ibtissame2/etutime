@@ -2,7 +2,6 @@
 import { SecondaryButton } from '@/packages/ui/src';
 import ReportCreateModal from '@/Components/Common/Report/ReportCreateModal.vue';
 import { h, ref } from 'vue';
-import { isAllowedToPerformPremiumAction } from '@/utils/billing';
 import UpgradeModal from '@/Components/Common/UpgradeModal.vue';
 
 defineProps({
@@ -20,11 +19,7 @@ const SaveIcon = h('div', {
 });
 
 function onSaveReportClick() {
-	if (isAllowedToPerformPremiumAction()) {
-		showCreateReportModal.value = true;
-	} else {
-		showPremiumModal.value = true;
-	}
+	showCreateReportModal.value = true;
 }
 </script>
 

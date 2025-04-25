@@ -18,7 +18,6 @@ import { useTagsStore } from '@/utils/useTags';
 import { useClientsStore } from '@/utils/useClients';
 import TimeEntryCreateModal from '@/packages/ui/src/TimeEntry/TimeEntryCreateModal.vue';
 import TimeEntryMassActionRow from '@/packages/ui/src/TimeEntry/TimeEntryMassActionRow.vue';
-import { isAllowedToPerformPremiumAction } from '@/utils/billing';
 import { canCreateProjects } from '@/utils/permissions';
 
 const timeEntriesStore = useTimeEntriesStore();
@@ -99,7 +98,7 @@ function deleteSelected() {
 <template>
 	<TimeEntryCreateModal
 		v-model:show="showManualTimeEntryModal"
-		:enable-estimated-time="isAllowedToPerformPremiumAction()"
+		:enable-estimated-time="true"
 		:create-project="createProject"
 		:create-client="createClient"
 		:create-tag="createTag"
@@ -129,7 +128,7 @@ function deleteSelected() {
 		</MainContainer>
 		<TimeEntryMassActionRow
 			:selected-time-entries="selectedTimeEntries"
-			:enable-estimated-time="isAllowedToPerformPremiumAction()"
+			:enable-estimated-time="true"
 			:can-create-project="canCreateProjects()"
 			:all-selected="selectedTimeEntries.length === timeEntries.length"
 			:delete-selected="deleteSelected"
@@ -155,7 +154,7 @@ function deleteSelected() {
 		<TimeEntryGroupedTable
 			v-model:selected="selectedTimeEntries"
 			:create-project="createProject"
-			:enable-estimated-time="isAllowedToPerformPremiumAction()"
+			:enable-estimated-time="true"
 			:can-create-project="canCreateProjects()"
 			:clients="clients"
 			:create-client="createClient"

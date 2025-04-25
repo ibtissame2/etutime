@@ -68,9 +68,6 @@ const userHasValidMailAddress = computed(() => {
 		<div class="whitespace-nowrap px-3 py-4 text-sm text-muted">
 			{{ capitalizeFirstLetter(props.member.role) }}
 		</div>
-		<div class="whitespace-nowrap px-3 py-4 text-sm text-muted">
-			{{ props.member.billable_rate ? formatCents(props.member.billable_rate, 'MAD') : '--' }}
-		</div>
 		<div class="whitespace-nowrap px-3 py-4 text-sm text-muted flex space-x-1 items-center font-medium">
 			<CheckCircleIcon v-if="props.member.is_placeholder === false" class="w-5" />
 			<span v-if="props.member.is_placeholder === false">Active</span>

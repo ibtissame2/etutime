@@ -3,8 +3,6 @@ import { ChevronDownIcon } from '@heroicons/vue/20/solid';
 import Dropdown from '@/packages/ui/src/Input/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import { usePage, route } from '../utils/inertia';
-import { isBillingActivated } from '@/utils/billing';
-import { canManageBilling } from '@/utils/permissions';
 import { switchOrganization } from '@/utils/useOrganization';
 
 const page = usePage();
@@ -46,8 +44,6 @@ const switchToTeam = (organization) => {
 				<DropdownLink :href="route('teams.show', page.props.auth.user.current_team.id)">
 					Organization Settings
 				</DropdownLink>
-
-				<DropdownLink v-if="canManageBilling() && isBillingActivated()" href="/billing"> Billing </DropdownLink>
 
 				<DropdownLink v-if="page.props.jetstream.canCreateTeams" :href="route('teams.create')">
 					Create new organization

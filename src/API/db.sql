@@ -46,8 +46,6 @@ CREATE TABLE `clients` (
 
 CREATE TABLE `customers` (
   `id` char(36) NOT NULL,
-  `billable_id` char(36) NOT NULL,
-  `billable_type` varchar(255) NOT NULL,
   `paddle_id` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
@@ -56,8 +54,7 @@ CREATE TABLE `customers` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `customers_paddle_id_unique` (`paddle_id`),
-  KEY `customers_billable_id_billable_type_index` (`billable_id`,`billable_type`)
+  UNIQUE KEY `customers_paddle_id_unique` (`paddle_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -101,7 +98,6 @@ CREATE TABLE `members` (
   `organization_id` char(36) NOT NULL,
   `user_id` char(36) NOT NULL,
   `role` varchar(255) DEFAULT NULL,
-  `billable_rate` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -223,7 +219,6 @@ CREATE TABLE `organizations` (
   `user_id` char(36) NOT NULL,
   `name` varchar(255) NOT NULL,
   `personal_team` tinyint(1) NOT NULL,
-  `billable_rate` int DEFAULT NULL,
   `currency` varchar(3) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -268,7 +263,6 @@ CREATE TABLE `personal_access_tokens` (
 
 CREATE TABLE `project_members` (
   `id` char(36) NOT NULL,
-  `billable_rate` int DEFAULT NULL,
   `project_id` char(36) NOT NULL,
   `user_id` char(36) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -289,13 +283,11 @@ CREATE TABLE `projects` (
   `id` char(36) NOT NULL,
   `name` varchar(255) NOT NULL,
   `color` varchar(16) NOT NULL,
-  `billable_rate` int DEFAULT NULL,
   `is_public` tinyint(1) NOT NULL DEFAULT '0',
   `client_id` char(36) DEFAULT NULL,
   `organization_id` char(36) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `is_billable` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `projects_client_id_foreign` (`client_id`),
   KEY `projects_organization_id_foreign` (`organization_id`)
@@ -340,8 +332,6 @@ CREATE TABLE `subscription_items` (
 
 CREATE TABLE `subscriptions` (
   `id` char(36) NOT NULL,
-  `billable_id` char(36) NOT NULL,
-  `billable_type` varchar(255) NOT NULL,
   `paddle_id` varchar(255) NOT NULL,
   `type` varchar(255) NOT NULL,
   `status` varchar(255) NOT NULL,
@@ -351,8 +341,7 @@ CREATE TABLE `subscriptions` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `subscriptions_paddle_id_unique` (`paddle_id`),
-  KEY `subscriptions_billable_id_billable_type_index` (`billable_id`,`billable_type`)
+  UNIQUE KEY `subscriptions_paddle_id_unique` (`paddle_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -395,8 +384,6 @@ CREATE TABLE `time_entries` (
   `description` varchar(500) NOT NULL,
   `start` timestamp NOT NULL,
   `end` timestamp NULL DEFAULT NULL,
-  `billable_rate` int DEFAULT NULL,
-  `billable` tinyint(1) NOT NULL DEFAULT '0',
   `user_id` char(36) NOT NULL,
   `organization_id` char(36) NOT NULL,
   `project_id` char(36) DEFAULT NULL,
@@ -408,7 +395,6 @@ CREATE TABLE `time_entries` (
   `client_id` char(36) DEFAULT NULL,
   `is_imported` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY `time_entries_billable_index` (`billable`),
   KEY `time_entries_end_index` (`end`),
   KEY `time_entries_start_index` (`start`),
   KEY `time_entries_client_id_foreign` (`client_id`),
@@ -425,8 +411,6 @@ CREATE TABLE `time_entries` (
 
 CREATE TABLE `transactions` (
   `id` char(36) NOT NULL,
-  `billable_id` char(36) NOT NULL,
-  `billable_type` varchar(255) NOT NULL,
   `paddle_id` varchar(255) NOT NULL,
   `paddle_subscription_id` varchar(255) DEFAULT NULL,
   `invoice_number` varchar(255) DEFAULT NULL,
@@ -434,12 +418,10 @@ CREATE TABLE `transactions` (
   `total` varchar(255) NOT NULL,
   `tax` varchar(255) NOT NULL,
   `currency` varchar(3) NOT NULL,
-  `billed_at` timestamp NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `transactions_paddle_id_unique` (`paddle_id`),
-  KEY `transactions_billable_id_billable_type_index` (`billable_id`,`billable_type`),
   KEY `transactions_paddle_subscription_id_index` (`paddle_subscription_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -546,7 +528,5 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (29, '2024_05_07_141842_move_from_user_id_to_member_id_in_time_entries_table', 1),
 (30, '2024_05_13_171020_rename_table_organization_user_to_members', 1),
 (31, '2024_05_22_151226_add_client_id_to_time_entries_table', 1),
-(32, '2024_05_30_175801_add_is_billable_column_to_projects_table', 1),
 (33, '2024_05_30_175825_add_is_imported_column_to_time_entries_table', 1),
-(34, '2024_06_07_113443_change_member_id_foreign_keys_to_restrict_on_delete', 1),
-(35, '2024_06_10_161831_reset_billable_rates_with_zero_as_value', 1);
+(34, '2024_06_07_113443_change_member_id_foreign_keys_to_restrict_on_delete', 1);

@@ -6,9 +6,7 @@ import TableRow from '@/Components/TableRow.vue';
 import { canDeleteTasks } from '@/utils/permissions';
 import TaskEditModal from '@/Components/Common/Task/TaskEditModal.vue';
 import { ref } from 'vue';
-import { isAllowedToPerformPremiumAction } from '@/utils/billing';
 import EstimatedTimeProgress from '@/packages/ui/src/EstimatedTimeProgress.vue';
-import UpgradeBadge from '@/Components/Common/UpgradeBadge.vue';
 import { formatHumanReadableDuration } from '../../../packages/ui/src/utils/time';
 
 const props = defineProps({
@@ -48,12 +46,7 @@ const showTaskEditModal = ref(false);
 			<span v-else> -- </span>
 		</div>
 		<div class="whitespace-nowrap px-3 flex items-center text-sm text-muted">
-			<UpgradeBadge v-if="!isAllowedToPerformPremiumAction()" />
-			<EstimatedTimeProgress
-				v-else-if="task.estimated_time"
-				:estimated="task.estimated_time"
-				:current="task.spent_time"
-			/>
+			<EstimatedTimeProgress v-if="task.estimated_time" :estimated="task.estimated_time" :current="task.spent_time" />
 			<span v-else> -- </span>
 		</div>
 		<div class="whitespace-nowrap px-3 py-4 text-sm text-muted flex space-x-1 items-center font-medium">

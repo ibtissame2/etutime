@@ -19,8 +19,6 @@ const refreshDashboardData = () => {
 	queryClient.invalidateQueries({ queryKey: ['latestTeamActivity'] });
 	queryClient.invalidateQueries({ queryKey: ['weeklyProjectOverview'] });
 	queryClient.invalidateQueries({ queryKey: ['totalWeeklyTime'] });
-	queryClient.invalidateQueries({ queryKey: ['totalWeeklyBillableTime'] });
-	queryClient.invalidateQueries({ queryKey: ['totalWeeklyBillableAmount'] });
 	queryClient.invalidateQueries({ queryKey: ['weeklyHistory'] });
 	queryClient.invalidateQueries({ queryKey: ['timeEntries'] });
 };

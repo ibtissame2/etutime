@@ -5,7 +5,6 @@ import TimeEntryDescriptionInput from '@/packages/ui/src/TimeEntry/TimeEntryDesc
 import TimeEntryRowTagDropdown from '@/packages/ui/src/TimeEntry/TimeEntryRowTagDropdown.vue';
 import TimeEntryMoreOptionsDropdown from '@/packages/ui/src/TimeEntry/TimeEntryMoreOptionsDropdown.vue';
 import TimeTrackerProjectTaskDropdown from '@/packages/ui/src/TimeTracker/TimeTrackerProjectTaskDropdown.vue';
-import BillableToggleButton from '@/packages/ui/src/Input/BillableToggleButton.vue';
 import { ref } from 'vue';
 import { formatHumanReadableDuration, formatStartEnd } from '@/packages/ui/src/utils/time';
 import TimeEntryRow from '@/packages/ui/src/TimeEntry/TimeEntryRow.vue';
@@ -44,13 +43,6 @@ function updateTimeEntryTags(tags) {
 	props.updateTimeEntries(
 		props.timeEntry.timeEntries.map((timeEntry) => timeEntry.id),
 		{ tags: tags }
-	);
-}
-
-function updateTimeEntryBillable(billable) {
-	props.updateTimeEntries(
-		props.timeEntry.timeEntries.map((timeEntry) => timeEntry.id),
-		{ billable: billable }
 	);
 }
 
@@ -119,12 +111,6 @@ function onSelectChange(event) {
 						:model-value="timeEntry.tags"
 						@changed="updateTimeEntryTags"
 					></TimeEntryRowTagDropdown>
-					<BillableToggleButton
-						:model-value="timeEntry.billable"
-						class="opacity-50 focus-visible:opacity-100 group-hover:opacity-100"
-						size="small"
-						@changed="updateTimeEntryBillable"
-					></BillableToggleButton>
 					<div class="flex-1">
 						<button
 							class="hidden lg:block text-muted w-[110px] px-1 py-1.5 bg-transparent text-center hover:bg-card-background rounded-lg border border-transparent hover:border-card-border text-sm font-medium focus-visible:outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:bg-tertiary"

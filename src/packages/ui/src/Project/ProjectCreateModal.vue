@@ -12,7 +12,6 @@ import ProjectColorSelector from '@/packages/ui/src/Project/ProjectColorSelector
 import { UserCircleIcon } from '@heroicons/vue/20/solid';
 import EstimatedTimeSection from '@/packages/ui/src/EstimatedTimeSection.vue';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
-import ProjectEditBillableSection from '@/packages/ui/src/Project/ProjectEditBillableSection.vue';
 
 const show = defineModel('show', { default: false });
 const saving = ref(false);
@@ -33,8 +32,6 @@ const project = ref({
 	name: '',
 	color: getRandomColor(),
 	client_id: null,
-	billable_rate: null,
-	is_billable: false,
 	estimated_time: null,
 });
 
@@ -45,8 +42,6 @@ async function submit() {
 		name: '',
 		color: getRandomColor(),
 		client_id: null,
-		billable_rate: null,
-		is_billable: false,
 		estimated_time: null,
 	};
 }

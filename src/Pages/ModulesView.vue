@@ -13,9 +13,7 @@ import TabBarItem from '@/Components/Common/TabBar/TabBarItem.vue';
 import TabBar from '@/Components/Common/TabBar/TabBar.vue';
 import { storeToRefs } from 'pinia';
 import { useClientsStore } from '@/utils/useClients';
-import { getCurrentRole } from '@/utils/useUser';
 import { useOrganizationStore } from '@/utils/useOrganization';
-import { isAllowedToPerformPremiumAction } from '@/utils/billing';
 
 onMounted(() => {
 	useProjectsStore().fetchProjects();
@@ -49,10 +47,6 @@ async function createProject(project) {
 async function createClient(client) {
 	return await useClientsStore().createClient(client);
 }
-
-const showBillableRate = computed(() => {
-	return !!(getCurrentRole() !== 'employee' || organization.value?.employees_can_see_billable_rates);
-});
 </script>
 
 <template>
@@ -68,16 +62,16 @@ const showBillableRate = computed(() => {
 			<SecondaryButton v-if="canCreateProjects()" :icon="PlusIcon" @click="showCreateProjectModal = true"
 				>Créer un module
 			</SecondaryButton>
+			<!-- :enable-estimated-time="isAllowedToPerformPremiumAction" -->
 			<ProjectCreateModal
 				v-model:show="showCreateProjectModal"
 				:create-project="createProject"
-				:enable-estimated-time="isAllowedToPerformPremiumAction"
 				:create-client="createClient"
 				:currency="'MAD'"
 				:clients="clients"
 				@submit="createProject"
 			></ProjectCreateModal>
 		</MainContainer>
-		<ProjectTable :show-billable-rate="showBillableRate" :projects="shownProjects"></ProjectTable>
+		<ProjectTable :projects="shownProjects"></ProjectTable>
 	</AppLayout>
 </template>

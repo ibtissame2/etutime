@@ -6,7 +6,6 @@ import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import { useFocus } from '@vueuse/core';
 import { useProjectMembersStore } from '@/utils/useProjectMembers';
 import MemberCombobox from '@/Components/Common/Member/MemberCombobox.vue';
-import BillableRateInput from '@/packages/ui/src/Input/BillableRateInput.vue';
 
 const { createProjectMember } = useProjectMembersStore();
 const show = defineModel('show', { default: false });
@@ -25,7 +24,6 @@ const props = defineProps({
 
 const projectMember = ref({
 	member_id: '',
-	billable_rate: null,
 });
 
 async function submit() {
@@ -33,7 +31,6 @@ async function submit() {
 	show.value = false;
 	projectMember.value = {
 		member_id: '',
-		billable_rate: null,
 	};
 }
 
@@ -54,13 +51,6 @@ useFocus(projectNameInput, { initialValue: true });
 			<div class="grid grid-cols-3 items-center space-x-4">
 				<div class="col-span-3 sm:col-span-2">
 					<MemberCombobox v-model="projectMember.member_id" :hidden-members="existingMembers"></MemberCombobox>
-				</div>
-				<div class="col-span-3 sm:col-span-1 flex-1">
-					<BillableRateInput
-						v-model="projectMember.billable_rate"
-						name="billable_rate"
-						:currency="'MAD'"
-					></BillableRateInput>
 				</div>
 			</div>
 		</template>

@@ -3,7 +3,6 @@ import { SecondaryButton } from '@/packages/ui/src';
 import { ArrowDownTrayIcon, LockClosedIcon } from '@heroicons/vue/20/solid';
 import Dropdown from '@/packages/ui/src/Input/Dropdown.vue';
 import { ref } from 'vue';
-import { isAllowedToPerformPremiumAction } from '@/utils/billing';
 import UpgradeModal from '@/Components/Common/UpgradeModal.vue';
 
 const props = defineProps({
@@ -17,10 +16,6 @@ const loading = ref(false);
 const showPremiumModal = ref(false);
 
 function triggerDownload(format) {
-	if (format === 'pdf' && !isAllowedToPerformPremiumAction()) {
-		showPremiumModal.value = true;
-		return;
-	}
 	loading.value = true;
 	props.download(format).finally(() => {
 		loading.value = false;
@@ -38,7 +33,6 @@ function triggerDownload(format) {
 				<SecondaryButton class="border-0 px-2" @click="triggerDownload('pdf')">
 					<div class="flex items-center space-x-2">
 						<span> Export as PDF </span>
-						<LockClosedIcon v-if="!isAllowedToPerformPremiumAction()" class="w-3.5 text-text-tertiary"></LockClosedIcon>
 					</div>
 				</SecondaryButton>
 				<SecondaryButton class="border-0 px-2" @click="triggerDownload('xlsx')">Export as Excel</SecondaryButton>

@@ -4,11 +4,7 @@ import DialogModal from '@/packages/ui/src/DialogModal.vue';
 import { computed, ref } from 'vue';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import { useMembersStore } from '@/utils/useMembers';
-import BillableRateInput from '@/packages/ui/src/Input/BillableRateInput.vue';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
-import MemberBillableRateModal from '@/Components/Common/Member/MemberBillableRateModal.vue';
-import MemberBillableSelect from '@/Components/Common/Member/MemberBillableSelect.vue';
-import { onMounted, watch } from 'vue';
 import MemberRoleSelect from '@/Components/Common/Member/MemberRoleSelect.vue';
 import MemberOwnershipTransferConfirmModal from '@/Components/Common/Member/MemberOwnershipTransferConfirmModal.vue';
 
@@ -22,66 +18,32 @@ const props = defineProps({
 
 const memberBody = ref({
 	role: props.member.role,
-	billable_rate: props.member.billable_rate,
 });
-
-async function submitBillableRate() {
-	if (memberBody.value.role === 'owner' && props.member.role !== 'owner') {
-		show.value = false;
-		showOwnershipTransferConfirmModal.value = true;
-	} else {
-		await submit();
-	}
-}
 
 async function submit() {
 	await updateMember(props.member.id, memberBody.value);
 	show.value = false;
-	showBillableRateModal.value = false;
 	showOwnershipTransferConfirmModal.value = false;
 }
 
-const showBillableRateModal = ref(false);
 const showOwnershipTransferConfirmModal = ref(false);
 
 function saveWithChecks() {
-	if (memberBody.value.billable_rate !== props.member.billable_rate) {
-		showBillableRateModal.value = true;
-		show.value = false;
-	} else if (memberBody.value.role === 'owner' && props.member.role !== 'owner') {
+	if (memberBody.value.role === 'owner' && props.member.role !== 'owner') {
 		show.value = false;
 		showOwnershipTransferConfirmModal.value = true;
-	} else {
-		submitBillableRate();
 	}
 }
 
-const billableRateSelect = ref < MemberBillableKey > 'default-rate';
-
-onMounted(() => {
-	if (props.member.billable_rate !== null) {
-		billableRateSelect.value = 'custom-rate';
-	} else {
-		billableRateSelect.value = 'default-rate';
-	}
-});
-watch(billableRateSelect, () => {
-	if (billableRateSelect.value === 'default-rate') {
-		memberBody.value.billable_rate = null;
-	} else if (billableRateSelect.value === 'custom-rate') {
-		memberBody.value.billable_rate = props.member.billable_rate ?? 0;
-	}
-});
-
 const roleDescriptionTexts = {
 	owner:
-		'The owner has full access of the organization. The owner is the only role that can: delete the organization, transfer the ownership to another user and access to the billing settings',
+		'The owner has full access of the organization. The owner is the only role that can: delete the organization, transfer the ownership to another user',
 	admin: 'The admin has full access to the organization, except for the stuff that only the owner can do.',
 	manager:
 		'The manager has full access to projects, clients, tags, time entries, and reports, but can not manage the organization or the users.',
 	employee: 'An employee is a user that is only using the application to track time, but has no administrative rights.',
 	placeholder:
-		'Placeholder users can not do anything in the organization. They are not billed and can be used to remove users from the organization without deleting their time entries.',
+		'Placeholder users can not do anything in the organization. They can be used to remove users from the organization without deleting their time entries.',
 };
 
 const roleDescription = computed(() => {
@@ -93,13 +55,6 @@ const roleDescription = computed(() => {
 </script>
 
 <template>
-	<MemberBillableRateModal
-		v-model:saving="saving"
-		v-model:show="showBillableRateModal"
-		:member-name="member.name"
-		:new-billable-rate="memberBody.billable_rate"
-		@submit="submitBillableRate"
-	></MemberBillableRateModal>
 	<MemberOwnershipTransferConfirmModal
 		v-model:show="showOwnershipTransferConfirmModal"
 		:member-name="member.name"
@@ -124,27 +79,7 @@ const roleDescription = computed(() => {
 					</div>
 				</div>
 				<div class="flex items-center space-x-4 pt-5">
-					<div class="col-span-6 sm:col-span-4 flex-1 flex space-x-5">
-						<div>
-							<InputLabel for="billableType" value="Billable" />
-							<MemberBillableSelect
-								v-model="billableRateSelect"
-								class="mt-2"
-								name="billableType"
-							></MemberBillableSelect>
-						</div>
-						<div v-if="billableRateSelect === 'custom-rate'" class="flex-1">
-							<InputLabel for="memberBillableRate" class="mb-2" value="Billable Rate" />
-							<BillableRateInput
-								v-model="memberBody.billable_rate"
-								focus
-								class="w-full"
-								:currency="'MAD'"
-								name="memberBillableRate"
-								@keydown.enter="saveWithChecks()"
-							></BillableRateInput>
-						</div>
-					</div>
+					<div class="col-span-6 sm:col-span-4 flex-1 flex space-x-5"></div>
 				</div>
 			</div>
 		</template>

@@ -11,10 +11,7 @@ import NotificationContainer from '@/Components/NotificationContainer.vue';
 import NavigationSidebarItem from '@/Components/NavigationSidebarItem.vue';
 import UserSettingsIcon from '@/Components/UserSettingsIcon.vue';
 import MainContainer from '@/packages/ui/src/MainContainer.vue';
-import BannerEl from '@/Components/BannerEl.vue';
-import BillingBanner from '@/Components/Billing/BillingBanner.vue';
 import {
-	canManageBilling,
 	canUpdateOrganization,
 	canViewNotes,
 	canViewClients,
@@ -23,7 +20,6 @@ import {
 	canViewReport,
 	canViewTags,
 } from '@/utils/permissions';
-import { isBillingActivated } from '@/utils/billing';
 import { Head, route } from '@/utils/inertia';
 import { fetchToken, isTokenValid } from '@/utils/session';
 
@@ -185,9 +181,6 @@ onMounted(async () => {
 				<OrganizationSwitcher></OrganizationSwitcher>
 			</div>
 			<!-- <Head :title="title" /> -->
-
-			<BannerEl />
-			<BillingBanner v-if="isBillingActivated()" />
 
 			<div class="min-h-screen bg-default-background border-l border-default-background-separator">
 				<header v-if="$slots.header" class="bg-default-background border-b border-default-background-separator shadow">

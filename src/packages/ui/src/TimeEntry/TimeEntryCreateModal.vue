@@ -11,7 +11,6 @@ import { getDayJsInstance, getLocalizedDayJs } from '@/packages/ui/src/utils/tim
 import { canCreateProjects } from '@/utils/permissions';
 import TagDropdown from '@/packages/ui/src/Tag/TagDropdown.vue';
 import { Badge } from '@/packages/ui/src';
-import BillableIcon from '@/packages/ui/src/Icons/BillableIcon.vue';
 import SelectDropdown from '@/packages/ui/src/Input/SelectDropdown.vue';
 import DatePicker from '@/packages/ui/src/Input/DatePicker.vue';
 import DurationHumanInput from '@/packages/ui/src/Input/DurationHumanInput.vue';
@@ -48,24 +47,11 @@ const timeEntryDefaultValues = {
 	project_id: null,
 	task_id: null,
 	tags: [],
-	billable: false,
 	start: getDayJsInstance().utc().subtract(1, 'h').format(),
 	end: getDayJsInstance().utc().format(),
 };
 
 const timeEntry = ref({ ...timeEntryDefaultValues });
-
-watch(
-	() => timeEntry.value.project_id,
-	(value) => {
-		if (value) {
-			const project = props.projects.find((p) => p.id === value);
-			if (project) {
-				timeEntry.value.billable = project.is_billable;
-			}
-		}
-	}
-);
 
 const localStart = ref(getLocalizedDayJs(timeEntryDefaultValues.start).format());
 
@@ -89,13 +75,6 @@ async function submit() {
 	localEnd.value = getLocalizedDayJs(timeEntryDefaultValues.end).format();
 	show.value = false;
 }
-
-const billableProxy = computed({
-	get: () => (timeEntry.value.billable ? 'true' : 'false'),
-	set: (value) => {
-		timeEntry.value.billable = value === 'true';
-	},
-});
 </script>
 
 <template>
@@ -154,24 +133,6 @@ const billableProxy = computed({
 									</Badge>
 								</template>
 							</TagDropdown>
-						</div>
-						<div class="flex-col">
-							<SelectDropdown
-								v-model="billableProxy"
-								:get-key-from-item="(item) => item.value"
-								:get-name-for-item="(item) => item.label"
-								:items="[
-									{ label: 'Billable', value: 'true' },
-									{ label: 'Non Billable', value: 'false' },
-								]"
-							>
-								<template #trigger>
-									<Badge class="bg-input-background" tag="button" size="xlarge">
-										<BillableIcon class="h-4"></BillableIcon>
-										<span>{{ timeEntry.billable ? 'Billable' : 'Non-Billable' }}</span>
-									</Badge>
-								</template>
-							</SelectDropdown>
 						</div>
 					</div>
 				</div>

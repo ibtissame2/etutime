@@ -41,11 +41,7 @@ const groupedTimeEntries = computed(() => {
 
 		for (const entry of dailyEntries) {
 			const oldEntriesIndex = newDailyEntries.findIndex(
-				(e) =>
-					e.project_id === entry.project_id &&
-					e.task_id === entry.task_id &&
-					e.billable === entry.billable &&
-					e.description === entry.description
+				(e) => e.project_id === entry.project_id && e.task_id === entry.task_id && e.description === entry.description
 			);
 			if (oldEntriesIndex !== -1 && newDailyEntries[oldEntriesIndex]) {
 				newDailyEntries[oldEntriesIndex].timeEntries.push(entry);
@@ -75,7 +71,6 @@ function startTimeEntryFromExisting(entry) {
 		task_id: entry.task_id,
 		start: getDayJsInstance().utc().format(),
 		end: null,
-		billable: entry.billable,
 		description: entry.description,
 		tags: [...entry.tags],
 	});

@@ -57,30 +57,22 @@ const MemberResource = z
 		email: z.string(),
 		role: z.string(),
 		is_placeholder: z.boolean(),
-		billable_rate: z.union([z.number(), z.null()]),
 	})
 	.passthrough();
 const Role = z.enum(['owner', 'admin', 'manager', 'employee', 'placeholder']);
-const MemberUpdateRequest = z
-	.object({ role: Role, billable_rate: z.union([z.number(), z.null()]) })
-	.partial()
-	.passthrough();
+const MemberUpdateRequest = z.object({ role: Role }).partial().passthrough();
 const MemberMergeIntoRequest = z.object({ member_id: z.string() }).partial().passthrough();
 const OrganizationResource = z
 	.object({
 		id: z.string(),
 		name: z.string(),
 		is_personal: z.boolean(),
-		billable_rate: z.union([z.number(), z.null()]),
-		employees_can_see_billable_rates: z.boolean(),
 		currency: z.string(),
 	})
 	.passthrough();
 const OrganizationUpdateRequest = z
 	.object({
 		name: z.string().max(255),
-		billable_rate: z.union([z.number(), z.null()]).optional(),
-		employees_can_see_billable_rates: z.boolean().optional(),
 	})
 	.passthrough();
 const ProjectResource = z
@@ -90,8 +82,6 @@ const ProjectResource = z
 		color: z.string(),
 		client_id: z.union([z.string(), z.null()]),
 		is_archived: z.boolean(),
-		billable_rate: z.union([z.number(), z.null()]),
-		is_billable: z.boolean(),
 		estimated_time: z.union([z.number(), z.null()]),
 		spent_time: z.number().int(),
 		is_public: z.boolean(),
@@ -101,8 +91,6 @@ const ProjectStoreRequest = z
 	.object({
 		name: z.string().min(1).max(255),
 		color: z.string().max(255),
-		is_billable: z.boolean(),
-		billable_rate: z.union([z.number(), z.null()]).optional(),
 		client_id: z.union([z.string(), z.null()]).optional(),
 		estimated_time: z.union([z.number(), z.null()]).optional(),
 		is_public: z.boolean().optional(),
@@ -112,18 +100,15 @@ const ProjectUpdateRequest = z
 	.object({
 		name: z.string().max(255),
 		color: z.string().max(255),
-		is_billable: z.boolean(),
 		is_archived: z.boolean().optional(),
 		is_public: z.boolean().optional(),
 		client_id: z.union([z.string(), z.null()]).optional(),
-		billable_rate: z.union([z.number(), z.null()]).optional(),
 		estimated_time: z.union([z.number(), z.null()]).optional(),
 	})
 	.passthrough();
 const ProjectMemberResource = z
 	.object({
 		id: z.string(),
-		billable_rate: z.union([z.number(), z.null()]),
 		member_id: z.string(),
 		project_id: z.string(),
 	})
@@ -131,13 +116,9 @@ const ProjectMemberResource = z
 const ProjectMemberStoreRequest = z
 	.object({
 		member_id: z.string(),
-		billable_rate: z.union([z.number(), z.null()]).optional(),
 	})
 	.passthrough();
-const ProjectMemberUpdateRequest = z
-	.object({ billable_rate: z.union([z.number(), z.null()]) })
-	.partial()
-	.passthrough();
+const ProjectMemberUpdateRequest = z.object({}).partial().passthrough();
 const ReportResource = z
 	.object({
 		id: z.string(),
@@ -159,7 +140,6 @@ const TimeEntryAggregationType = z.enum([
 	'project',
 	'task',
 	'client',
-	'billable',
 	'description',
 ]);
 const TimeEntryAggregationTypeInterval = z.enum(['day', 'week', 'month', 'year']);
@@ -176,7 +156,6 @@ const ReportStoreRequest = z
 				end: z.string(),
 				active: z.union([z.boolean(), z.null()]).optional(),
 				member_ids: z.union([z.array(z.string().uuid()), z.null()]).optional(),
-				billable: z.union([z.boolean(), z.null()]).optional(),
 				client_ids: z.union([z.array(z.string().uuid()), z.null()]).optional(),
 				project_ids: z.union([z.array(z.string().uuid()), z.null()]).optional(),
 				tag_ids: z.union([z.array(z.string().uuid()), z.null()]).optional(),
@@ -207,7 +186,6 @@ const DetailedReportResource = z
 				end: z.string(),
 				active: z.union([z.boolean(), z.null()]),
 				member_ids: z.union([z.array(z.string()), z.null()]),
-				billable: z.union([z.boolean(), z.null()]),
 				client_ids: z.union([z.array(z.string()), z.null()]),
 				project_ids: z.union([z.array(z.string()), z.null()]),
 				tag_ids: z.union([z.array(z.string()), z.null()]),
@@ -368,7 +346,6 @@ const TimeEntryResource = z
 		organization_id: z.string(),
 		user_id: z.string(),
 		tags: z.array(z.string()),
-		billable: z.boolean(),
 	})
 	.passthrough();
 const TimeEntryStoreRequest = z
@@ -378,7 +355,6 @@ const TimeEntryStoreRequest = z
 		task_id: z.union([z.string(), z.null()]).optional(),
 		start: z.string(),
 		end: z.union([z.string(), z.null()]).optional(),
-		billable: z.boolean(),
 		description: z.union([z.string(), z.null()]).optional(),
 		tags: z.union([z.array(z.string()), z.null()]).optional(),
 	})
@@ -391,7 +367,6 @@ const TimeEntryUpdateMultipleRequest = z
 				member_id: z.string(),
 				project_id: z.union([z.string(), z.null()]),
 				task_id: z.union([z.string(), z.null()]),
-				billable: z.boolean(),
 				description: z.union([z.string(), z.null()]),
 				tags: z.union([z.array(z.string()), z.null()]),
 			})
@@ -406,7 +381,6 @@ const TimeEntryUpdateRequest = z
 		task_id: z.union([z.string(), z.null()]),
 		start: z.string(),
 		end: z.union([z.string(), z.null()]),
-		billable: z.boolean(),
 		description: z.union([z.string(), z.null()]),
 		tags: z.union([z.array(z.string()), z.null()]),
 	})
@@ -691,68 +665,6 @@ const endpoints = makeApi([
 				})
 				.passthrough()
 		),
-		errors: [
-			{
-				status: 401,
-				description: `Unauthenticated`,
-				schema: z.object({ message: z.string() }).passthrough(),
-			},
-			{
-				status: 403,
-				description: `Authorization error`,
-				schema: z.object({ message: z.string() }).passthrough(),
-			},
-			{
-				status: 404,
-				description: `Not found`,
-				schema: z.object({ message: z.string() }).passthrough(),
-			},
-		],
-	},
-	{
-		method: 'get',
-		path: '/v1/organizations/:organization/charts/total-weekly-billable-amount',
-		alias: 'totalWeeklyBillableAmount',
-		requestFormat: 'json',
-		parameters: [
-			{
-				name: 'organization',
-				type: 'Path',
-				schema: z.string(),
-			},
-		],
-		response: z.object({ value: z.number().int(), currency: z.string() }).passthrough(),
-		errors: [
-			{
-				status: 401,
-				description: `Unauthenticated`,
-				schema: z.object({ message: z.string() }).passthrough(),
-			},
-			{
-				status: 403,
-				description: `Authorization error`,
-				schema: z.object({ message: z.string() }).passthrough(),
-			},
-			{
-				status: 404,
-				description: `Not found`,
-				schema: z.object({ message: z.string() }).passthrough(),
-			},
-		],
-	},
-	{
-		method: 'get',
-		path: '/v1/organizations/:organization/charts/total-weekly-billable-time',
-		alias: 'totalWeeklyBillableTime',
-		requestFormat: 'json',
-		parameters: [
-			{
-				name: 'organization',
-				type: 'Path',
-				schema: z.string(),
-			},
-		],
-		response: z.number().int(),
 		errors: [
 			{
 				status: 401,
@@ -2906,11 +2818,6 @@ Users with the permission &#x60;time-entries:view:own&#x60; can only use this en
 				schema: z.enum(['true', 'false']).optional(),
 			},
 			{
-				name: 'billable',
-				type: 'Query',
-				schema: z.enum(['true', 'false']).optional(),
-			},
-			{
 				name: 'limit',
 				type: 'Query',
 				schema: z.number().int().gte(1).lte(500).optional(),
@@ -3254,16 +3161,12 @@ If the group parameters are all set to &#x60;null&#x60; or are all missing, the 
 			{
 				name: 'group',
 				type: 'Query',
-				schema: z
-					.enum(['day', 'week', 'month', 'year', 'user', 'project', 'task', 'client', 'billable', 'description'])
-					.optional(),
+				schema: z.enum(['day', 'week', 'month', 'year', 'user', 'project', 'task', 'client', 'description']).optional(),
 			},
 			{
 				name: 'sub_group',
 				type: 'Query',
-				schema: z
-					.enum(['day', 'week', 'month', 'year', 'user', 'project', 'task', 'client', 'billable', 'description'])
-					.optional(),
+				schema: z.enum(['day', 'week', 'month', 'year', 'user', 'project', 'task', 'client', 'description']).optional(),
 			},
 			{
 				name: 'member_id',
@@ -3287,11 +3190,6 @@ If the group parameters are all set to &#x60;null&#x60; or are all missing, the 
 			},
 			{
 				name: 'active',
-				type: 'Query',
-				schema: z.enum(['true', 'false']).optional(),
-			},
-			{
-				name: 'billable',
 				type: 'Query',
 				schema: z.enum(['true', 'false']).optional(),
 			},
@@ -3411,34 +3309,12 @@ If the group parameters are all set to &#x60;null&#x60; or are all missing, the 
 			{
 				name: 'group',
 				type: 'Query',
-				schema: z.enum([
-					'day',
-					'week',
-					'month',
-					'year',
-					'user',
-					'project',
-					'task',
-					'client',
-					'billable',
-					'description',
-				]),
+				schema: z.enum(['day', 'week', 'month', 'year', 'user', 'project', 'task', 'client', 'description']),
 			},
 			{
 				name: 'sub_group',
 				type: 'Query',
-				schema: z.enum([
-					'day',
-					'week',
-					'month',
-					'year',
-					'user',
-					'project',
-					'task',
-					'client',
-					'billable',
-					'description',
-				]),
+				schema: z.enum(['day', 'week', 'month', 'year', 'user', 'project', 'task', 'client', 'description']),
 			},
 			{
 				name: 'history_group',
@@ -3467,11 +3343,6 @@ If the group parameters are all set to &#x60;null&#x60; or are all missing, the 
 			},
 			{
 				name: 'active',
-				type: 'Query',
-				schema: z.enum(['true', 'false']).optional(),
-			},
-			{
-				name: 'billable',
 				type: 'Query',
 				schema: z.enum(['true', 'false']).optional(),
 			},
@@ -3587,11 +3458,6 @@ If the group parameters are all set to &#x60;null&#x60; or are all missing, the 
 			},
 			{
 				name: 'active',
-				type: 'Query',
-				schema: z.enum(['true', 'false']).optional(),
-			},
-			{
-				name: 'billable',
 				type: 'Query',
 				schema: z.enum(['true', 'false']).optional(),
 			},

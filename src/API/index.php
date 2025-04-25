@@ -1,5 +1,5 @@
 <?php
-$connection = new mysqli("localhost", "root", "", "etutime_test_1");
+$connection = new mysqli("localhost", "root", "", "etutime_2_1");
 if (isset($_SERVER['HTTP_ORIGIN'])) {
 	header('Access-Control-Allow-Origin: *');
 	header('Access-Control-Allow-Credentials: true');

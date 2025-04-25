@@ -33,7 +33,6 @@ const props = defineProps({
 const emit = defineEmits(['startTimer', 'stopTimer', 'updateTimeEntry', 'startLiveTimer', 'stopLiveTimer']);
 
 function updateProject() {
-	setBillableDefaultForProject();
 	emit('updateTimeEntry');
 }
 
@@ -51,7 +50,6 @@ function setCurrentTimeEntry(timeEntry) {
 	currentTimeEntry.value.project_id = timeEntry.project_id;
 	currentTimeEntry.value.task_id = timeEntry.task_id;
 	currentTimeEntry.value.tags = timeEntry.tags;
-	currentTimeEntry.value.billable = timeEntry.billable;
 }
 
 function startTimerIfNotActive() {
@@ -71,13 +69,6 @@ function startTimerIfNotActive() {
 		emit('startTimer');
 	} else {
 		emit('updateTimeEntry');
-	}
-}
-
-function setBillableDefaultForProject() {
-	const project = props.projects.find((project) => project.id === currentTimeEntry.value.project_id);
-	if (project) {
-		currentTimeEntry.value.billable = project.is_billable;
 	}
 }
 
@@ -122,8 +113,7 @@ const filteredRecentlyTrackedTimeEntries = computed(() => {
 					t.task_id === item.task_id &&
 					t.project_id === item.project_id &&
 					t.tags.length === item.tags.length &&
-					t.tags.every((tag) => item.tags.includes(tag)) &&
-					t.billable === item.billable
+					t.tags.every((tag) => item.tags.includes(tag))
 			)
 		);
 	});

@@ -23,8 +23,13 @@ export const useQuery = ({ queryFn, queryKey, enabled }) => {
 	let data;
 	if (queryKey[0] === 'dailyTrackedHours' || queryKey[0] === 'lastSevenDays' || queryKey[0] === 'weeklyHistory')
 		data = [
-			{ date: '2025-04-20', duration: 6, history: [1, 2, 3] },
-			{ date: '2025-04-20', duration: 1, history: [1] },
+			{ date: '2025-04-21', duration: 50, history: [1] },
+			{ date: '2025-04-20', duration: 50, history: [1] },
+			{ date: '2025-04-19', duration: 50, history: [1] },
+			{ date: '2025-04-18', duration: 3650, history: [1] },
+			{ date: '2025-04-17', duration: 93, history: [1, 2, 3] },
+			{ date: '2025-04-16', duration: 93, history: [1, 2, 3] },
+			{ date: '2025-04-15', duration: 93, history: [1, 2, 3] },
 		];
 	else if (queryKey[0] === 'timeEntries' || queryKey[0] === 'latestTeamActivity')
 		data = [
@@ -36,7 +41,6 @@ export const useQuery = ({ queryFn, queryKey, enabled }) => {
 				task_id: '1',
 				project_id: '1',
 				tags: [],
-				billable: false,
 			},
 			{
 				time_entry_id: '2',
@@ -46,7 +50,6 @@ export const useQuery = ({ queryFn, queryKey, enabled }) => {
 				task_id: '2',
 				project_id: '2',
 				tags: [],
-				billable: false,
 			},
 		];
 	else if (queryKey[0] === 'weeklyProjectOverview')

@@ -61,7 +61,7 @@ async function submit() {
 		<template #content>
 			<p>
 				Deactivating the user <strong>{{ props.member.name }}</strong> will remove the user's access to the
-				organization. You will not be billed for inactive users and all time entries will be preserved.
+				organization.
 			</p>
 		</template>
 		<template #footer>

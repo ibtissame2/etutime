@@ -47,9 +47,6 @@ const showEditModal = ref(false);
 			</span>
 		</div>
 		<div class="whitespace-nowrap px-3 py-4 text-sm text-muted">
-			{{ projectMember.billable_rate ? formatCents(projectMember.billable_rate, 'MAD') : '--' }}
-		</div>
-		<div class="whitespace-nowrap px-3 py-4 text-sm text-muted">
 			{{ capitalizeFirstLetter(member?.role ?? '') }}
 		</div>
 		<div

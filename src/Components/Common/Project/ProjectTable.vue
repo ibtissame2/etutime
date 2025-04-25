@@ -10,15 +10,10 @@ import { canCreateProjects } from '@/utils/permissions';
 import { useProjectsStore } from '@/utils/useProjects';
 import { useClientsStore } from '@/utils/useClients';
 import { storeToRefs } from 'pinia';
-import { isAllowedToPerformPremiumAction } from '@/utils/billing';
 
 const props = defineProps({
 	projects: {
 		type: Array,
-		required: true,
-	},
-	showBillableRate: {
-		type: Boolean,
 		required: true,
 	},
 });
@@ -36,25 +31,23 @@ async function createClient(client) {
 const { clients } = storeToRefs(useClientsStore());
 
 const gridTemplate = computed(() => {
-	return `grid-template-columns: minmax(300px, 1fr) minmax(150px, auto) minmax(140px, auto) minmax(130px, auto) ${
-		props.showBillableRate ? 'minmax(130px, auto)' : ''
-	} minmax(120px, auto) 80px;`;
+	return `grid-template-columns: minmax(300px, 1fr) minmax(150px, auto) minmax(140px, auto) minmax(130px, auto) minmax(120px, auto) 80px;`;
 });
 </script>
 
 <template>
+	<!-- :enable-estimated-time="isAllowedToPerformPremiumAction" -->
 	<ProjectCreateModal
 		v-model:show="showCreateProjectModal"
 		:create-project="createProject"
 		:create-client="createClient"
 		:currency="'MAD'"
 		:clients="clients"
-		:enable-estimated-time="isAllowedToPerformPremiumAction"
 	></ProjectCreateModal>
 	<div class="flow-root max-w-[100vw] overflow-x-auto">
 		<div class="inline-block min-w-full align-middle">
 			<div data-testid="project_table" class="grid min-w-full" :style="gridTemplate">
-				<ProjectTableHeading :show-billable-rate="props.showBillableRate"></ProjectTableHeading>
+				<ProjectTableHeading></ProjectTableHeading>
 				<div v-if="projects.length === 0" class="col-span-5 py-24 text-center">
 					<FolderPlusIcon class="w-8 text-icon-default inline pb-2"></FolderPlusIcon>
 					<h3 class="text-text-primary font-semibold">
@@ -72,7 +65,7 @@ const gridTemplate = computed(() => {
 					</SecondaryButton>
 				</div>
 				<template v-for="project in projects" :key="project.id">
-					<ProjectTableRow :show-billable-rate="props.showBillableRate" :project="project"></ProjectTableRow>
+					<ProjectTableRow :project="project"></ProjectTableRow>
 				</template>
 			</div>
 		</div>

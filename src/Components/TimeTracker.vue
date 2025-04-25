@@ -16,7 +16,6 @@ import { useTagsStore } from '@/utils/useTags';
 import { useClientsStore } from '@/utils/useClients';
 import TimeTrackerControls from '@/packages/ui/src/TimeTracker/TimeTrackerControls.vue';
 import TimeTrackerRunningInDifferentOrganizationOverlay from '@/packages/ui/src/TimeTracker/TimeTrackerRunningInDifferentOrganizationOverlay.vue';
-import { isAllowedToPerformPremiumAction } from '@/utils/billing';
 import { canCreateProjects } from '@/utils/permissions';
 
 const page = usePage();
@@ -104,7 +103,7 @@ const { tags } = storeToRefs(useTagsStore());
 			v-model:current-time-entry="currentTimeEntry"
 			v-model:live-timer="now"
 			:create-project="createProject"
-			:enable-estimated-time="isAllowedToPerformPremiumAction()"
+			:enable-estimated-time="true"
 			:can-create-project="canCreateProjects()"
 			:create-client="createClient"
 			:clients="clients"

@@ -6,7 +6,6 @@ import TimeEntryDescriptionInput from '@/packages/ui/src/TimeEntry/TimeEntryDesc
 import TimeEntryRowTagDropdown from '@/packages/ui/src/TimeEntry/TimeEntryRowTagDropdown.vue';
 import TimeEntryRowDurationInput from '@/packages/ui/src/TimeEntry/TimeEntryRowDurationInput.vue';
 import TimeEntryMoreOptionsDropdown from '@/packages/ui/src/TimeEntry/TimeEntryMoreOptionsDropdown.vue';
-import BillableToggleButton from '@/packages/ui/src/Input/BillableToggleButton.vue';
 import { computed } from 'vue';
 import TimeTrackerProjectTaskDropdown from '@/packages/ui/src/TimeTracker/TimeTrackerProjectTaskDropdown.vue';
 import { Checkbox } from '@/packages/ui/src';
@@ -53,10 +52,6 @@ function updateTimeEntryDescription(description) {
 
 function updateTimeEntryTags(tags) {
 	props.updateTimeEntry({ ...props.timeEntry, tags });
-}
-
-function updateTimeEntryBillable(billable) {
-	props.updateTimeEntry({ ...props.timeEntry, billable });
 }
 
 function updateStartEndTime(start, end) {
@@ -131,12 +126,6 @@ function onSelectChange(event) {
 						:model-value="timeEntry.tags"
 						@changed="updateTimeEntryTags"
 					></TimeEntryRowTagDropdown>
-					<BillableToggleButton
-						:model-value="timeEntry.billable"
-						class="opacity-50 group-hover:opacity-100 focus-visible:opacity-100"
-						size="small"
-						@changed="updateTimeEntryBillable"
-					></BillableToggleButton>
 					<div class="flex-1">
 						<TimeEntryRangeSelector
 							class="hidden lg:block"

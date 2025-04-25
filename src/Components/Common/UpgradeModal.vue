@@ -1,9 +1,6 @@
 <script setup>
 import DialogModal from '@/packages/ui/src/DialogModal.vue';
-import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
-import { isBillingActivated } from '@/utils/billing';
 import { CreditCardIcon, UserGroupIcon } from '@heroicons/vue/20/solid';
-import { canManageBilling, canUpdateOrganization } from '@/utils/permissions';
 import { SecondaryButton } from '@/packages/ui/src';
 
 const show = defineModel('show', { default: false });
@@ -39,17 +36,6 @@ const show = defineModel('show', { default: false });
 						>
 						to try out this feature.
 					</p>
-
-					<router-link v-if="isBillingActivated() && canManageBilling()" href="/billing">
-						<PrimaryButton
-							v-if="isBillingActivated() && canUpdateOrganization()"
-							type="button"
-							class="mt-6"
-							:icon="CreditCardIcon"
-						>
-							Go to Billing
-						</PrimaryButton>
-					</router-link>
 				</div>
 			</div>
 		</template>

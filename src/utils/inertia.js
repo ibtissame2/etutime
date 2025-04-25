@@ -24,8 +24,6 @@ export const usePage = () => {
 				hasEmailVerification: true,
 				hasApiFeatures: true,
 				flash: {
-					bannerStyle: 'success',
-					banner: '',
 					token: '',
 				},
 			},
@@ -72,7 +70,6 @@ export const usePage = () => {
 					'tags:view',
 					'tags:create',
 					'tags:delete',
-					'billing',
 					'reports:view',
 					'reports:update',
 					'reports:delete',
@@ -80,13 +77,6 @@ export const usePage = () => {
 					'notes:create',
 					'notes:view',
 				],
-			},
-			has_billing_extension: true,
-			billing: {
-				has_trial: true,
-				trial_until: '2025-06-26',
-				is_blocked: false,
-				has_subscription: true,
 			},
 		},
 	};

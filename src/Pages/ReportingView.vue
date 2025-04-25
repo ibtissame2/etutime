@@ -5,7 +5,6 @@ import { FolderIcon, ChartBarIcon, UserGroupIcon, CheckCircleIcon, TagIcon } fro
 import PageTitle from '@/Components/Common/PageTitle.vue';
 import DateRangePicker from '@/packages/ui/src/Input/DateRangePicker.vue';
 import ReportingChart from '@/Components/Common/Reporting/ReportingChart.vue';
-import BillableIcon from '@/packages/ui/src/Icons/BillableIcon.vue';
 import { computed, onMounted, ref } from 'vue';
 import { formatHumanReadableDuration, getDayJsInstance, getLocalizedDayJs } from '@/packages/ui/src/utils/time';
 import { useReportingStore } from '@/utils/useReporting';
@@ -44,7 +43,6 @@ const selectedProjects = ref([]);
 const selectedMembers = ref([]);
 const selectedTasks = ref([]);
 const selectedClients = ref([]);
-const billable = ref(null);
 
 const group = useStorage('reporting-group', 'project');
 const subGroup = useStorage('reporting-sub-group', 'task');
@@ -66,7 +64,6 @@ function getFilterAttributes() {
 		task_ids: selectedTasks.value.length > 0 ? selectedTasks.value : undefined,
 		client_ids: selectedClients.value.length > 0 ? selectedClients.value : undefined,
 		tag_ids: selectedTags.value.length > 0 ? selectedTags.value : undefined,
-		billable: billable.value !== null ? billable.value : undefined,
 	};
 
 	return params;
@@ -274,35 +271,6 @@ const tableData = computed(() => {
 							></ReportingFilterBadge>
 						</template>
 					</TagDropdown>
-
-					<SelectDropdown
-						v-model="billable"
-						:get-key-from-item="(item) => item.value"
-						:get-name-for-item="(item) => item.label"
-						:items="[
-							{
-								label: 'Both',
-								value: null,
-							},
-							{
-								label: 'Billable',
-								value: 'true',
-							},
-							{
-								label: 'Non Billable',
-								value: 'false',
-							},
-						]"
-						@changed="updateReporting"
-					>
-						<template #trigger>
-							<ReportingFilterBadge
-								:active="billable !== null"
-								:title="billable === 'false' ? 'Non Billable' : 'Billable'"
-								:icon="BillableIcon"
-							></ReportingFilterBadge>
-						</template>
-					</SelectDropdown>
 				</div>
 				<div>
 					<DateRangePicker v-model:start="startDate" v-model:end="endDate" @submit="updateReporting"></DateRangePicker>

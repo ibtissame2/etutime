@@ -14,15 +14,11 @@ import ProjectColorSelector from '@/packages/ui/src/Project/ProjectColorSelector
 import { UserCircleIcon } from '@heroicons/vue/20/solid';
 import EstimatedTimeSection from '@/packages/ui/src/EstimatedTimeSection.vue';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
-import ProjectBillableRateModal from '@/packages/ui/src/Project/ProjectBillableRateModal.vue';
-import ProjectEditBillableSection from '@/packages/ui/src/Project/ProjectEditBillableSection.vue';
-import { isAllowedToPerformPremiumAction } from '@/utils/billing';
 
 const { updateProject } = useProjectsStore();
 const { clients } = storeToRefs(useClientsStore());
 const show = defineModel('show', { default: false });
 const saving = ref(false);
-const showBillableRateModal = ref(false);
 const props = defineProps({
 	originalProject: {
 		type: Object,
@@ -38,16 +34,10 @@ const project = ref({
 	name: props.originalProject.name,
 	color: props.originalProject.color,
 	client_id: props.originalProject.client_id,
-	billable_rate: props.originalProject.billable_rate,
-	is_billable: props.originalProject.is_billable,
 	estimated_time: props.originalProject.estimated_time,
 });
 
 async function submit() {
-	if (props.originalProject.billable_rate !== project.value.billable_rate) {
-		showBillableRateModal.value = true;
-		return;
-	}
 	await updateProject(props.originalProject.id, project.value);
 	show.value = false;
 }
@@ -62,12 +52,6 @@ const currentClientName = computed(() => {
 	}
 	return 'No Client';
 });
-
-async function submitBillableRate() {
-	await updateProject(props.originalProject.id, project.value);
-	show.value = false;
-	showBillableRateModal.value = false;
-}
 </script>
 
 <template>
@@ -118,19 +102,7 @@ async function submitBillableRate() {
 			</div>
 			<div class="lg:grid grid-cols-2 gap-12">
 				<div>
-					<ProjectEditBillableSection
-						v-model:is-billable="project.is_billable"
-						v-model:billable-rate="project.billable_rate"
-						:currency="'MAD'"
-						@submit="submit"
-					></ProjectEditBillableSection>
-				</div>
-				<div>
-					<EstimatedTimeSection
-						v-if="isAllowedToPerformPremiumAction()"
-						v-model="project.estimated_time"
-						@submit="submit()"
-					></EstimatedTimeSection>
+					<EstimatedTimeSection v-model="project.estimated_time" @submit="submit()"></EstimatedTimeSection>
 				</div>
 			</div>
 		</template>
@@ -142,13 +114,6 @@ async function submitBillableRate() {
 			</PrimaryButton>
 		</template>
 	</DialogModal>
-	<ProjectBillableRateModal
-		v-model:show="showBillableRateModal"
-		:currency="'MAD'"
-		:new-billable-rate="project.billable_rate"
-		:project-name="project.name"
-		@submit="submitBillableRate"
-	></ProjectBillableRateModal>
 </template>
 
 <style scoped></style>

@@ -9,7 +9,6 @@ import { useTasksStore } from '@/utils/useTasks';
 import { useClientsStore } from '@/utils/useClients';
 import { CheckCircleIcon, UserCircleIcon, UserGroupIcon } from '@heroicons/vue/20/solid';
 import { DocumentTextIcon, FolderIcon } from '@heroicons/vue/16/solid';
-import BillableIcon from '@/packages/ui/src/Icons/BillableIcon.vue';
 
 export const useReportingStore = defineStore('reporting', () => {
 	const reportingGraphResponse = ref(null);
@@ -63,7 +62,6 @@ export const useReportingStore = defineStore('reporting', () => {
 		user: 'No User',
 		project: 'No Project',
 		task: 'No Task',
-		billable: 'Non-Billable',
 		client: 'No Client',
 		description: 'No Description',
 	};
@@ -96,13 +94,6 @@ export const useReportingStore = defineStore('reporting', () => {
 			const { clients } = storeToRefs(clientsStore);
 			return clients.value.find((client) => client.id === key)?.name;
 		}
-		if (type === 'billable') {
-			if (key === '0') {
-				return 'Non-Billable';
-			} else {
-				return 'Billable';
-			}
-		}
 		return key;
 	}
 
@@ -126,11 +117,6 @@ export const useReportingStore = defineStore('reporting', () => {
 			label: 'Clients',
 			value: 'client',
 			icon: UserCircleIcon,
-		},
-		{
-			label: 'Billable',
-			value: 'billable',
-			icon: BillableIcon,
 		},
 		{
 			label: 'Description',

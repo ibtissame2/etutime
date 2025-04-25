@@ -10,9 +10,7 @@ import InputError from '@/packages/ui/src/Input/InputError.vue';
 import { useForm } from '@/utils/inertia';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { filterRoles } from '@/utils/roles';
-import { isAllowedToPerformPremiumAction, isBillingActivated } from '@/utils/billing';
 import { CreditCardIcon, UserGroupIcon } from '@heroicons/vue/20/solid';
-import { canManageBilling, canUpdateOrganization } from '@/utils/permissions';
 import { api } from '@/packages/api/src';
 import { useNotificationsStore } from '@/utils/notification';
 import { z } from 'zod';
@@ -81,28 +79,7 @@ useFocus(clientNameInput, { initialValue: true });
 		</template>
 
 		<template #content>
-			<div v-if="!isAllowedToPerformPremiumAction()">
-				<div
-					class="rounded-full flex items-center justify-center w-20 h-20 mx-auto border border-border-tertiary bg-secondary"
-				>
-					<UserGroupIcon class="w-12"></UserGroupIcon>
-				</div>
-				<div class="max-w-sm text-center mx-auto py-4 text-base">
-					<p class="py-1">The Free plan is <strong>limited to one member</strong></p>
-					<p class="py-1">
-						To add new team members to your organization you,
-						<strong>please upgrade to a paid plan</strong>.
-					</p>
-
-					<router-link v-if="isBillingActivated() && canManageBilling()" href="/billing">
-						<PrimaryButton v-if="isBillingActivated() && canUpdateOrganization()" type="button" class="mt-6">
-							<CreditCardIcon class="w-5 h-5 me-2" />
-							Go to Billing
-						</PrimaryButton>
-					</router-link>
-				</div>
-			</div>
-			<div v-else class="space-y-4">
+			<div class="space-y-4">
 				<div class="col-span-6 sm:col-span-4 flex-1">
 					<InputLabel for="email" value="Email" />
 					<TextInput
@@ -173,13 +150,7 @@ useFocus(clientNameInput, { initialValue: true });
 		</template>
 		<template #footer>
 			<SecondaryButton @click="show = false">Cancel</SecondaryButton>
-			<PrimaryButton
-				v-if="isAllowedToPerformPremiumAction()"
-				class="ms-3"
-				:class="{ 'opacity-25': saving }"
-				:disabled="saving"
-				@click="submit"
-			>
+			<PrimaryButton class="ms-3" :class="{ 'opacity-25': saving }" :disabled="saving" @click="submit">
 				Invite Member
 			</PrimaryButton>
 		</template>

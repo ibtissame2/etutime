@@ -2,12 +2,11 @@
 import TextInput from '../Input/TextInput.vue';
 import SecondaryButton from '../Buttons/SecondaryButton.vue';
 import DialogModal from '@/packages/ui/src/DialogModal.vue';
-import { computed, nextTick, ref, watch } from 'vue';
+import { nextTick, ref, watch } from 'vue';
 import PrimaryButton from '../Buttons/PrimaryButton.vue';
 import TimeTrackerProjectTaskDropdown from '@/packages/ui/src/TimeTracker/TimeTrackerProjectTaskDropdown.vue';
 import InputLabel from '../Input/InputLabel.vue';
 import { Badge, Checkbox } from '@/packages/ui/src';
-import SelectDropdown from '../Input/SelectDropdown.vue';
 import TagDropdown from '@/packages/ui/src/Tag/TagDropdown.vue';
 
 const show = defineModel('show', { default: false });
@@ -41,26 +40,7 @@ watch(show, (value) => {
 const description = ref('');
 const taskId = ref(undefined);
 const projectId = ref(null);
-const billable = ref(undefined);
 const selectedTags = ref([]);
-
-const timeEntryBillable = computed({
-	get: () => {
-		if (billable.value === undefined) {
-			return 'do-not-update';
-		}
-		return billable.value ? 'billable' : 'non-billable';
-	},
-	set: (value) => {
-		if (value === 'do-not-update') {
-			billable.value = undefined;
-		} else if (value === 'billable') {
-			billable.value = true;
-		} else {
-			billable.value = false;
-		}
-	},
-});
 
 async function submit() {
 	saving.value = true;
@@ -80,9 +60,6 @@ async function submit() {
 		}
 	}
 
-	if (billable.value !== undefined) {
-		timeEntryUpdatesBody.billable = billable.value;
-	}
 	if (selectedTags.value.length > 0) {
 		timeEntryUpdatesBody.tags = selectedTags.value;
 	}
@@ -99,7 +76,6 @@ async function submit() {
 		projectId.value = null;
 		taskId.value = undefined;
 		selectedTags.value = [];
-		billable.value = undefined;
 		saving.value = false;
 		removeAllTags.value = false;
 	} catch {
@@ -169,29 +145,6 @@ watch(removeAllTags, () => {
 							<Checkbox id="no_tags" v-model:checked="removeAllTags"></Checkbox>
 							<InputLabel for="no_tags" value="Remove all tags" />
 						</div>
-					</div>
-				</div>
-				<div class="space-y-2">
-					<InputLabel for="project" value="Billable" />
-					<div class="flex">
-						<SelectDropdown
-							v-model="timeEntryBillable"
-							:get-key-from-item="(item) => item.value"
-							:get-name-for-item="(item) => item.label"
-							:items="[
-								{ label: 'Keep current billable status', value: 'do-not-update' },
-								{ label: 'Billable', value: 'billable' },
-								{ label: 'Non Billable', value: 'non-billable' },
-							]"
-						>
-							<template #trigger>
-								<Badge tag="button" size="xlarge">
-									<span v-if="billable === undefined">Set billable status</span>
-									<span v-else-if="billable === true">Billable</span>
-									<span v-else> Non Billable </span>
-								</Badge>
-							</template>
-						</SelectDropdown>
 					</div>
 				</div>
 			</div>
