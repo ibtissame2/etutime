@@ -1,0 +1,41 @@
+.fade-enter-active[data-v-e2a68def],
+.fade-leave-active[data-v-e2a68def] {
+	transition: opacity 0.2s ease;
+}
+
+.fade-enter-from[data-v-e2a68def],
+.fade-leave-to[data-v-e2a68def] {
+	opacity: 0;
+}
+
+.CollapsibleContent[data-v-c119200b] {
+	overflow: hidden;
+}
+
+.CollapsibleContent[data-state='open'][data-v-c119200b] {
+	animation: slideDown-c119200b 0.3s ease-out;
+}
+
+.CollapsibleContent[data-state='closed'][data-v-c119200b] {
+	animation: slideUp-c119200b 0.3s ease-out;
+}
+
+@keyframes slideDown-c119200b {
+	0% {
+		height: 0;
+	}
+
+	to {
+		height: var(--radix-collapsible-content-height);
+	}
+}
+
+@keyframes slideUp-c119200b {
+	0% {
+		height: var(--radix-collapsible-content-height);
+	}
+
+	to {
+		height: 0;
+	}
+}

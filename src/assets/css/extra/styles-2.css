@@ -1,0 +1,14 @@
+.monica-reading-highlight {
+	animation: fadeInOut 1.5s ease-in-out;
+}
+
+@keyframes fadeInOut {
+	0%,
+	100% {
+		background-color: transparent;
+	}
+	30%,
+	70% {
+		background-color: rgba(2, 118, 255, 0.2);
+	}
+}

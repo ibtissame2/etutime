@@ -1,0 +1,4 @@
+input[data-v-f98f236b]::-webkit-calendar-picker-indicator {
+	filter: invert(1);
+	opacity: 0.2;
+}
