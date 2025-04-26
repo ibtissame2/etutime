@@ -1,4 +1,4 @@
-import { useProjectsStore } from '@/utils/useProjects';
+import { useModulesStore } from '@/store/modules';
 import { useTasksStore } from '@/utils/useTasks';
 import { useTagsStore } from '@/utils/useTags';
 import { useCurrentTimeEntryStore } from '@/utils/useCurrentTimeEntry';
@@ -12,7 +12,7 @@ export function initializeStores() {
 }
 
 export function refreshStores() {
-	useProjectsStore().fetchProjects();
+	useModulesStore().fetchModules();
 	useTasksStore().fetchTasks();
 	useTagsStore().fetchTags();
 	useCurrentTimeEntryStore().fetchCurrentTimeEntry();

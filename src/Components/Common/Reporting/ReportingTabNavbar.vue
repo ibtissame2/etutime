@@ -1,5 +1,5 @@
 <script setup>
-import { router } from '@/utils/inertia';
+import { router, route } from '@/utils/inertia';
 import TabBar from '@/Components/Common/TabBar/TabBar.vue';
 import TabBarItem from '@/Components/Common/TabBar/TabBarItem.vue';
 import { canViewReport } from '@/utils/permissions';

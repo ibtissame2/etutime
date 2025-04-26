@@ -1,7 +1,7 @@
 <script setup>
 import ProjectBadge from '@/packages/ui/src/Project/ProjectBadge.vue';
 import { computed, nextTick, ref, watch } from 'vue';
-import { useProjectsStore } from '@/utils/useProjects';
+import { useModulesStore } from '@/store/modules';
 import Dropdown from '@/packages/ui/src/Input/Dropdown.vue';
 import {
 	ComboboxAnchor,
@@ -25,14 +25,13 @@ const model = defineModel({
 	default: null,
 });
 const open = ref(false);
-const projectsStore = useProjectsStore();
 const emit = defineEmits(['update:modelValue', 'changed']);
 
-const { projects } = storeToRefs(projectsStore);
+const { modules } = storeToRefs(useModulesStore());
 const projectDropdownTrigger = ref(null);
-const shownProjects = computed(() => {
-	return projects.value.filter((project) => {
-		return project.name.toLowerCase().includes(searchValue.value?.toLowerCase()?.trim() || '');
+const shownModules = computed(() => {
+	return modules.value.filter((module) => {
+		return module.name.toLowerCase().includes(searchValue.value?.toLowerCase()?.trim() || '');
 	});
 });
 
@@ -46,18 +45,19 @@ const props = defineProps({
 const page = usePage();
 
 async function addProjectIfNoneExists() {
-	if (searchValue.value.length > 0 && shownProjects.value.length === 0) {
-		const response = await api.createProject(
-			{
-				name: searchValue.value,
-				color: getRandomColor(),
-			},
-			{ params: { organization: page.props.auth.user.current_team.id } }
-		);
-		projects.value.unshift(response.data);
-		model.value = response.data.id;
-		searchValue.value = '';
-		open.value = false;
+	if (searchValue.value.length > 0 && shownModules.value.length === 0) {
+		// Ibtissame
+		// const response = await api.createProject(
+		// 	{
+		// 		name: searchValue.value,
+		// 		color: getRandomColor(),
+		// 	},
+		// 	{ params: { organization: page.props.auth.user.current_team.id } }
+		// );
+		// modules.value.unshift(response.data);
+		// model.value = response.data.id;
+		// searchValue.value = '';
+		// open.value = false;
 	}
 }
 
@@ -67,17 +67,17 @@ watch(open, (isOpen) => {
 			searchInput.value?.$el?.focus();
 		});
 
-		projects.value.sort((iteratingProject) => {
+		modules.value.sort((iteratingProject) => {
 			return model.value === iteratingProject.id ? -1 : 1;
 		});
 	}
 });
 
 const currentProject = computed(() => {
-	return projects.value.find((project) => project.id === model.value);
+	return modules.value.find((project) => project.id === model.value);
 });
 
-function isProjectSelected(project) {
+function isModuleSelected(project) {
 	return model.value === project.id;
 }
 
@@ -129,19 +129,19 @@ function updateValue(project) {
 					<ComboboxContent>
 						<ComboboxViewport ref="dropdownViewport" class="w-60 max-h-60 overflow-y-scroll">
 							<ComboboxItem
-								v-for="project in shownProjects"
+								v-for="project in shownModules"
 								:key="project.id"
 								:value="project"
 								class="data-[highlighted]:bg-card-background-active"
 								:data-project-id="project.id"
 							>
 								<ProjectDropdownItem
-									:selected="isProjectSelected(project)"
+									:selected="isModuleSelected(project)"
 									:color="project.color"
 									:name="project.name"
 								></ProjectDropdownItem>
 							</ComboboxItem>
-							<div v-if="searchValue.length > 0 && shownProjects.length === 0" class="bg-card-background-active">
+							<div v-if="searchValue.length > 0 && shownModules.length === 0" class="bg-card-background-active">
 								<div
 									class="flex space-x-3 items-center px-4 py-3 text-xs font-medium border-t rounded-b-lg border-card-background-separator"
 								>

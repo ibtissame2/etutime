@@ -18,7 +18,6 @@ const props = defineProps({
 	updateTimeEntries: Function,
 	deleteTimeEntries: Function,
 	createTimeEntry: Function,
-	createProject: Function,
 	createClient: Function,
 	currency: String,
 	enableEstimatedTime: Boolean,
@@ -113,7 +112,6 @@ function unselectAllTimeEntries(value) {
 		<template v-for="entry in value" :key="entry.id">
 			<TimeEntryAggregateRow
 				v-if="'timeEntries' in entry && entry.timeEntries.length > 1"
-				:create-project
 				:can-create-project
 				:enable-estimated-time
 				:selected-time-entries="selectedTimeEntries"
@@ -147,7 +145,6 @@ function unselectAllTimeEntries(value) {
 				:create-client
 				:enable-estimated-time
 				:can-create-project
-				:create-project
 				:projects="projects"
 				:selected="!!selectedTimeEntries.find((filterEntry) => filterEntry.id === entry.id)"
 				:tasks="tasks"

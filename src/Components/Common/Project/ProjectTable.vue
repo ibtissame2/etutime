@@ -6,8 +6,8 @@ import { computed, ref } from 'vue';
 import ProjectCreateModal from '@/packages/ui/src/Project/ProjectCreateModal.vue';
 import ProjectTableHeading from '@/Components/Common/Project/ProjectTableHeading.vue';
 import ProjectTableRow from '@/Components/Common/Project/ProjectTableRow.vue';
-import { canCreateProjects } from '@/utils/permissions';
-import { useProjectsStore } from '@/utils/useProjects';
+import { canCreateModule } from '@/utils/permissions';
+import { useModulesStore } from '@/store/modules';
 import { useClientsStore } from '@/utils/useClients';
 import { storeToRefs } from 'pinia';
 
@@ -21,7 +21,7 @@ const props = defineProps({
 const showCreateProjectModal = ref(false);
 
 async function createProject(project) {
-	return await useProjectsStore().createProject(project);
+	return await useModulesStore().createModule(project);
 }
 
 async function createClient(client) {
@@ -39,7 +39,6 @@ const gridTemplate = computed(() => {
 	<!-- :enable-estimated-time="isAllowedToPerformPremiumAction" -->
 	<ProjectCreateModal
 		v-model:show="showCreateProjectModal"
-		:create-project="createProject"
 		:create-client="createClient"
 		:currency="'MAD'"
 		:clients="clients"
@@ -51,17 +50,17 @@ const gridTemplate = computed(() => {
 				<div v-if="projects.length === 0" class="col-span-5 py-24 text-center">
 					<FolderPlusIcon class="w-8 text-icon-default inline pb-2"></FolderPlusIcon>
 					<h3 class="text-text-primary font-semibold">
-						{{ canCreateProjects() ? 'No projects found' : 'You are not a member of any projects' }}
+						{{ canCreateModule() ? 'Aucun module trouvé' : "Vous n'êtes membre d'aucun module" }}
 					</h3>
 					<p class="pb-5 max-w-md mx-auto text-sm pt-1">
 						{{
-							canCreateProjects()
-								? 'Create your first project now!'
-								: 'Ask your manager to add you to a project as a team member.'
+							canCreateModule()
+								? 'Créez votre premier module dès maintenant !'
+								: 'Demandez à votre responsable de vous ajouter à un module en tant que membre de l’équipe.'
 						}}
 					</p>
-					<SecondaryButton v-if="canCreateProjects()" :icon="PlusIcon" @click="showCreateProjectModal = true"
-						>Create your First Project
+					<SecondaryButton v-if="canCreateModule()" :icon="PlusIcon" @click="showCreateProjectModal = true"
+						>Créez votre premier module
 					</SecondaryButton>
 				</div>
 				<template v-for="project in projects" :key="project.id">

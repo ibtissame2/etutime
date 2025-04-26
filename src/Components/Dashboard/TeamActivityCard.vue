@@ -8,7 +8,7 @@ import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { api } from '@/packages/api/src';
 import { LoadingSpinner } from '@/packages/ui/src';
-import { router } from '@/utils/inertia';
+import { router, route } from '@/utils/inertia';
 
 const organizationId = computed(() => getCurrentOrganizationId());
 

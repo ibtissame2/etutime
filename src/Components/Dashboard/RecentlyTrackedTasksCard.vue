@@ -6,7 +6,7 @@ import DashboardCard from '@/Components/Dashboard/DashboardCard.vue';
 import { CheckCircleIcon } from '@heroicons/vue/20/solid';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import { PlusCircleIcon } from '@heroicons/vue/24/solid';
-import { router } from '@/utils/inertia';
+import { router, route } from '@/utils/inertia';
 import { getCurrentMembershipId, getCurrentOrganizationId } from '@/utils/useUser';
 import { api } from '@/packages/api/src';
 import { LoadingSpinner } from '@/packages/ui/src';

@@ -18,7 +18,6 @@ const props = defineProps({
 	tags: Array,
 	clients: Array,
 	createTag: Function,
-	createProject: Function,
 	createClient: Function,
 	onStartStopClick: Function,
 	updateTimeEntries: Function,
@@ -90,7 +89,6 @@ function onSelectChange(event) {
 						></TimeEntryDescriptionInput>
 						<TimeTrackerProjectTaskDropdown
 							:clients
-							:create-project
 							:create-client
 							:can-create-project
 							:projects="projects"
@@ -148,7 +146,6 @@ function onSelectChange(event) {
 				:selected="!!selectedTimeEntries.find((filterEntry) => filterEntry.id === subEntry.id)"
 				:create-client
 				:clients
-				:create-project
 				:tags="tags"
 				indent
 				:update-time-entry="(timeEntry) => updateTimeEntry(timeEntry)"

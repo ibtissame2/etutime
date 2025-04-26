@@ -3,7 +3,7 @@ import { defineStore, storeToRefs } from 'pinia';
 import { api } from '@/packages/api/src';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { useNotificationsStore } from '@/utils/notification';
-import { useProjectsStore } from '@/utils/useProjects';
+import { useModulesStore } from '@/store/modules';
 import { useMembersStore } from '@/utils/useMembers';
 import { useTasksStore } from '@/utils/useTasks';
 import { useClientsStore } from '@/utils/useClients';
@@ -75,9 +75,8 @@ export const useReportingStore = defineStore('reporting', () => {
 		}
 
 		if (type === 'project') {
-			const projectsStore = useProjectsStore();
-			const { projects } = storeToRefs(projectsStore);
-			return projects.value.find((project) => project.id === key)?.name;
+			const { modules } = storeToRefs(useModulesStore());
+			return modules.value.find((project) => project.id === key)?.name;
 		}
 		if (type === 'user') {
 			const memberStore = useMembersStore();

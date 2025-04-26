@@ -17,7 +17,7 @@ export function canViewProjects() {
 	return currentUserHasPermission('projects:view');
 }
 
-export function canCreateProjects() {
+export function canCreateModule() {
 	return currentUserHasPermission('projects:create');
 }
 

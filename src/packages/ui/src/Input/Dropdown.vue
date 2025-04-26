@@ -90,7 +90,7 @@ const { floatingStyles } = useFloating(reference, floating, {
 				leave-from-class="transform opacity-100 scale-100"
 				leave-to-class="transform opacity-0 scale-95"
 			>
-				<div v-if="open" ref="floating" class="z-50" @click="onContentClick">
+				<div v-if="open" ref="floating" class="z-50" :style="floatingStyles" @click="onContentClick">
 					<div
 						class="rounded-lg overflow-hidden relative border border-card-border overflow-none shadow-dropdown bg-card-background"
 					>

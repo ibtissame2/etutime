@@ -18,7 +18,6 @@ const props = defineProps({
 	tasks: Array,
 	clients: Array,
 	tags: Array,
-	createProject: Function,
 	createClient: Function,
 	createTag: Function,
 	updateTimeEntries: Function,
@@ -117,7 +116,6 @@ watch(removeAllTags, () => {
 						v-model:project="projectId"
 						v-model:task="taskId"
 						:clients
-						:create-project
 						:create-client
 						:currency="currency"
 						:can-create-project

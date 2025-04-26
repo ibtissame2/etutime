@@ -23,7 +23,6 @@ const props = defineProps({
 	projects: Array,
 	tasks: Array,
 	clients: Array,
-	createProject: Function,
 	createClient: Function,
 	currency: String,
 	emptyPlaceholder: { type: String, default: 'No Project' },
@@ -86,7 +85,6 @@ function addProjectToFilterObject(tempFilteredClients, project, filteredTasks, e
 				name: 'No Client',
 				color: 'var(--theme-color-icon-default)',
 				created_at: '',
-				updated_at: '',
 				value: '',
 				is_archived: false,
 				projects: [
@@ -110,7 +108,6 @@ watchEffect(() => {
 			name: 'No Client',
 			color: 'var(--theme-color-icon-default)',
 			created_at: '',
-			updated_at: '',
 			value: '',
 			is_archived: false,
 			projects: [
@@ -136,11 +133,6 @@ watchEffect(() => {
 			.toLowerCase()
 			.includes(searchValue.value?.toLowerCase()?.trim() || '');
 
-		const clientNameIncludesSearchTerm = props.clients
-			.find((client) => client.id === filterProject.client_id)
-			?.name.toLowerCase()
-			.includes(searchValue.value?.toLowerCase()?.trim() || '');
-
 		const projectTasks = props.tasks.filter((task) => {
 			return task.project_id === filterProject.id;
 		});
@@ -152,10 +144,7 @@ watchEffect(() => {
 			);
 		});
 
-		if (
-			(projectNameIncludesSearchTerm || clientNameIncludesSearchTerm) &&
-			(!filterProject.is_archived || project.value === filterProject.id)
-		) {
+		if (projectNameIncludesSearchTerm && (!filterProject.is_archived || project.value === filterProject.id)) {
 			addProjectToFilterObject(tempFilteredClients, filterProject, filteredTasks, false);
 		} else if (filteredTasks.length > 0 && !filterProject.is_archived) {
 			addProjectToFilterObject(tempFilteredClients, filterProject, filteredTasks, true);
@@ -567,7 +556,6 @@ const showCreateProject = ref(false);
 		:enable-estimated-time="enableEstimatedTime"
 		:currency="currency"
 		:clients="clients"
-		:create-project
 	></ProjectCreateModal>
 </template>
 

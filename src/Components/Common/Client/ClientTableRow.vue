@@ -1,14 +1,11 @@
 <script setup>
 import { CheckCircleIcon } from '@heroicons/vue/20/solid';
 import { useClientsStore } from '@/utils/useClients';
-import { storeToRefs } from 'pinia';
 import ClientMoreOptionsDropdown from '@/Components/Common/Client/ClientMoreOptionsDropdown.vue';
-import { useProjectsStore } from '@/utils/useProjects';
+import { useModulesStore } from '@/store/modules';
 import TableRow from '@/Components/TableRow.vue';
 import ClientEditModal from '@/Components/Common/Client/ClientEditModal.vue';
 import { computed, ref } from 'vue';
-
-const { projects } = storeToRefs(useProjectsStore());
 
 const props = defineProps({
 	client: {
@@ -17,13 +14,12 @@ const props = defineProps({
 	},
 });
 
+const { modules } = useModulesStore();
+const projectCount = computed(() => modules.value.length);
+
 function deleteClient() {
 	useClientsStore().deleteClient(props.client.id);
 }
-
-const projectCount = computed(() => {
-	return projects.value.filter((project) => project.client_id === props.client.id).length;
-});
 
 function archiveClient() {
 	useClientsStore().updateClient(props.client.id, {

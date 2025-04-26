@@ -1,1 +1,5 @@
-INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `is_placeholder`, `current_team_id`, `profile_photo_path`, `timezone`, `week_start`, `created_at`, `updated_at`, `two_factor_secret`, `two_factor_recovery_codes`, `two_factor_confirmed_at`) VALUES ('a03e3303-1e45-11f0-8d2e-0a0027000016', 'Ibtissame', 'ibtissame@gmail.com', NULL, 'Ibtissame', NULL, '0', NULL, NULL, 'Africa/Casablanca', 'monday', NULL, NULL, NULL, NULL, NULL), ('a03e743b-1e45-11f0-8d2e-0a0027000016', 'Oussama', 'oussama@gmail.com', NULL, 'Oussama', NULL, '0', NULL, NULL, 'Africa/Casablanca', 'monday', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `teams` (`name`, `created_at`) VALUES ('Team A', NULL);
+
+INSERT INTO `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `current_team_id`, `profile_photo_path`, `created_at`, `two_factor_secret`, `two_factor_recovery_codes`, `two_factor_confirmed_at`) VALUES
+('Ibtissame', 'ibtissame@gmail.com', NULL, 'Ibtissame', NULL, 1, NULL, NULL, NULL, NULL, NULL),
+('Oussama', 'oussama@gmail.com', NULL, 'Oussama', NULL, 1, NULL, NULL, NULL, NULL, NULL);

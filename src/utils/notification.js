@@ -1,8 +1,5 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import axios from 'axios';
-import { router } from './inertia';
-import { fetchToken } from '@/utils/session';
 
 export const useNotificationsStore = defineStore('notifications', () => {
 	const notifications = ref([]);
@@ -24,54 +21,15 @@ export const useNotificationsStore = defineStore('notifications', () => {
 	}
 
 	async function handleApiRequestNotifications(apiRequest, successMessage, errorMessage, onSuccess) {
-		let a = true;
-		if (a) return;
-		// Ibtissame
 		try {
 			const response = await apiRequest();
-			if (successMessage) {
-				addNotification('success', successMessage);
-			}
-			if (onSuccess) {
-				onSuccess(response);
-			}
+			if (response.isError) throw new Error(response.errorMessage);
+			if (successMessage) addNotification('success', successMessage);
+			if (onSuccess) onSuccess(response);
 			return response;
 		} catch (error) {
-			if (axios.isAxiosError(error)) {
-				if (error?.response?.status === 403 || error?.response?.status === 400) {
-					if (error?.response?.data?.key === 'organization_has_no_subscription_but_multiple_members') {
-						showActionBlockedModal.value = true;
-					} else {
-						addNotification(
-							'error',
-							errorMessage ?? 'Request Error',
-							error.response?.data?.errorMessage ??
-								error?.response?.data?.message ??
-								'An request error occurred. Please try again later.'
-						);
-					}
-				} else if (error?.response?.status === 422) {
-					const message = error.response.data.message;
-					addNotification('error', message);
-				} else if (error?.response?.status === 401) {
-					await fetchToken();
-					try {
-						const response = await apiRequest();
-						if (successMessage) {
-							addNotification('success', successMessage);
-						}
-						if (onSuccess) {
-							onSuccess(response);
-						}
-						return response;
-					} catch {
-						router.get(route('login'));
-					}
-				} else {
-					addNotification('error', 'The action failed. Please try again later.');
-				}
-			}
-			throw new Error('Failed to handle API request');
+			console.log('Error:', error);
+			addNotification('error', errorMessage);
 		}
 	}
 

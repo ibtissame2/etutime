@@ -10,13 +10,13 @@ import { useCurrentTimeEntryStore } from '@/utils/useCurrentTimeEntry';
 import { storeToRefs } from 'pinia';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { switchOrganization } from '@/utils/useOrganization';
-import { useProjectsStore } from '@/utils/useProjects';
+import { useModulesStore } from '@/store/modules';
 import { useTasksStore } from '@/utils/useTasks';
 import { useTagsStore } from '@/utils/useTags';
 import { useClientsStore } from '@/utils/useClients';
 import TimeTrackerControls from '@/packages/ui/src/TimeTracker/TimeTrackerControls.vue';
 import TimeTrackerRunningInDifferentOrganizationOverlay from '@/packages/ui/src/TimeTracker/TimeTrackerRunningInDifferentOrganizationOverlay.vue';
-import { canCreateProjects } from '@/utils/permissions';
+import { canCreateModule } from '@/utils/permissions';
 
 const page = usePage();
 dayjs.extend(duration);
@@ -26,8 +26,7 @@ const currentTimeEntryStore = useCurrentTimeEntryStore();
 const { currentTimeEntry, isActive, now } = storeToRefs(currentTimeEntryStore);
 const { startLiveTimer, stopLiveTimer, setActiveState } = currentTimeEntryStore;
 
-const projectStore = useProjectsStore();
-const { projects } = storeToRefs(projectStore);
+const { modules } = storeToRefs(useModulesStore());
 const taskStore = useTasksStore();
 const { tasks } = storeToRefs(taskStore);
 const clientStore = useClientsStore();
@@ -66,10 +65,8 @@ const isRunningInDifferentOrganization = computed(() => {
 });
 
 async function createProject(project) {
-	const newProject = await useProjectsStore().createProject(project);
-	if (newProject) {
-		currentTimeEntry.value.project_id = newProject.id;
-	}
+	const newProject = await useModulesStore().createProject(project);
+	if (newProject) currentTimeEntry.value.project_id = newProject.id;
 	return newProject;
 }
 
@@ -102,14 +99,13 @@ const { tags } = storeToRefs(useTagsStore());
 		<TimeTrackerControls
 			v-model:current-time-entry="currentTimeEntry"
 			v-model:live-timer="now"
-			:create-project="createProject"
 			:enable-estimated-time="true"
-			:can-create-project="canCreateProjects()"
+			:can-create-project="canCreateModule()"
 			:create-client="createClient"
 			:clients="clients"
 			:tags="tags"
 			:tasks="tasks"
-			:projects="projects"
+			:projects="modules"
 			:create-tag="createTag"
 			:is-active="isActive"
 			:currency="'MAD'"

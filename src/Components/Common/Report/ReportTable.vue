@@ -3,10 +3,10 @@ import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import { FolderPlusIcon } from '@heroicons/vue/24/solid';
 import { PlusIcon } from '@heroicons/vue/16/solid';
 import { computed } from 'vue';
-import { canCreateProjects } from '@/utils/permissions';
+import { canCreateModule } from '@/utils/permissions';
 import ReportTableHeading from '@/Components/Common/Report/ReportTableHeading.vue';
 import ReportTableRow from '@/Components/Common/Report/ReportTableRow.vue';
-import { router } from '@/utils/inertia';
+import { router, route } from '@/utils/inertia';
 
 defineProps({
 	reports: {
@@ -28,7 +28,7 @@ const gridTemplate = computed(() => {
 				<div v-if="reports.length === 0" class="col-span-5 py-24 text-center">
 					<FolderPlusIcon class="w-8 text-icon-default inline pb-2"></FolderPlusIcon>
 					<h3 class="text-text-primary font-semibold">No shared reports found</h3>
-					<p v-if="canCreateProjects()" class="pb-5">Create your first project now!</p>
+					<p v-if="canCreateModule()" class="pb-5">Créez votre premier module dès maintenant !</p>
 					<SecondaryButton :icon="PlusIcon" @click="router.visit(route('reporting'))"
 						>Go to the overview to create a report
 					</SecondaryButton>

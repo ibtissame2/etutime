@@ -5,12 +5,13 @@ import { CheckCircleIcon } from '@heroicons/vue/20/solid';
 import { useClientsStore } from '@/utils/useClients';
 import { storeToRefs } from 'pinia';
 import { useTasksStore } from '@/utils/useTasks';
-import { useProjectsStore } from '@/utils/useProjects';
+import { useModulesStore } from '@/store/modules';
 import TableRow from '@/Components/TableRow.vue';
 import ProjectEditModal from '@/Components/Common/Project/ProjectEditModal.vue';
 import { formatCents } from '@/packages/ui/src/utils/money';
 import EstimatedTimeProgress from '@/packages/ui/src/EstimatedTimeProgress.vue';
 import { formatHumanReadableDuration } from '../../../packages/ui/src/utils/time';
+import { route } from '@/utils/inertia';
 
 const { clients } = storeToRefs(useClientsStore());
 const { tasks } = storeToRefs(useTasksStore());
@@ -31,14 +32,11 @@ const projectTasksCount = computed(() => {
 });
 
 function deleteProject() {
-	useProjectsStore().deleteProject(props.project.id);
+	useModulesStore().deleteModule(props.project.id);
 }
 
 function archiveProject() {
-	useProjectsStore().updateProject(props.project.id, {
-		...props.project,
-		is_archived: !props.project.is_archived,
-	});
+	useModulesStore().updateModule(props.project.id, { is_public: !props.project.is_public });
 }
 
 const showEditProjectModal = ref(false);

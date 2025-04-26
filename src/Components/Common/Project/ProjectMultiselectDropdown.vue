@@ -1,10 +1,9 @@
 <script setup>
 import MultiselectDropdown from '@/packages/ui/src/Input/MultiselectDropdown.vue';
 import { storeToRefs } from 'pinia';
-import { useProjectsStore } from '@/utils/useProjects';
+import { useModulesStore } from '@/store/modules';
 
-const projectsStore = useProjectsStore();
-const { projects } = storeToRefs(projectsStore);
+const { modules } = storeToRefs(useModulesStore());
 
 function getKeyFromItem(item) {
 	return item.id;
@@ -18,7 +17,7 @@ function getNameForItem(item) {
 <template>
 	<MultiselectDropdown
 		search-placeholder="Search for a Project..."
-		:items="projects"
+		:items="modules"
 		:get-key-from-item="getKeyFromItem"
 		:get-name-for-item="getNameForItem"
 	>

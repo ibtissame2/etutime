@@ -8,7 +8,7 @@ import TimeTrackerProjectTaskDropdown from '@/packages/ui/src/TimeTracker/TimeTr
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
 import { TagIcon } from '@heroicons/vue/20/solid';
 import { getDayJsInstance, getLocalizedDayJs } from '@/packages/ui/src/utils/time';
-import { canCreateProjects } from '@/utils/permissions';
+import { canCreateModule } from '@/utils/permissions';
 import TagDropdown from '@/packages/ui/src/Tag/TagDropdown.vue';
 import { Badge } from '@/packages/ui/src';
 import SelectDropdown from '@/packages/ui/src/Input/SelectDropdown.vue';
@@ -24,7 +24,6 @@ const props = defineProps({
 	enableEstimatedTime: Boolean,
 	createTimeEntry: Function,
 	createClient: Function,
-	createProject: Function,
 	createTag: Function,
 	tags: Array,
 	projects: Array,
@@ -106,9 +105,8 @@ async function submit() {
 							v-model:project="timeEntry.project_id"
 							v-model:task="timeEntry.task_id"
 							:clients
-							:create-project
 							:create-client
-							:can-create-project="canCreateProjects()"
+							:can-create-project="canCreateModule()"
 							:currency="'MAD'"
 							size="xlarge"
 							class="bg-input-background"

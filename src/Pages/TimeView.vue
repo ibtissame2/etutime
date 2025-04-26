@@ -12,13 +12,13 @@ import { PlusIcon } from '@heroicons/vue/16/solid';
 import LoadingSpinner from '@/packages/ui/src/LoadingSpinner.vue';
 import { useCurrentTimeEntryStore } from '@/utils/useCurrentTimeEntry';
 import { useTasksStore } from '@/utils/useTasks';
-import { useProjectsStore } from '@/utils/useProjects';
+import { useModulesStore } from '@/store/modules';
 import TimeEntryGroupedTable from '@/packages/ui/src/TimeEntry/TimeEntryGroupedTable.vue';
 import { useTagsStore } from '@/utils/useTags';
 import { useClientsStore } from '@/utils/useClients';
 import TimeEntryCreateModal from '@/packages/ui/src/TimeEntry/TimeEntryCreateModal.vue';
 import TimeEntryMassActionRow from '@/packages/ui/src/TimeEntry/TimeEntryMassActionRow.vue';
-import { canCreateProjects } from '@/utils/permissions';
+import { canCreateModule } from '@/utils/permissions';
 
 const timeEntriesStore = useTimeEntriesStore();
 const { timeEntries, allTimeEntriesLoaded } = storeToRefs(timeEntriesStore);
@@ -63,8 +63,8 @@ onMounted(async () => {
 });
 
 const showManualTimeEntryModal = ref(false);
-const projectStore = useProjectsStore();
-const { projects } = storeToRefs(projectStore);
+
+const { modules } = storeToRefs(useModulesStore());
 const taskStore = useTasksStore();
 const { tasks } = storeToRefs(taskStore);
 const clientStore = useClientsStore();
@@ -74,8 +74,8 @@ async function createTag(name) {
 	return await useTagsStore().createTag(name);
 }
 
-async function createProject(project) {
-	return await useProjectsStore().createProject(project);
+async function createModule(project) {
+	return await useModulesStore().createModule(project);
 }
 
 async function createClient(body) {
@@ -99,11 +99,10 @@ function deleteSelected() {
 	<TimeEntryCreateModal
 		v-model:show="showManualTimeEntryModal"
 		:enable-estimated-time="true"
-		:create-project="createProject"
 		:create-client="createClient"
 		:create-tag="createTag"
 		:create-time-entry="createTimeEntry"
-		:projects="projects"
+		:projects="modules"
 		:tasks="tasks"
 		:tags="tags"
 		:clients="clients"
@@ -129,10 +128,10 @@ function deleteSelected() {
 		<TimeEntryMassActionRow
 			:selected-time-entries="selectedTimeEntries"
 			:enable-estimated-time="true"
-			:can-create-project="canCreateProjects()"
+			:can-create-project="canCreateModule()"
 			:all-selected="selectedTimeEntries.length === timeEntries.length"
 			:delete-selected="deleteSelected"
-			:projects="projects"
+			:projects="modules"
 			:tasks="tasks"
 			:tags="tags"
 			:currency="'MAD'"
@@ -144,7 +143,6 @@ function deleteSelected() {
 						args
 					)
 			"
-			:create-project="createProject"
 			:create-client="createClient"
 			:create-tag="createTag"
 			@submit="clearSelectionAndState"
@@ -153,9 +151,8 @@ function deleteSelected() {
 		></TimeEntryMassActionRow>
 		<TimeEntryGroupedTable
 			v-model:selected="selectedTimeEntries"
-			:create-project="createProject"
 			:enable-estimated-time="true"
-			:can-create-project="canCreateProjects()"
+			:can-create-project="canCreateModule()"
 			:clients="clients"
 			:create-client="createClient"
 			:update-time-entry="updateTimeEntry"
@@ -163,7 +160,7 @@ function deleteSelected() {
 			:delete-time-entries="deleteTimeEntries"
 			:create-time-entry="startTimeEntry"
 			:create-tag="createTag"
-			:projects="projects"
+			:projects="modules"
 			:tasks="tasks"
 			:currency="'MAD'"
 			:time-entries="timeEntries"

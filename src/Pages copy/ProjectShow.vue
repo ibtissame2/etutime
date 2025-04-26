@@ -11,7 +11,7 @@ import {
 } from '@heroicons/vue/20/solid';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import { computed, onMounted, ref } from 'vue';
-import { useProjectsStore } from '@/utils/useProjects';
+import { useModulesStore } from '@/store/modules';
 import { storeToRefs } from 'pinia';
 import TaskCreateModal from '@/Components/Common/Task/TaskCreateModal.vue';
 import TaskTable from '@/Components/Common/Task/TaskTable.vue';
@@ -20,7 +20,7 @@ import Card from '@/Components/Common/Card.vue';
 import ProjectMemberTable from '@/Components/Common/ProjectMember/ProjectMemberTable.vue';
 import ProjectMemberCreateModal from '@/Components/Common/ProjectMember/ProjectMemberCreateModal.vue';
 import { useProjectMembersStore } from '@/utils/useProjectMembers';
-import { canCreateProjects, canCreateTasks, canViewProjectMembers } from '@/utils/permissions';
+import { canCreateModule, canCreateTasks, canViewProjectMembers } from '@/utils/permissions';
 import TabBarItem from '@/Components/Common/TabBar/TabBarItem.vue';
 import TabBar from '@/Components/Common/TabBar/TabBar.vue';
 import { useTasksStore } from '@/utils/useTasks';
@@ -28,10 +28,10 @@ import ProjectEditModal from '@/Components/Common/Project/ProjectEditModal.vue';
 import { Badge } from '@/packages/ui/src';
 import { formatCents } from '../packages/ui/src/utils/money';
 
-const { projects } = storeToRefs(useProjectsStore());
+const { modules } = storeToRefs(useModulesStore());
 
 const project = computed(() => {
-	return projects.value.find((project) => project.id === route().params.project) ?? null;
+	return modules.value.find((project) => project.id === route().params.project) ?? null;
 });
 
 const createTask = ref(false);
@@ -97,7 +97,7 @@ const shownTasks = computed(() => {
 				</ol>
 			</nav>
 			<div>
-				<SecondaryButton v-if="canCreateProjects()" :icon="PencilSquareIcon" @click="showEditProjectModal = true">
+				<SecondaryButton v-if="canCreateModule()" :icon="PencilSquareIcon" @click="showEditProjectModal = true">
 					Edit Project
 				</SecondaryButton>
 				<ProjectEditModal

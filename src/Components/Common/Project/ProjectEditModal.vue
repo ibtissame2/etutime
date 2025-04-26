@@ -4,54 +4,33 @@ import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import DialogModal from '@/packages/ui/src/DialogModal.vue';
 import { computed, ref } from 'vue';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
-import { useProjectsStore } from '@/utils/useProjects';
+import { useModulesStore } from '@/store/modules';
 import { useFocus } from '@vueuse/core';
-import ClientDropdown from '@/packages/ui/src/Client/ClientDropdown.vue';
 import Badge from '@/packages/ui/src/Badge.vue';
-import { useClientsStore } from '@/utils/useClients';
-import { storeToRefs } from 'pinia';
 import ProjectColorSelector from '@/packages/ui/src/Project/ProjectColorSelector.vue';
 import { UserCircleIcon } from '@heroicons/vue/20/solid';
-import EstimatedTimeSection from '@/packages/ui/src/EstimatedTimeSection.vue';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
 
-const { updateProject } = useProjectsStore();
-const { clients } = storeToRefs(useClientsStore());
+const { updateModule } = useModulesStore();
 const show = defineModel('show', { default: false });
 const saving = ref(false);
 const props = defineProps({
-	originalProject: {
-		type: Object,
-		required: true,
-	},
+	originalProject: Object,
 });
-
-async function createClient(body) {
-	return await useClientsStore().createClient(body);
-}
 
 const project = ref({
 	name: props.originalProject.name,
 	color: props.originalProject.color,
-	client_id: props.originalProject.client_id,
-	estimated_time: props.originalProject.estimated_time,
 });
 
 async function submit() {
-	await updateProject(props.originalProject.id, project.value);
+	await updateModule(props.originalProject.id, project.value);
 	show.value = false;
 }
 
 const projectNameInput = ref(null);
 
 useFocus(projectNameInput, { initialValue: true });
-
-const currentClientName = computed(() => {
-	if (project.value.client_id) {
-		return clients.value.find((client) => client.id === project.value.client_id)?.name;
-	}
-	return 'No Client';
-});
 </script>
 
 <template>
@@ -84,33 +63,13 @@ const currentClientName = computed(() => {
 						@keydown.enter="submit()"
 					/>
 				</div>
-				<div class="">
-					<InputLabel for="client" value="Client" />
-					<ClientDropdown v-model="project.client_id" :create-client="createClient" :clients="clients" class="mt-1">
-						<template #trigger>
-							<Badge class="bg-input-background cursor-pointer hover:bg-tertiary" size="xlarge">
-								<div class="flex items-center space-x-2">
-									<UserCircleIcon class="w-5 text-icon-default"></UserCircleIcon>
-									<span class="whitespace-nowrap">
-										{{ currentClientName }}
-									</span>
-								</div>
-							</Badge>
-						</template>
-					</ClientDropdown>
-				</div>
-			</div>
-			<div class="lg:grid grid-cols-2 gap-12">
-				<div>
-					<EstimatedTimeSection v-model="project.estimated_time" @submit="submit()"></EstimatedTimeSection>
-				</div>
 			</div>
 		</template>
 		<template #footer>
 			<SecondaryButton @click="show = false"> Cancel</SecondaryButton>
 
 			<PrimaryButton class="ms-3" :class="{ 'opacity-25': saving }" :disabled="saving" @click="submit">
-				Update Project
+				Modifier
 			</PrimaryButton>
 		</template>
 	</DialogModal>

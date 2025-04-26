@@ -32,15 +32,12 @@ export const usePage = () => {
 			},
 			auth: {
 				user: {
-					id: '1',
+					id: 1,
 					name: 'Ibtissame',
 					email: 'ibtissame@gmail.com',
 					profile_photo_url: 'https://example.com/photo.jpg',
-					all_teams: [
-						{ id: '1', name: 'Team A', membership: { id: '1', role: 'Admin' } },
-						{ id: '2', name: 'Team B', membership: { id: '2', role: 'Member' } },
-					],
-					current_team: { id: '1', name: 'Team A' },
+					all_teams: [{ id: 1, name: 'Team A', membership: { id: '1', role: 'Admin' } }],
+					current_team: { id: 1, name: 'Team A' },
 					two_factor_enabled: true,
 					timezone: 'Africa/Casablanca',
 					week_start: 'Lundi',

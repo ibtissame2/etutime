@@ -2,64 +2,40 @@
 import TextInput from '@/packages/ui/src/Input/TextInput.vue';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import DialogModal from '@/packages/ui/src/DialogModal.vue';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { getRandomColor } from '@/packages/ui/src/utils/color';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import { useFocus } from '@vueuse/core';
-import ClientDropdown from '@/packages/ui/src/Client/ClientDropdown.vue';
-import Badge from '@/packages/ui/src/Badge.vue';
 import ProjectColorSelector from '@/packages/ui/src/Project/ProjectColorSelector.vue';
-import { UserCircleIcon } from '@heroicons/vue/20/solid';
-import EstimatedTimeSection from '@/packages/ui/src/EstimatedTimeSection.vue';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
+import { useModulesStore } from '@/store/modules';
+
+const { createModule } = useModulesStore();
 
 const show = defineModel('show', { default: false });
-const saving = ref(false);
+const loading = ref(false);
 
-const props = defineProps({
-	clients: Array,
-	createProject: Function,
-	createClient: Function,
-	currency: String,
-	enableEstimatedTime: Boolean,
-});
+const resetFormData = () => {
+	show.value = false;
+	return { name: '', color: getRandomColor() };
+};
 
-const activeClients = computed(() => {
-	return props.clients.filter((client) => !client.is_archived);
-});
-
-const project = ref({
-	name: '',
-	color: getRandomColor(),
-	client_id: null,
-	estimated_time: null,
-});
+const project = ref(resetFormData());
 
 async function submit() {
-	await props.createProject(project.value);
-	show.value = false;
-	project.value = {
-		name: '',
-		color: getRandomColor(),
-		client_id: null,
-		estimated_time: null,
-	};
+	loading.value = true;
+	await createModule(project.value, () => {
+		project.value = resetFormData();
+	});
+	loading.value = false;
 }
 
-const projectNameInput = ref(null);
-
-useFocus(projectNameInput, { initialValue: true });
-
-const currentClientName = computed(() => {
-	if (project.value.client_id) {
-		return props.clients.find((client) => client.id === project.value.client_id)?.name;
-	}
-	return 'No Client';
-});
+const moduleNameInput = ref(null);
+useFocus(moduleNameInput, { initialValue: true });
 </script>
 
 <template>
-	<DialogModal closeable :show="show" @close="show = false">
+	<DialogModal closeable :show="show" @close="project = resetFormData()">
 		<template #title>
 			<div class="flex space-x-2">
 				<span>Créer un module</span>
@@ -77,7 +53,7 @@ const currentClientName = computed(() => {
 						<InputLabel for="projectName" value="Nom du module" />
 						<TextInput
 							id="projectName"
-							ref="projectNameInput"
+							ref="moduleNameInput"
 							v-model="project.name"
 							name="projectName"
 							type="text"
@@ -89,21 +65,14 @@ const currentClientName = computed(() => {
 						/>
 					</div>
 				</div>
-				<div>
-					<EstimatedTimeSection
-						v-if="enableEstimatedTime"
-						v-model="project.estimated_time"
-						@submit="submit()"
-					></EstimatedTimeSection>
-				</div>
 			</div>
 			<div class="lg:grid grid-cols-2 gap-12">
 				<div></div>
 			</div>
 		</template>
 		<template #footer>
-			<SecondaryButton @click="show = false">Annuler</SecondaryButton>
-			<PrimaryButton class="ms-3" :class="{ 'opacity-25': saving }" :disabled="saving" @click="submit">
+			<SecondaryButton @click="project = resetFormData()">Annuler</SecondaryButton>
+			<PrimaryButton class="ms-3" :class="{ 'opacity-25': loading }" :disabled="loading" @click="submit">
 				Créer
 			</PrimaryButton>
 		</template>

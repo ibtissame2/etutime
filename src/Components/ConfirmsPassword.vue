@@ -6,6 +6,7 @@ import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import TextInput from '@/packages/ui/src/Input/TextInput.vue';
 import axios from 'axios';
+import { route } from '@/utils/inertia';
 
 const emit = defineEmits(['confirmed']);
 

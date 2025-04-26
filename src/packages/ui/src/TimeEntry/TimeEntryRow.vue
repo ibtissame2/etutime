@@ -22,7 +22,6 @@ const props = defineProps({
 		required: false,
 	},
 	createTag: Function,
-	createProject: Function,
 	createClient: Function,
 	onStartStopClick: Function,
 	deleteTimeEntry: Function,
@@ -102,7 +101,6 @@ function onSelectChange(event) {
 						@changed="updateTimeEntryDescription"
 					></TimeEntryDescriptionInput>
 					<TimeTrackerProjectTaskDropdown
-						:create-project
 						:create-client
 						:can-create-project
 						:clients

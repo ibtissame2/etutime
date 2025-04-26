@@ -22,7 +22,6 @@ const props = defineProps({
 	tags: Array,
 	clients: Array,
 	createTag: Function,
-	createProject: Function,
 	createClient: Function,
 	isActive: Boolean,
 	currency: String,
@@ -216,7 +215,6 @@ useSelectEvents(filteredRecentlyTrackedTimeEntries, highlightedDropdownEntryId, 
 						:create-client
 						:can-create-project
 						:clients
-						:create-project
 						:currency="currency"
 						:projects="projects"
 						:tasks="tasks"

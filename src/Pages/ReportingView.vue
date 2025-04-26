@@ -160,10 +160,9 @@ async function downloadExport(format) {
 }
 
 const { getNameForReportingRowEntry, emptyPlaceholder } = useReportingStore();
-import { useProjectsStore } from '@/utils/useProjects';
+import { useModulesStore } from '@/store/modules';
 import ReportingExportModal from '@/Components/Common/Reporting/ReportingExportModal.vue';
-const projectsStore = useProjectsStore();
-const { projects } = storeToRefs(projectsStore);
+const { modules } = storeToRefs(useModulesStore());
 const showExportModal = ref(false);
 const exportUrl = ref(null);
 
@@ -179,7 +178,7 @@ const groupedPieChartData = computed(() => {
 			) {
 				color = '#CCCCCC';
 			} else if (aggregatedTableTimeEntries.value?.grouped_type === 'project') {
-				color = projects.value?.find((project) => project.id === entry.key)?.color ?? '#CCCCCC';
+				color = modules.value?.find((project) => project.id === entry.key)?.color ?? '#CCCCCC';
 			}
 			return {
 				value: entry.seconds,

@@ -4,8 +4,9 @@ import { computed, ref } from 'vue';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { useNotificationsStore } from '@/utils/notification';
 
-export const useProjectsStore = defineStore('projects', () => {
+export const useModulesStore = defineStore('projects', () => {
 	const projectResponse = ref(null);
+
 	const { handleApiRequestNotifications } = useNotificationsStore();
 	async function fetchProjects() {
 		const organization = getCurrentOrganizationId();
