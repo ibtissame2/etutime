@@ -112,11 +112,11 @@ export const Head = () => {};
 const route = function (...parts) {
 	return parts.join('/');
 };
-route.current = undefined;
-route.isCurrent = function (name) {
-	return route.current === name;
+route.currentRoute = undefined;
+route.current = function (name) {
+	return route.currentRoute === name;
 };
 route.setCurrent = function (name) {
-	return (route.current = name);
+	return (route.currentRoute = name);
 };
 export { route };

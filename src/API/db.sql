@@ -35,5 +35,5 @@ CREATE TABLE `modules` (
   `team_id` INT NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `projects_team_id_foreign` (`team_id`)
+  KEY `modules_team_id_foreign` (`team_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

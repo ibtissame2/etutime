@@ -1,7 +1,7 @@
 <script setup>
 import DropdownLink from '@/Components/DropdownLink.vue';
 import Dropdown from '@/packages/ui/src/Input/Dropdown.vue';
-import { router, usePage } from '../utils/inertia';
+import { router, usePage, route } from '../utils/inertia';
 
 const page = usePage();
 
@@ -49,7 +49,7 @@ const logout = () => {
 
 			<template #content>
 				<div class="block px-4 py-2 text-xs text-gray-400">Manage Account</div>
-				<DropdownLink href="profile.show"> Profile </DropdownLink>
+				<DropdownLink :href="route('profile')"> Profile </DropdownLink>
 
 				<DropdownLink v-if="page.props.jetstream.hasApiFeatures" href="api-tokens.index"> API Tokens </DropdownLink>
 				<div class="border-t border-card-border" />

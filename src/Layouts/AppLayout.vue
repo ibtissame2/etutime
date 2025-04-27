@@ -2,26 +2,26 @@
 import { onMounted, ref, watch } from 'vue';
 import { initializeStores, refreshStores } from '@/utils/init';
 import { theme } from '@/utils/theme';
-// import { Bars3Icon, ChartBarIcon, ClockIcon, Cog6ToothIcon, CreditCardIcon, FolderIcon, HomeIcon,
-//     TagIcon, UserCircleIcon, UserGroupIcon, XMarkIcon } from '@heroicons/vue/20/solid';
-// import { ArrowsRightLeftIcon } from '@heroicons/vue/16/solid';
 import OrganizationSwitcher from '@/Components/OrganizationSwitcher.vue';
 import CurrentSidebarTimer from '@/Components/CurrentSidebarTimer.vue';
 import NotificationContainer from '@/Components/NotificationContainer.vue';
 import NavigationSidebarItem from '@/Components/NavigationSidebarItem.vue';
 import UserSettingsIcon from '@/Components/UserSettingsIcon.vue';
 import MainContainer from '@/packages/ui/src/MainContainer.vue';
-import {
-	canUpdateOrganization,
-	canViewNotes,
-	canViewClients,
-	canViewMembers,
-	canViewProjects,
-	canViewReport,
-	canViewTags,
-} from '@/utils/permissions';
+import { canUpdateOrganization, canViewNotes, canViewMembers, canViewProjects, canViewTags } from '@/utils/permissions';
 import { Head, route } from '@/utils/inertia';
 import { fetchToken, isTokenValid } from '@/utils/session';
+import HomeIcon from '@/Components/Icons/HomeIcon.vue';
+import ArrowsRightLeftIcon from '@/Components/Icons/ArrowsRightLeftIcon.vue';
+import CalendarIcon from '@/Components/Icons/CalendarIcon.vue';
+import ChartBarIcon from '@/Components/Icons/ChartBarIcon.vue';
+import ClockIcon from '@/Components/Icons/ClockIcon.vue';
+import Cog6ToothIcon from '@/Components/Icons/Cog6ToothIcon.vue';
+import NotesIcon from '@/Components/Icons/NotesIcon.vue';
+import FolderIcon from '@/Components/Icons/FolderIcon.vue';
+import TagIcon from '@/Components/Icons/TagIcon.vue';
+import UserGroupIcon from '@/Components/Icons/UserGroupIcon.vue';
+import EnvGroupIcon from '@/Components/Icons/EnvGroupIcon.vue';
 
 defineProps({
 	title: String,
@@ -68,7 +68,6 @@ onMounted(async () => {
 			<div class="flex flex-col h-full">
 				<div class="border-b border-default-background-separator pb-2 flex justify-between">
 					<OrganizationSwitcher class="w-full"></OrganizationSwitcher>
-					<!-- <XMarkIcon class="w-8 lg:hidden" @click="showSidebarMenu = false"></XMarkIcon> -->
 				</div>
 				<div class="border-b border-default-background-separator">
 					<CurrentSidebarTimer></CurrentSidebarTimer>
@@ -81,35 +80,38 @@ onMounted(async () => {
 						<ul>
 							<NavigationSidebarItem
 								title="Accueil"
-								:icon="undefined"
-								href="/dashboard"
-								:current="route.isCurrent('dashboard')"
+								:icon="HomeIcon"
+								:href="route('dashboard')"
+								:current="route.current('dashboard')"
 							></NavigationSidebarItem>
 
 							<NavigationSidebarItem
 								title="Emploi du Temps"
-								:icon="undefined"
-								href="/emploi"
-								:current="route.isCurrent('emploi')"
+								:icon="CalendarIcon"
+								:current="route.current('emploi')"
+								:href="route('emploi')"
 							></NavigationSidebarItem>
 
 							<NavigationSidebarItem
 								title="Envirenement du travail"
-								:icon="undefined"
-								href="/env"
-								:current="route.isCurrent('env')"
+								:icon="EnvGroupIcon"
+								:current="route.current('env')"
+								:href="route('env')"
 							></NavigationSidebarItem>
 
-							<NavigationSidebarItem title="Tempt" :icon="undefined" :current="route.isCurrent('time')" href="/time">
-							</NavigationSidebarItem>
+							<NavigationSidebarItem
+								title="Tempt"
+								:icon="ClockIcon"
+								:current="route.current('time')"
+								:href="route(time)"
+							></NavigationSidebarItem>
 
 							<NavigationSidebarItem
 								title="Rapport"
-								:icon="undefined"
-								:current="route.isCurrent('reporting')"
-								href="/rapport"
-							>
-							</NavigationSidebarItem>
+								:icon="ChartBarIcon"
+								:current="route.current('reporting')"
+								:href="route(rapport)"
+							></NavigationSidebarItem>
 						</ul>
 					</nav>
 
@@ -120,23 +122,25 @@ onMounted(async () => {
 							<NavigationSidebarItem
 								v-if="canViewProjects()"
 								title="Modules"
-								:icon="undefined"
-								href="/modules"
-								:current="route.isCurrent('modules')"
+								:icon="FolderIcon"
+								:href="route('modules')"
+								:current="route.current('modules')"
 							></NavigationSidebarItem>
+
 							<NavigationSidebarItem
 								v-if="canViewMembers()"
 								title="Etudiants"
-								:icon="undefined"
-								:current="route.isCurrent('etudiants')"
-								href="/etudiants"
+								:icon="UserGroupIcon"
+								:current="route.current('etudiants')"
+								:href="route('etudiants')"
 							></NavigationSidebarItem>
+
 							<NavigationSidebarItem
 								v-if="canViewTags()"
 								title="Tags"
-								:icon="undefined"
-								:current="route.isCurrent('tags')"
-								href="tags"
+								:icon="TagIcon"
+								:current="route.current('tags')"
+								:href="route('tags')"
 							></NavigationSidebarItem>
 						</ul>
 					</nav>
@@ -149,24 +153,29 @@ onMounted(async () => {
 							<NavigationSidebarItem
 								v-if="canViewNotes()"
 								title="Notes"
-								:icon="undefined"
-								:current="route.isCurrent('notes')"
-								href="/notes"
-							/>
+								:icon="NotesIcon"
+								:current="route.current('notes')"
+								:href="route('notes')"
+							></NavigationSidebarItem>
+
 							<NavigationSidebarItem
 								v-if="canUpdateOrganization()"
 								title="Import"
-								:icon="undefined"
-								:current="route.isCurrent('import')"
-								href="import"
-							/>
+								:icon="ArrowsRightLeftIcon"
+								:current="route.current('import')"
+								:href="route('import')"
+							></NavigationSidebarItem>
 						</ul>
 					</nav>
 				</div>
 				<div class="justify-self-end">
 					<ul class="border-t border-default-background-separator pt-3 flex justify-between pr-4 items-center">
-						<NavigationSidebarItem class="flex-1" title="Profile Settings" :icon="undefined" href="profile">
-						</NavigationSidebarItem>
+						<NavigationSidebarItem
+							class="flex-1"
+							title="Profile Settings"
+							:icon="Cog6ToothIcon"
+							:href="route('profile')"
+						></NavigationSidebarItem>
 
 						<UserSettingsIcon></UserSettingsIcon>
 					</ul>
@@ -174,12 +183,6 @@ onMounted(async () => {
 			</div>
 		</div>
 		<div class="flex-1 lg:ml-[230px] 2xl:ml-[250px] min-w-0">
-			<div
-				class="lg:hidden w-full px-3 py-1 border-b border-b-default-background-separator text-muted flex justify-between items-center"
-			>
-				<!-- <Bars3Icon class="w-7 text-muted" @click="showSidebarMenu = !showSidebarMenu"></Bars3Icon> -->
-				<OrganizationSwitcher></OrganizationSwitcher>
-			</div>
 			<!-- <Head :title="title" /> -->
 
 			<div class="min-h-screen bg-default-background border-l border-default-background-separator">
