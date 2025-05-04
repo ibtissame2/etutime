@@ -23,9 +23,7 @@ const props = defineProps({
 	clients: Array,
 	createClient: Function,
 	isActive: Boolean,
-	currency: String,
 	enableEstimatedTime: Boolean,
-	canCreateProject: Boolean,
 });
 
 const emit = defineEmits(['startTimer', 'stopTimer', 'updateTimeEntry', 'startLiveTimer', 'stopLiveTimer']);
@@ -212,9 +210,9 @@ useSelectEvents(filteredRecentlyTrackedTimeEntries, highlightedDropdownEntryId, 
 						v-model:project="currentTimeEntry.project_id"
 						v-model:task="currentTimeEntry.task_id"
 						:create-client
-						:can-create-project
+						:can-create-project="true"
 						:clients
-						:currency="currency"
+						:currency="'MAD'"
 						:projects="projects"
 						:tasks="tasks"
 						:enable-estimated-time="enableEstimatedTime"

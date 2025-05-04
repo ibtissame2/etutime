@@ -9,7 +9,7 @@ const props = defineProps({
 		default: 'button',
 	},
 	icon: {
-		type: Object,
+		type: Function,
 		required: false,
 	},
 	size: {

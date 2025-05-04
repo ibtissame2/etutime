@@ -15,7 +15,7 @@ import CardTitle from '@/packages/ui/src/CardTitle.vue';
 defineProps({
 	title: String,
 	icon: {
-		type: Object,
+		type: Function,
 		required: false,
 	},
 });

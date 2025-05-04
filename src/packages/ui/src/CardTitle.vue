@@ -2,7 +2,7 @@
 defineProps({
 	title: String,
 	icon: {
-		type: Object,
+		type: Function,
 		required: false,
 	},
 });

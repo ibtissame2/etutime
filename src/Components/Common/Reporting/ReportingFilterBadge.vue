@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge';
 
 const props = defineProps({
 	icon: {
-		type: Object,
+		type: Function,
 		required: true,
 	},
 	title: {

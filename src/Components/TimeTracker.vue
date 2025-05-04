@@ -63,16 +63,6 @@ const isRunningInDifferentOrganization = computed(() => {
 	);
 });
 
-async function createProject(project) {
-	const newProject = await useModulesStore().createProject(project);
-	if (newProject) currentTimeEntry.value.project_id = newProject.id;
-	return newProject;
-}
-
-async function createClient(client) {
-	return await useClientsStore().createClient(client);
-}
-
 function switchToTimeEntryOrganization() {
 	if (currentTimeEntry.value.organization_id) {
 		switchOrganization(currentTimeEntry.value.organization_id);
@@ -92,17 +82,13 @@ const { taches } = storeToRefs(useTachesStore());
 		</TimeTrackerRunningInDifferentOrganizationOverlay>
 
 		<TimeTrackerControls
+			:projects="modules"
+			:tasks="tasks"
+			:tags="taches"
+			:clients="clients"
+			:is-active="isActive"
 			v-model:current-time-entry="currentTimeEntry"
 			v-model:live-timer="now"
-			:enable-estimated-time="true"
-			:can-create-project="true"
-			:create-client="createClient"
-			:clients="clients"
-			:tags="taches"
-			:tasks="tasks"
-			:projects="modules"
-			:is-active="isActive"
-			:currency="'MAD'"
 			@start-live-timer="startLiveTimer"
 			@stop-live-timer="stopLiveTimer"
 			@start-timer="setActiveState(true)"

@@ -9,7 +9,7 @@ const props = defineProps({
 		default: 'submit',
 	},
 	icon: {
-		type: Object,
+		type: Function,
 		required: false,
 	},
 	loading: {

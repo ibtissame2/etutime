@@ -6,10 +6,10 @@ import EnvView from '../Pages/EnvView.vue';
 import TimeView from '../Pages/TimeView.vue';
 import ReportingView from '../Pages/ReportingView.vue';
 import ModulesView from '../Pages/ModulesView.vue';
-import EtudiantsView from '../Pages/EtudiantsView.vue';
 import TagsView from '../Pages/TagsView.vue';
 import NotesView from '../Pages/NotesView.vue';
 import ImportView from '../Pages/ImportView.vue';
+import ProfileView from '../Pages/ProfileView.vue';
 
 const routes = [
 	{
@@ -25,7 +25,7 @@ const routes = [
 	{
 		path: '/env',
 		name: 'Envirenement du travail',
-		component: EtudiantsView,
+		component: EnvView,
 	},
 	{
 		path: '/time',
@@ -56,6 +56,11 @@ const routes = [
 		path: '/import',
 		name: 'Import',
 		component: ImportView,
+	},
+	{
+		path: '/profile',
+		name: 'Profile',
+		component: ProfileView,
 	},
 ];
 
