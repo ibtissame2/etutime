@@ -24,7 +24,7 @@ const props = defineProps({
 				@click.prevent="emit('edit')"
 			>
 				<PencilSquareIcon class="w-5 text-icon-active"></PencilSquareIcon>
-				<span>Edit</span>
+				<span>Modifier</span>
 			</button>
 			<button
 				v-if="canUpdateProjects()"
@@ -33,7 +33,7 @@ const props = defineProps({
 				@click.prevent="emit('archive')"
 			>
 				<ArchiveBoxIcon class="w-5 text-icon-active"></ArchiveBoxIcon>
-				<span>{{ project.is_archived ? 'Unarchive' : 'Archive' }}</span>
+				<span>{{ project.is_public ? 'Archiver' : 'Désarchiver' }}</span>
 			</button>
 			<button
 				v-if="canDeleteProjects()"
@@ -43,7 +43,7 @@ const props = defineProps({
 				@click.prevent="emit('delete')"
 			>
 				<TrashIcon class="w-5 text-icon-active"></TrashIcon>
-				<span>Delete</span>
+				<span>Supprimer</span>
 			</button>
 		</div>
 	</MoreOptionsDropdown>

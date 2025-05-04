@@ -1,20 +1,13 @@
 <script setup>
 import ProjectMoreOptionsDropdown from '@/Components/Common/Project/ProjectMoreOptionsDropdown.vue';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { CheckCircleIcon } from '@heroicons/vue/20/solid';
-import { useClientsStore } from '@/utils/useClients';
-import { storeToRefs } from 'pinia';
-import { useTasksStore } from '@/utils/useTasks';
 import { useModulesStore } from '@/store/modules';
 import TableRow from '@/Components/TableRow.vue';
 import ProjectEditModal from '@/Components/Common/Project/ProjectEditModal.vue';
-import { formatCents } from '@/packages/ui/src/utils/money';
-import EstimatedTimeProgress from '@/packages/ui/src/EstimatedTimeProgress.vue';
+import ProjectProgress from '@/components/common/Project/ProjectProgress.vue';
 import { formatHumanReadableDuration } from '../../../packages/ui/src/utils/time';
 import { route } from '@/utils/inertia';
-
-const { clients } = storeToRefs(useClientsStore());
-const { tasks } = storeToRefs(useTasksStore());
 
 const props = defineProps({
 	project: {
@@ -23,20 +16,12 @@ const props = defineProps({
 	},
 });
 
-const client = computed(() => {
-	return clients.value.find((client) => client.id === props.project.client_id);
-});
-
-const projectTasksCount = computed(() => {
-	return tasks.value.filter((task) => task.project_id === props.project.id).length;
-});
+function archiveProject() {
+	useModulesStore().updateModule(props.project.id, { is_public: !props.project.is_public });
+}
 
 function deleteProject() {
 	useModulesStore().deleteModule(props.project.id);
-}
-
-function archiveProject() {
-	useModulesStore().updateModule(props.project.id, { is_public: !props.project.is_public });
 }
 
 const showEditProjectModal = ref(false);
@@ -58,13 +43,6 @@ const showEditProjectModal = ref(false);
 			<span class="overflow-ellipsis overflow-hidden">
 				{{ project.name }}
 			</span>
-			<span class="text-muted"> {{ projectTasksCount }} Tasks </span>
-		</div>
-		<div class="whitespace-nowrap min-w-0 px-3 py-4 text-sm text-muted">
-			<div v-if="project.client_id" class="overflow-ellipsis overflow-hidden">
-				{{ client?.name }}
-			</div>
-			<div v-else>No client</div>
 		</div>
 		<div class="whitespace-nowrap px-3 py-4 text-sm text-muted">
 			<div v-if="project.spent_time">
@@ -73,16 +51,11 @@ const showEditProjectModal = ref(false);
 			<div v-else>--</div>
 		</div>
 		<div class="whitespace-nowrap px-3 flex items-center text-sm text-muted">
-			<EstimatedTimeProgress
-				v-if="project.estimated_time"
-				:estimated="project.estimated_time"
-				:current="project.spent_time"
-			></EstimatedTimeProgress>
-			<span v-else> -- </span>
+			<ProjectProgress :module="project" />
 		</div>
 		<div class="whitespace-nowrap px-3 py-4 text-sm text-muted flex space-x-1 items-center font-medium">
 			<CheckCircleIcon class="w-5"></CheckCircleIcon>
-			<span>Active</span>
+			<span>{{ project.is_public ? 'Actif' : 'Archivé' }}</span>
 		</div>
 		<div
 			class="relative whitespace-nowrap flex items-center pl-3 text-right text-sm font-medium pr-4 sm:pr-6 lg:pr-8 3xl:pr-12"

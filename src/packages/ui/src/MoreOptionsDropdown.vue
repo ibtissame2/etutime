@@ -3,13 +3,19 @@ import Dropdown from '@/packages/ui/src/Input/Dropdown.vue';
 
 defineProps({
 	label: String,
+	triggerSlot: {
+		type: Boolean,
+		default: false,
+	},
 });
 </script>
 
 <template>
-	<Dropdown :align="'bottom-end'">
+	<Dropdown :align="'bottom-end'" :close-on-content-click="true">
 		<template #trigger>
+			<slot v-if="triggerSlot" name="trigger"></slot>
 			<button
+				v-else
 				class="focus-visible:outline-none focus-visible:bg-card-background rounded-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:opacity-100 hover:bg-card-background group-hover:opacity-100 opacity-20 transition-opacity text-muted"
 				:aria-label="label"
 			>

@@ -31,7 +31,7 @@ async function createClient(client) {
 const { clients } = storeToRefs(useClientsStore());
 
 const gridTemplate = computed(() => {
-	return `grid-template-columns: minmax(300px, 1fr) minmax(150px, auto) minmax(140px, auto) minmax(130px, auto) minmax(120px, auto) 80px;`;
+	return `grid-template-columns: minmax(300px, 1fr) minmax(140px, auto) minmax(130px, auto) minmax(120px, auto) 80px;`;
 });
 </script>
 

@@ -103,14 +103,14 @@ onMounted(async () => {
 								title="Tempt"
 								:icon="ClockIcon"
 								:current="route.current('time')"
-								:href="route(time)"
+								:href="route('time')"
 							></NavigationSidebarItem>
 
 							<NavigationSidebarItem
 								title="Rapport"
 								:icon="ChartBarIcon"
-								:current="route.current('reporting')"
-								:href="route(rapport)"
+								:current="route.current('rapport')"
+								:href="route('rapport')"
 							></NavigationSidebarItem>
 						</ul>
 					</nav>

@@ -33,7 +33,6 @@ function isActiveTab(tab) {
 }
 
 const shownModules = computed(() => {
-	console.log(modules.value);
 	if (activeTab.value !== 'archived') return modules.value.filter((module) => module.is_public);
 	return modules.value.filter((module) => !module.is_public);
 });
