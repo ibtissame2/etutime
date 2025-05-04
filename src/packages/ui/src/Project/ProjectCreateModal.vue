@@ -1,14 +1,14 @@
 <script setup>
+import { ref } from 'vue';
+import { useFocus } from '@vueuse/core';
+import { useModulesStore } from '@/store/modules';
+import { getRandomColor } from '@/packages/ui/src/utils/color';
+import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
 import TextInput from '@/packages/ui/src/Input/TextInput.vue';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
-import DialogModal from '@/packages/ui/src/DialogModal.vue';
-import { ref } from 'vue';
-import { getRandomColor } from '@/packages/ui/src/utils/color';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
-import { useFocus } from '@vueuse/core';
 import ProjectColorSelector from '@/packages/ui/src/Project/ProjectColorSelector.vue';
-import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
-import { useModulesStore } from '@/store/modules';
+import DialogModal from '@/packages/ui/src/DialogModal.vue';
 
 const { createModule } = useModulesStore();
 
@@ -46,7 +46,7 @@ useFocus(moduleNameInput, { initialValue: true });
 			<div class="sm:flex items-center space-y-2 sm:space-y-0 sm:space-x-4">
 				<div class="flex-1 flex items-center">
 					<div class="text-center pr-5">
-						<InputLabel for="color" value="Color" />
+						<InputLabel for="color" value="Couleur" />
 						<ProjectColorSelector v-model="project.color" class="mt-2.5"></ProjectColorSelector>
 					</div>
 					<div class="w-full">

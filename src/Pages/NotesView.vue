@@ -8,12 +8,12 @@ import TagTable from '@/Components/Common/Tag/TagTable.vue';
 // import TagCreateModal from '@/packages/ui/src/Tag/TagCreateModal.vue';
 import PageTitle from '@/Components/Common/PageTitle.vue';
 import { canCreateNotes } from '@/utils/permissions';
-// import { useTagsStore } from '@/utils/useTags';
+// import { useNotesStore } from '@/store/notes';
 
 const showCreateNoteModal = ref(false);
 
 async function createNote(tag) {
-	// return await useTagsStore().createNote(tag);
+	// return await useNotesStore().createNote(tag);
 }
 </script>
 
@@ -26,8 +26,8 @@ async function createNote(tag) {
 			<SecondaryButton v-if="canCreateNotes()" :icon="PlusIcon" @click="showCreateNoteModal = true"
 				>Créer une note
 			</SecondaryButton>
-			<!-- <TagCreateModal v-model:show="showCreateNoteModal" :create-tag="createNote"></TagCreateModal> -->
+			<!-- <TagCreateModal v-model:show="showCreateNoteModal"></TagCreateModal> -->
 		</MainContainer>
-		<!-- <TagTable :create-tag="createNote"></TagTable> -->
+		<!-- <TagTable></TagTable> -->
 	</AppLayout>
 </template>

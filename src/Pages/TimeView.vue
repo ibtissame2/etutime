@@ -14,7 +14,7 @@ import { useCurrentTimeEntryStore } from '@/utils/useCurrentTimeEntry';
 import { useTasksStore } from '@/utils/useTasks';
 import { useModulesStore } from '@/store/modules';
 import TimeEntryGroupedTable from '@/packages/ui/src/TimeEntry/TimeEntryGroupedTable.vue';
-import { useTagsStore } from '@/utils/useTags';
+import { useTachesStore } from '@/store/taches';
 import { useClientsStore } from '@/utils/useClients';
 import TimeEntryCreateModal from '@/packages/ui/src/TimeEntry/TimeEntryCreateModal.vue';
 import TimeEntryMassActionRow from '@/packages/ui/src/TimeEntry/TimeEntryMassActionRow.vue';
@@ -35,7 +35,7 @@ const isLoadMoreVisible = useElementVisibility(loadMoreContainer);
 const currentTimeEntryStore = useCurrentTimeEntryStore();
 const { currentTimeEntry } = storeToRefs(currentTimeEntryStore);
 const { setActiveState } = currentTimeEntryStore;
-const { tags } = storeToRefs(useTagsStore());
+const { taches } = storeToRefs(useTachesStore());
 
 async function startTimeEntry(timeEntry) {
 	if (currentTimeEntry.value.id) {
@@ -65,18 +65,8 @@ onMounted(async () => {
 const showManualTimeEntryModal = ref(false);
 
 const { modules } = storeToRefs(useModulesStore());
-const taskStore = useTasksStore();
-const { tasks } = storeToRefs(taskStore);
-const clientStore = useClientsStore();
-const { clients } = storeToRefs(clientStore);
-
-async function createTag(name) {
-	return await useTagsStore().createTag(name);
-}
-
-async function createModule(project) {
-	return await useModulesStore().createModule(project);
-}
+const { tasks } = storeToRefs(useTasksStore());
+const { clients } = storeToRefs(useClientsStore());
 
 async function createClient(body) {
 	return await useClientsStore().createClient(body);
@@ -100,11 +90,10 @@ function deleteSelected() {
 		v-model:show="showManualTimeEntryModal"
 		:enable-estimated-time="true"
 		:create-client="createClient"
-		:create-tag="createTag"
 		:create-time-entry="createTimeEntry"
 		:projects="modules"
 		:tasks="tasks"
-		:tags="tags"
+		:tags="taches"
 		:clients="clients"
 	></TimeEntryCreateModal>
 	<AppLayout title="Dashboard" data-testid="time_view">
@@ -133,7 +122,7 @@ function deleteSelected() {
 			:delete-selected="deleteSelected"
 			:projects="modules"
 			:tasks="tasks"
-			:tags="tags"
+			:tags="taches"
 			:currency="'MAD'"
 			:clients="clients"
 			:update-time-entries="
@@ -144,7 +133,6 @@ function deleteSelected() {
 					)
 			"
 			:create-client="createClient"
-			:create-tag="createTag"
 			@submit="clearSelectionAndState"
 			@select-all="selectedTimeEntries = [...timeEntries]"
 			@unselect-all="selectedTimeEntries = []"
@@ -159,12 +147,11 @@ function deleteSelected() {
 			:update-time-entries="updateTimeEntries"
 			:delete-time-entries="deleteTimeEntries"
 			:create-time-entry="startTimeEntry"
-			:create-tag="createTag"
 			:projects="modules"
 			:tasks="tasks"
 			:currency="'MAD'"
 			:time-entries="timeEntries"
-			:tags="tags"
+			:tags="taches"
 		></TimeEntryGroupedTable>
 		<div v-if="timeEntries.length === 0" class="text-center pt-12">
 			<ClockIcon class="w-8 text-icon-default inline pb-2"></ClockIcon>

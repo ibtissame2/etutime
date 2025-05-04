@@ -115,7 +115,7 @@ onMounted(async () => {
 						</ul>
 					</nav>
 
-					<div class="text-text-tertiary text-sm font-semibold pt-5 pb-1.5">Manage</div>
+					<div class="text-text-tertiary text-sm font-semibold pt-5 pb-1.5">Programme</div>
 
 					<nav>
 						<ul>
@@ -137,10 +137,10 @@ onMounted(async () => {
 
 							<NavigationSidebarItem
 								v-if="canViewTags()"
-								title="Tags"
+								title="Tâches"
 								:icon="TagIcon"
-								:current="route.current('tags')"
-								:href="route('tags')"
+								:current="route.current('taches')"
+								:href="route('taches')"
 							></NavigationSidebarItem>
 						</ul>
 					</nav>

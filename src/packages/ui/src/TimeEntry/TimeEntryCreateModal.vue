@@ -11,7 +11,6 @@ import { getDayJsInstance, getLocalizedDayJs } from '@/packages/ui/src/utils/tim
 import { canCreateModule } from '@/utils/permissions';
 import TagDropdown from '@/packages/ui/src/Tag/TagDropdown.vue';
 import { Badge } from '@/packages/ui/src';
-import SelectDropdown from '@/packages/ui/src/Input/SelectDropdown.vue';
 import DatePicker from '@/packages/ui/src/Input/DatePicker.vue';
 import DurationHumanInput from '@/packages/ui/src/Input/DurationHumanInput.vue';
 import { InformationCircleIcon } from '@heroicons/vue/20/solid';
@@ -24,7 +23,6 @@ const props = defineProps({
 	enableEstimatedTime: Boolean,
 	createTimeEntry: Function,
 	createClient: Function,
-	createTag: Function,
 	tags: Array,
 	projects: Array,
 	tasks: Array,
@@ -117,7 +115,7 @@ async function submit() {
 					</div>
 					<div class="flex items-center space-x-2">
 						<div class="flex-col">
-							<TagDropdown v-model="timeEntry.tags" :create-tag :tags="tags">
+							<TagDropdown v-model="timeEntry.tags" :tags="tags">
 								<template #trigger>
 									<Badge class="bg-input-background" tag="button" size="xlarge">
 										<TagIcon v-if="timeEntry.tags.length === 0" class="w-4"></TagIcon>

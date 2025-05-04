@@ -13,7 +13,6 @@ const props = defineProps({
 	tasks: Array,
 	tags: Array,
 	clients: Array,
-	createTag: Function,
 	updateTimeEntry: Function,
 	updateTimeEntries: Function,
 	deleteTimeEntries: Function,
@@ -124,7 +123,6 @@ function unselectAllTimeEntries(value) {
 				:update-time-entries
 				:update-time-entry
 				:delete-time-entries
-				:create-tag
 				:currency="currency"
 				:time-entry="entry"
 				@selected="
@@ -150,7 +148,6 @@ function unselectAllTimeEntries(value) {
 				:tasks="tasks"
 				:tags="tags"
 				:clients
-				:create-tag
 				:update-time-entry
 				:on-start-stop-click="() => startTimeEntryFromExisting(entry)"
 				:delete-time-entry="() => deleteTimeEntries([entry])"

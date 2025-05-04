@@ -288,20 +288,6 @@ CREATE TABLE `subscriptions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Table structure for table `tags`
---
-
-CREATE TABLE `tags` (
-  `id` char(36) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `organization_id` char(36) NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `tags_organization_id_foreign` (`organization_id`),
-  KEY `tags_created_at_index` (`created_at`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
 -- Table structure for table `tasks`
 --
 

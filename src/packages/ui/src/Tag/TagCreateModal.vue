@@ -1,32 +1,33 @@
 <script setup>
+import { ref } from 'vue';
+import { useFocus } from '@vueuse/core';
+import { useTachesStore } from '@/store/taches';
 import TextInput from '@/packages/ui/src/Input/TextInput.vue';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
-import DialogModal from '@/packages/ui/src/DialogModal.vue';
-import { ref } from 'vue';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
-import { useFocus } from '@vueuse/core';
+import DialogModal from '@/packages/ui/src/DialogModal.vue';
+
+const { createTache } = useTachesStore();
 
 const show = defineModel('show', { default: false });
-const saving = ref(false);
+const loading = ref(false);
 
-const tag = ref({
-	name: '',
-});
+const resetFormData = () => {
+	show.value = false;
+	return { name: '' };
+};
 
-const props = defineProps({
-	createTag: Function,
-});
+const tache = ref(resetFormData());
 
 async function submit() {
-	const newTag = props.createTag(tag.value.name);
-	if (newTag !== undefined) {
-		show.value = false;
-		tag.value.name = '';
-	}
+	loading.value = true;
+	await createTache(tache.value, () => {
+		tache.value = resetFormData();
+	});
+	loading.value = false;
 }
 
 const tagNameInput = ref(null);
-
 useFocus(tagNameInput, { initialValue: true });
 </script>
 
@@ -34,7 +35,7 @@ useFocus(tagNameInput, { initialValue: true });
 	<DialogModal closeable :show="show" @close="show = false">
 		<template #title>
 			<div class="flex space-x-2">
-				<span> Create Tags </span>
+				<span>Créer une tâche</span>
 			</div>
 		</template>
 		<template #content>
@@ -43,9 +44,9 @@ useFocus(tagNameInput, { initialValue: true });
 					<TextInput
 						id="tagName"
 						ref="tagNameInput"
-						v-model="tag.name"
+						v-model="tache.name"
 						type="text"
-						placeholder="Tag Name"
+						placeholder="Nom du tâche"
 						class="mt-1 block w-full"
 						required
 						autocomplete="tagName"
@@ -55,10 +56,10 @@ useFocus(tagNameInput, { initialValue: true });
 			</div>
 		</template>
 		<template #footer>
-			<SecondaryButton @click="show = false"> Cancel </SecondaryButton>
+			<SecondaryButton @click="show = false">Annuler</SecondaryButton>
 
-			<PrimaryButton class="ms-3" :class="{ 'opacity-25': saving }" :disabled="saving" @click="submit">
-				Create Tag
+			<PrimaryButton class="ms-3" :class="{ 'opacity-25': loading }" :disabled="loading" @click="submit">
+				Créer
 			</PrimaryButton>
 		</template>
 	</DialogModal>

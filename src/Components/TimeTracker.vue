@@ -11,8 +11,8 @@ import { storeToRefs } from 'pinia';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { switchOrganization } from '@/utils/useOrganization';
 import { useModulesStore } from '@/store/modules';
+import { useTachesStore } from '@/store/taches';
 import { useTasksStore } from '@/utils/useTasks';
-import { useTagsStore } from '@/utils/useTags';
 import { useClientsStore } from '@/utils/useClients';
 import TimeTrackerControls from '@/packages/ui/src/TimeTracker/TimeTrackerControls.vue';
 import TimeTrackerRunningInDifferentOrganizationOverlay from '@/packages/ui/src/TimeTracker/TimeTrackerRunningInDifferentOrganizationOverlay.vue';
@@ -80,11 +80,7 @@ function switchToTimeEntryOrganization() {
 	}
 }
 
-async function createTag(tag) {
-	return await useTagsStore().createTag(tag);
-}
-
-const { tags } = storeToRefs(useTagsStore());
+const { taches } = storeToRefs(useTachesStore());
 </script>
 
 <template>
@@ -103,10 +99,9 @@ const { tags } = storeToRefs(useTagsStore());
 			:can-create-project="canCreateModule()"
 			:create-client="createClient"
 			:clients="clients"
-			:tags="tags"
+			:tags="taches"
 			:tasks="tasks"
 			:projects="modules"
-			:create-tag="createTag"
 			:is-active="isActive"
 			:currency="'MAD'"
 			@start-live-timer="startLiveTimer"

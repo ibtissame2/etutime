@@ -15,13 +15,12 @@ import ReportingFilterBadge from '@/Components/Common/Reporting/ReportingFilterB
 import ProjectMultiselectDropdown from '@/Components/Common/Project/ProjectMultiselectDropdown.vue';
 import MemberMultiselectDropdown from '@/Components/Common/Member/MemberMultiselectDropdown.vue';
 import TaskMultiselectDropdown from '@/Components/Common/Task/TaskMultiselectDropdown.vue';
-import SelectDropdown from '@/packages/ui/src/Input/SelectDropdown.vue';
 import ReportingGroupBySelect from '@/Components/Common/Reporting/ReportingGroupBySelect.vue';
 import ReportingRow from '@/Components/Common/Reporting/ReportingRow.vue';
 import ReportingPieChart from '@/Components/Common/Reporting/ReportingPieChart.vue';
 import { getCurrentMembershipId, getCurrentOrganizationId, getCurrentRole } from '@/utils/useUser';
 import ClientMultiselectDropdown from '@/Components/Common/Client/ClientMultiselectDropdown.vue';
-import { useTagsStore } from '@/utils/useTags';
+import { useTachesStore } from '@/store/taches';
 import { formatCents } from '@/packages/ui/src/utils/money';
 import { useSessionStorage, useStorage } from '@vueuse/core';
 import ReportingTabNavbar from '@/Components/Common/Reporting/ReportingTabNavbar.vue';
@@ -117,10 +116,7 @@ onMounted(() => {
 	updateTableReporting();
 });
 
-const { tags } = storeToRefs(useTagsStore());
-async function createTag(tag) {
-	return await useTagsStore().createTag(tag);
-}
+const { taches } = storeToRefs(useTachesStore());
 
 const reportProperties = computed(() => {
 	return {
@@ -260,7 +256,7 @@ const tableData = computed(() => {
 							<ReportingFilterBadge title="Clients" :icon="FolderIcon"></ReportingFilterBadge>
 						</template>
 					</ClientMultiselectDropdown>
-					<TagDropdown v-model="selectedTags" :create-tag :tags="tags" @submit="updateReporting">
+					<TagDropdown v-model="selectedTags" :tags="taches" @submit="updateReporting">
 						<template #trigger>
 							<ReportingFilterBadge
 								:count="selectedTags.length"

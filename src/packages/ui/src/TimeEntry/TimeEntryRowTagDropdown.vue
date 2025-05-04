@@ -5,7 +5,6 @@ import TagBadge from '@/packages/ui/src/Tag/TagBadge.vue';
 
 const props = defineProps({
 	tags: Array,
-	createTag: Function,
 });
 
 const emit = defineEmits(['changed']);
@@ -18,7 +17,7 @@ const timeEntryTags = computed(() => {
 </script>
 
 <template>
-	<TagDropdown v-model="model" :tags="tags" :align="'bottom-end'" :create-tag @changed="emit('changed', model)">
+	<TagDropdown v-model="model" :tags="tags" :align="'bottom-end'" @changed="emit('changed', model)">
 		<template #trigger>
 			<button
 				data-testid="time_entry_tag_dropdown"

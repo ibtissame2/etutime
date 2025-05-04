@@ -8,7 +8,6 @@ import { UseFocusTrap } from '@vueuse/integrations/useFocusTrap/component';
 
 const props = defineProps({
 	tags: Array,
-	createTag: Function,
 	align: {
 		type: String,
 		default: 'bottom-start',
@@ -63,15 +62,6 @@ const filteredTags = computed(() => {
 	});
 });
 
-async function createAndAddTag(name) {
-	const newTag = await props.createTag(name);
-	if (newTag) {
-		addOrRemoveTagFromSelection(newTag.id);
-	}
-	searchValue.value = '';
-	return newTag;
-}
-
 async function addTagIfNoneExists() {
 	if (highlightedItemId.value) {
 		addOrRemoveTagFromSelection(highlightedItemId.value);
@@ -91,9 +81,7 @@ function updateSearchValue(event) {
 		const highlightedTagId = highlightedItemId.value;
 		if (highlightedTagId) {
 			const highlightedTag = props.tags.find((tag) => tag.id === highlightedTagId);
-			if (highlightedTag) {
-				addOrRemoveTagFromSelection(highlightedTag.id);
-			}
+			if (highlightedTag) addOrRemoveTagFromSelection(highlightedTag.id);
 		}
 	} else {
 		searchValue.value = newInput;
@@ -141,7 +129,7 @@ const highlightedItem = computed(() => {
 </script>
 
 <template>
-	<TagCreateModal v-model:show="showCreateTagModal" :create-tag="createAndAddTag"></TagCreateModal>
+	<TagCreateModal v-model:show="showCreateTagModal"></TagCreateModal>
 	<Dropdown v-model="open" :align="align" :close-on-content-click="false" @submit="emit('submit')">
 		<template #trigger>
 			<slot name="trigger"></slot>

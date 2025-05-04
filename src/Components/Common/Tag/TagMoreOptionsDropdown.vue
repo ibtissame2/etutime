@@ -5,10 +5,7 @@ import MoreOptionsDropdown from '@/packages/ui/src/MoreOptionsDropdown.vue';
 const emit = defineEmits(['delete']);
 
 const props = defineProps({
-	tag: {
-		type: Object,
-		required: true,
-	},
+	tag: Object,
 });
 </script>
 
@@ -21,7 +18,7 @@ const props = defineProps({
 			@click="emit('delete')"
 		>
 			<TrashIcon class="w-5 text-icon-active"></TrashIcon>
-			<span>Delete</span>
+			<span>Supprimer</span>
 		</button>
 	</MoreOptionsDropdown>
 </template>

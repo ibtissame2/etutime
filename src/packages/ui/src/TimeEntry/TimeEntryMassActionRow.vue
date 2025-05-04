@@ -18,7 +18,6 @@ const props = defineProps({
 	tasks: Array,
 	tags: Array,
 	clients: Array,
-	createTag: Function,
 	createClient: Function,
 	updateTimeEntries: Function,
 	currency: String,
@@ -38,7 +37,6 @@ const showMassUpdateModal = ref(false);
 		:tasks
 		:tags
 		:clients
-		:create-tag
 		:create-client
 		:update-time-entries
 		:enable-estimated-time

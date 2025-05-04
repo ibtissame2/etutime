@@ -17,7 +17,6 @@ const props = defineProps({
 	tasks: Array,
 	tags: Array,
 	clients: Array,
-	createTag: Function,
 	createClient: Function,
 	onStartStopClick: Function,
 	updateTimeEntries: Function,
@@ -104,7 +103,6 @@ function onSelectChange(event) {
 				</div>
 				<div class="flex items-center font-medium lg:space-x-2">
 					<TimeEntryRowTagDropdown
-						:create-tag
 						:tags="tags"
 						:model-value="timeEntry.tags"
 						@changed="updateTimeEntryTags"
@@ -152,7 +150,6 @@ function onSelectChange(event) {
 				:on-start-stop-click="() => onStartStopClick(subEntry)"
 				:delete-time-entry="() => deleteTimeEntries([subEntry])"
 				:currency="currency"
-				:create-tag
 				:time-entry="subEntry"
 				@selected="emit('selected', [subEntry])"
 				@unselected="emit('unselected', [subEntry])"

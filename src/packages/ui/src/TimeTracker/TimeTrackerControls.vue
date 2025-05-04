@@ -21,7 +21,6 @@ const props = defineProps({
 	tasks: Array,
 	tags: Array,
 	clients: Array,
-	createTag: Function,
 	createClient: Function,
 	isActive: Boolean,
 	currency: String,
@@ -225,7 +224,6 @@ useSelectEvents(filteredRecentlyTrackedTimeEntries, highlightedDropdownEntryId, 
 				<div class="flex items-center @2xl:space-x-2 px-2 @2xl:px-4">
 					<TimeTrackerTagDropdown
 						v-model="currentTimeEntry.tags"
-						:create-tag
 						:tags="tags"
 						@changed="$emit('updateTimeEntry')"
 					></TimeTrackerTagDropdown>

@@ -21,7 +21,6 @@ const props = defineProps({
 		type: Array,
 		required: false,
 	},
-	createTag: Function,
 	createClient: Function,
 	onStartStopClick: Function,
 	deleteTimeEntry: Function,
@@ -119,7 +118,6 @@ function onSelectChange(event) {
 						{{ memberName }}
 					</div>
 					<TimeEntryRowTagDropdown
-						:create-tag
 						:tags="tags"
 						:model-value="timeEntry.tags"
 						@changed="updateTimeEntryTags"

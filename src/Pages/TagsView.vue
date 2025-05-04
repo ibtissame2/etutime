@@ -7,27 +7,19 @@ import { ref } from 'vue';
 import TagTable from '@/Components/Common/Tag/TagTable.vue';
 import TagCreateModal from '@/packages/ui/src/Tag/TagCreateModal.vue';
 import PageTitle from '@/Components/Common/PageTitle.vue';
-import { canCreateTags } from '@/utils/permissions';
-import { useTagsStore } from '@/utils/useTags';
 
 const showCreateTagModal = ref(false);
-
-async function createTag(tag) {
-	return await useTagsStore().createTag(tag);
-}
 </script>
 
 <template>
-	<AppLayout title="Tags" data-testid="tags_view">
+	<AppLayout title="Tâches" data-testid="tags_view">
 		<MainContainer class="py-5 border-b border-default-background-separator flex justify-between items-center">
 			<div class="flex items-center space-x-6">
-				<PageTitle :icon="TagIcon" title="Tags"></PageTitle>
+				<PageTitle :icon="TagIcon" title="Tâches"></PageTitle>
 			</div>
-			<SecondaryButton v-if="canCreateTags()" :icon="PlusIcon" @click="showCreateTagModal = true"
-				>Create Tag
-			</SecondaryButton>
-			<TagCreateModal v-model:show="showCreateTagModal" :create-tag="createTag"></TagCreateModal>
+			<SecondaryButton :icon="PlusIcon" @click="showCreateTagModal = true">Créer une tâche </SecondaryButton>
+			<TagCreateModal v-model:show="showCreateTagModal"></TagCreateModal>
 		</MainContainer>
-		<TagTable :create-tag="createTag"></TagTable>
+		<TagTable></TagTable>
 	</AppLayout>
 </template>

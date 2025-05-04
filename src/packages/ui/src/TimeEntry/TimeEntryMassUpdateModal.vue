@@ -19,7 +19,6 @@ const props = defineProps({
 	clients: Array,
 	tags: Array,
 	createClient: Function,
-	createTag: Function,
 	updateTimeEntries: Function,
 	currency: String,
 	enableEstimatedTime: Boolean,
@@ -131,7 +130,7 @@ watch(removeAllTags, () => {
 				<div class="space-y-2">
 					<InputLabel for="project" value="Tag" />
 					<div class="flex space-x-5">
-						<TagDropdown v-model="selectedTags" :create-tag :tags="tags">
+						<TagDropdown v-model="selectedTags" :tags="tags">
 							<template #trigger>
 								<Badge :disabled="removeAllTags" tag="button" size="xlarge">
 									<span v-if="selectedTags.length > 0"> Set {{ selectedTags.length }} tags </span>

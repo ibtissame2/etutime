@@ -15,15 +15,25 @@ export const useModulesStore = defineStore('modules', () => {
 		}
 	}
 
-	async function createModule({ name, color }, onSuccess, refresh = true) {
+	async function createModule(object, onSuccess, refresh = true) {
 		const team = getCurrentOrganizationId();
 		if (!team) return;
 		await useAxios.post(
 			'modules/create',
-			{ name, color, team },
+			{ ...object, team },
 			() => (onSuccess?.(), refresh && fetchModules()),
 			'Module créé avec succès',
 			'Échec de la création du module'
+		);
+	}
+
+	async function updateModule(moduleId, object, onSuccess, refresh = true) {
+		await useAxios.post(
+			'modules/update',
+			{ id: moduleId, ...object },
+			() => (onSuccess?.(), refresh && fetchModules()),
+			'Module mis à jour avec succès',
+			'Échec de la mise à jour du module'
 		);
 	}
 
@@ -35,17 +45,6 @@ export const useModulesStore = defineStore('modules', () => {
 			'Module supprimé avec succès',
 			'Échec de la suppression du module'
 		);
-	}
-
-	async function updateModule(moduleId, object, onSuccess, refresh = true) {
-		const response = await useAxios.post(
-			'modules/update',
-			{ id: moduleId, ...object },
-			() => (onSuccess?.(), refresh && fetchModules()),
-			'Module mis à jour avec succès',
-			'Échec de la mise à jour du module'
-		);
-		console.log('updateModule response', response);
 	}
 
 	return {

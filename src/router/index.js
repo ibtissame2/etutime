@@ -48,8 +48,8 @@ const routes = [
 		component: EtudiantsView,
 	},
 	{
-		path: '/tags',
-		name: 'Tags',
+		path: '/taches',
+		name: 'Tâches',
 		component: TagsView,
 	},
 	{

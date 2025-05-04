@@ -25,7 +25,6 @@ onMounted(() => {
 
 const { clients } = storeToRefs(useClientsStore());
 const showCreateProjectModal = ref(false);
-const { organization } = storeToRefs(useOrganizationStore());
 const activeTab = ref('active');
 
 function isActiveTab(tab) {
@@ -36,10 +35,6 @@ const shownModules = computed(() => {
 	if (activeTab.value !== 'archived') return modules.value.filter((module) => module.is_public);
 	return modules.value.filter((module) => !module.is_public);
 });
-
-async function createProject(project) {
-	return await createModule(project);
-}
 
 async function createClient(client) {
 	return await useClientsStore().createClient(client);
@@ -64,7 +59,7 @@ async function createClient(client) {
 				:create-client="createClient"
 				:currency="'MAD'"
 				:clients="clients"
-				@submit="createProject"
+				@submit="createModule"
 			></ProjectCreateModal>
 		</MainContainer>
 		<ProjectTable :projects="shownModules"></ProjectTable>
