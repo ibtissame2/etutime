@@ -54,7 +54,6 @@ async function createClient(client) {
 			<ProjectCreateModal
 				v-model:show="showCreateProjectModal"
 				:create-client="createClient"
-				:currency="'MAD'"
 				:clients="clients"
 				@submit="createModule"
 			></ProjectCreateModal>

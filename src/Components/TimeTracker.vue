@@ -73,7 +73,7 @@ const { taches } = storeToRefs(useTachesStore());
 </script>
 
 <template>
-	<CardTitle title="Time Tracker" :icon="ClockIcon"></CardTitle>
+	<CardTitle title="Suivi du temps" :icon="ClockIcon"></CardTitle>
 	<div class="relative">
 		<TimeTrackerRunningInDifferentOrganizationOverlay
 			v-if="isRunningInDifferentOrganization"

@@ -20,7 +20,6 @@ const props = defineProps({
 	tags: Array,
 	createClient: Function,
 	updateTimeEntries: Function,
-	currency: String,
 	enableEstimatedTime: Boolean,
 	canCreateProject: Boolean,
 });
@@ -116,7 +115,6 @@ watch(removeAllTags, () => {
 						v-model:task="taskId"
 						:clients
 						:create-client
-						:currency="currency"
 						:can-create-project
 						class="mt-1"
 						empty-placeholder="Select project..."

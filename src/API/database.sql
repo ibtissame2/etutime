@@ -1,13 +1,3 @@
--- MySQL database dump
---
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
-
---
--- Table structure for table `cache`
---
-
 CREATE TABLE `cache` (
   `key` varchar(255) NOT NULL,
   `value` text NOT NULL,
@@ -15,20 +5,12 @@ CREATE TABLE `cache` (
   PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Table structure for table `cache_locks`
---
-
 CREATE TABLE `cache_locks` (
   `key` varchar(255) NOT NULL,
   `owner` varchar(255) NOT NULL,
   `expiration` int NOT NULL,
   PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Table structure for table `clients`
---
 
 CREATE TABLE `clients` (
   `id` char(36) NOT NULL,
@@ -38,10 +20,6 @@ CREATE TABLE `clients` (
   PRIMARY KEY (`id`),
   KEY `clients_organization_id_foreign` (`organization_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Table structure for table `customers`
---
 
 CREATE TABLE `customers` (
   `id` char(36) NOT NULL,
@@ -55,10 +33,6 @@ CREATE TABLE `customers` (
   UNIQUE KEY `customers_paddle_id_unique` (`paddle_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Table structure for table `failed_jobs`
---
-
 CREATE TABLE `failed_jobs` (
   `id` char(36) NOT NULL,
   `uuid` char(36) NOT NULL,
@@ -70,10 +44,6 @@ CREATE TABLE `failed_jobs` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Table structure for table `jobs`
---
 
 CREATE TABLE `jobs` (
   `id` bigint NOT NULL AUTO_INCREMENT,
@@ -87,10 +57,6 @@ CREATE TABLE `jobs` (
   KEY `jobs_queue_index` (`queue`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Table structure for table `members`
---
-
 CREATE TABLE `members` (
   `id` char(36) NOT NULL,
   `organization_id` char(36) NOT NULL,
@@ -102,20 +68,12 @@ CREATE TABLE `members` (
   KEY `members_user_id_foreign` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Table structure for table `migrations`
---
-
 CREATE TABLE `migrations` (
   `id` int NOT NULL AUTO_INCREMENT,
   `migration` varchar(255) NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Table structure for table `oauth_access_tokens`
---
 
 CREATE TABLE `oauth_access_tokens` (
   `id` varchar(100) NOT NULL,
@@ -130,10 +88,6 @@ CREATE TABLE `oauth_access_tokens` (
   KEY `oauth_access_tokens_user_id_index` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Table structure for table `oauth_auth_codes`
---
-
 CREATE TABLE `oauth_auth_codes` (
   `id` varchar(100) NOT NULL,
   `user_id` char(36) NOT NULL,
@@ -144,10 +98,6 @@ CREATE TABLE `oauth_auth_codes` (
   PRIMARY KEY (`id`),
   KEY `oauth_auth_codes_user_id_index` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Table structure for table `oauth_clients`
---
 
 CREATE TABLE `oauth_clients` (
   `id` char(36) NOT NULL,
@@ -164,20 +114,12 @@ CREATE TABLE `oauth_clients` (
   KEY `oauth_clients_user_id_index` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Table structure for table `oauth_personal_access_clients`
---
-
 CREATE TABLE `oauth_personal_access_clients` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `client_id` char(36) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Table structure for table `oauth_refresh_tokens`
---
 
 CREATE TABLE `oauth_refresh_tokens` (
   `id` varchar(100) NOT NULL,
@@ -199,20 +141,12 @@ CREATE TABLE `organization_invitations` (
   KEY `organization_invitations_organization_id_foreign` (`organization_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Table structure for table `password_reset_tokens`
---
-
 CREATE TABLE `password_reset_tokens` (
   `email` varchar(255) NOT NULL,
   `token` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Table structure for table `personal_access_tokens`
---
 
 CREATE TABLE `personal_access_tokens` (
   `id` char(36) NOT NULL,
@@ -228,10 +162,6 @@ CREATE TABLE `personal_access_tokens` (
   UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
   KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Table structure for table `project_members`
---
 
 CREATE TABLE `project_members` (
   `id` char(36) NOT NULL,
@@ -270,10 +200,6 @@ CREATE TABLE `subscription_items` (
   UNIQUE KEY `subscription_items_subscription_id_price_id_unique` (`subscription_id`,`price_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Table structure for table `subscriptions`
---
-
 CREATE TABLE `subscriptions` (
   `id` char(36) NOT NULL,
   `paddle_id` varchar(255) NOT NULL,
@@ -287,54 +213,6 @@ CREATE TABLE `subscriptions` (
   UNIQUE KEY `subscriptions_paddle_id_unique` (`paddle_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Table structure for table `tasks`
---
-
-CREATE TABLE `tasks` (
-  `id` char(36) NOT NULL,
-  `name` varchar(500) NOT NULL,
-  `project_id` char(36) NOT NULL,
-  `organization_id` char(36) NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `tasks_organization_id_foreign` (`organization_id`),
-  KEY `tasks_project_id_foreign` (`project_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Table structure for table `time_entries`
---
-
-CREATE TABLE `time_entries` (
-  `id` char(36) NOT NULL,
-  `description` varchar(500) NOT NULL,
-  `start` timestamp NOT NULL,
-  `end` timestamp NULL DEFAULT NULL,
-  `user_id` char(36) NOT NULL,
-  `organization_id` char(36) NOT NULL,
-  `project_id` char(36) DEFAULT NULL,
-  `task_id` char(36) DEFAULT NULL,
-  `tags` json DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `member_id` char(36) NOT NULL,
-  `client_id` char(36) DEFAULT NULL,
-  `is_imported` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `time_entries_end_index` (`end`),
-  KEY `time_entries_start_index` (`start`),
-  KEY `time_entries_client_id_foreign` (`client_id`),
-  KEY `time_entries_member_id_foreign` (`member_id`),
-  KEY `time_entries_organization_id_foreign` (`organization_id`),
-  KEY `time_entries_project_id_foreign` (`project_id`),
-  KEY `time_entries_task_id_foreign` (`task_id`),
-  KEY `time_entries_user_id_foreign` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Table structure for table `transactions`
---
-
 CREATE TABLE `transactions` (
   `id` char(36) NOT NULL,
   `paddle_id` varchar(255) NOT NULL,
@@ -343,7 +221,6 @@ CREATE TABLE `transactions` (
   `status` varchar(255) NOT NULL,
   `total` varchar(255) NOT NULL,
   `tax` varchar(255) NOT NULL,
-  `currency` varchar(3) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `transactions_paddle_id_unique` (`paddle_id`),

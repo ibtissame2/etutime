@@ -2,7 +2,7 @@
 import TextInput from '@/packages/ui/src/Input/TextInput.vue';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import DialogModal from '@/packages/ui/src/DialogModal.vue';
-import { computed, nextTick, ref, watch } from 'vue';
+import { nextTick, ref, watch } from 'vue';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import TimeTrackerProjectTaskDropdown from '@/packages/ui/src/TimeTracker/TimeTrackerProjectTaskDropdown.vue';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
@@ -77,7 +77,7 @@ async function submit() {
 	<DialogModal closeable :show="show" @close="show = false">
 		<template #title>
 			<div class="flex space-x-2">
-				<span> Create manual time entry </span>
+				<span>Saisie manuelle du temps</span>
 			</div>
 		</template>
 
@@ -104,7 +104,6 @@ async function submit() {
 							:clients
 							:create-client
 							:can-create-project="true"
-							:currency="'MAD'"
 							size="xlarge"
 							class="bg-input-background"
 							:projects="projects"

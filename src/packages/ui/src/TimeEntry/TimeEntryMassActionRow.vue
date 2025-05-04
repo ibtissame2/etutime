@@ -20,7 +20,6 @@ const props = defineProps({
 	clients: Array,
 	createClient: Function,
 	updateTimeEntries: Function,
-	currency: String,
 	enableEstimatedTime: Boolean,
 	canCreateProject: Boolean,
 });
@@ -41,7 +40,6 @@ const showMassUpdateModal = ref(false);
 		:update-time-entries
 		:enable-estimated-time
 		:can-create-project
-		:currency
 		:time-entries="selectedTimeEntries"
 		@submit="emit('submit')"
 	></TimeEntryMassUpdateModal>

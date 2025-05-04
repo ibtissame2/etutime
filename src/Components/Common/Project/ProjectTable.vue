@@ -39,7 +39,6 @@ const gridTemplate = computed(() => {
 	<ProjectCreateModal
 		v-model:show="showCreateProjectModal"
 		:create-client="createClient"
-		:currency="'MAD'"
 		:clients="clients"
 	></ProjectCreateModal>
 	<div class="flow-root max-w-[100vw] overflow-x-auto">
@@ -49,7 +48,7 @@ const gridTemplate = computed(() => {
 				<div v-if="projects.length === 0" class="col-span-5 py-24 text-center">
 					<FolderPlusIcon class="w-8 text-icon-default inline pb-2"></FolderPlusIcon>
 					<h3 class="text-text-primary font-semibold">Aucun module trouvé</h3>
-					<p class="pb-5 max-w-md mx-auto text-sm pt-1">Créez votre premier module dès maintenant !</p>
+					<p class="pb-5 max-w-md mx-auto text-sm pt-1">Créez votre premier module maintenant !</p>
 					<SecondaryButton :icon="PlusIcon" @click="showCreateProjectModal = true"
 						>Créez votre premier module
 					</SecondaryButton>

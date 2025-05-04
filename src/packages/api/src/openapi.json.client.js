@@ -67,7 +67,6 @@ const OrganizationResource = z
 		id: z.string(),
 		name: z.string(),
 		is_personal: z.boolean(),
-		currency: z.string(),
 	})
 	.passthrough();
 const OrganizationUpdateRequest = z
@@ -210,7 +209,6 @@ const DetailedWithDataReportResource = z
 		name: z.string(),
 		description: z.union([z.string(), z.null()]),
 		public_until: z.union([z.string(), z.null()]),
-		currency: z.string(),
 		properties: z
 			.object({
 				group: z.string(),
@@ -399,7 +397,7 @@ const UserResource = z
 const PersonalMembershipResource = z
 	.object({
 		id: z.string(),
-		organization: z.object({ id: z.string(), name: z.string(), currency: z.string() }).passthrough(),
+		organization: z.object({ id: z.string(), name: z.string() }).passthrough(),
 		role: z.string(),
 	})
 	.passthrough();

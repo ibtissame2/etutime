@@ -5,7 +5,6 @@ import TableRow from '@/Components/TableRow.vue';
 import { useMembersStore } from '@/utils/useMembers';
 import { useProjectMembersStore } from '@/utils/useProjectMembers';
 import ProjectMemberMoreOptionsDropdown from '@/Components/Common/ProjectMember/ProjectMemberMoreOptionsDropdown.vue';
-import { formatCents } from '@/packages/ui/src/utils/money';
 import { capitalizeFirstLetter } from '@/utils/format';
 import ProjectMemberEditModal from '@/Components/Common/ProjectMember/ProjectMemberEditModal.vue';
 

@@ -24,7 +24,6 @@ const props = defineProps({
 	tasks: Array,
 	clients: Array,
 	createClient: Function,
-	currency: String,
 	emptyPlaceholder: { type: String, default: 'No Project' },
 	allowReset: { type: Boolean, default: false },
 	enableEstimatedTime: Boolean,

@@ -212,7 +212,6 @@ useSelectEvents(filteredRecentlyTrackedTimeEntries, highlightedDropdownEntryId, 
 						:create-client
 						:can-create-project="true"
 						:clients
-						:currency="'MAD'"
 						:projects="projects"
 						:tasks="tasks"
 						:enable-estimated-time="enableEstimatedTime"

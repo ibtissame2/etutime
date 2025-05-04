@@ -137,8 +137,8 @@ const option = computed(() => ({
 	<div class="w-[calc(100%-1px)]">
 		<v-chart v-if="groupedData && groupedData?.length > 0" :autoresize="true" class="chart" :option="option" />
 		<div v-else class="chart flex flex-col items-center justify-center">
-			<p class="text-lg text-text-primary font-semibold">No time entries found</p>
-			<p>Try to change the filters and time range</p>
+			<p class="text-lg text-text-primary font-semibold">Aucune entrée de temps trouvée</p>
+			<p>Essayez de changer les filtres et la plage horaire</p>
 		</div>
 	</div>
 </template>

@@ -21,7 +21,6 @@ import ReportingPieChart from '@/Components/Common/Reporting/ReportingPieChart.v
 import { getCurrentMembershipId, getCurrentOrganizationId, getCurrentRole } from '@/utils/useUser';
 import ClientMultiselectDropdown from '@/Components/Common/Client/ClientMultiselectDropdown.vue';
 import { useTachesStore } from '@/store/taches';
-import { formatCents } from '@/packages/ui/src/utils/money';
 import { useSessionStorage, useStorage } from '@vueuse/core';
 import ReportingTabNavbar from '@/Components/Common/Reporting/ReportingTabNavbar.vue';
 import { useNotificationsStore } from '@/utils/notification';
@@ -323,14 +322,11 @@ const tableData = computed(() => {
 								<div class="justify-end flex items-center font-medium">
 									{{ formatHumanReadableDuration(aggregatedTableTimeEntries.seconds) }}
 								</div>
-								<div class="justify-end pr-6 flex items-center font-medium">
-									{{ aggregatedTableTimeEntries.cost ? formatCents(aggregatedTableTimeEntries.cost, 'MAD') : '--' }}
-								</div>
 							</div>
 						</template>
 						<div v-else class="chart flex flex-col items-center justify-center py-12 col-span-3">
-							<p class="text-lg text-text-primary font-semibold">No time entries found</p>
-							<p>Try to change the filters and time range</p>
+							<p class="text-lg text-text-primary font-semibold">Aucune entrée de temps trouvée</p>
+							<p>Essayez de changer les filtres et la plage horaire</p>
 						</div>
 					</div>
 				</div>

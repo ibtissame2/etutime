@@ -22,7 +22,6 @@ const props = defineProps({
 	updateTimeEntries: Function,
 	updateTimeEntry: Function,
 	deleteTimeEntries: Function,
-	currency: String,
 	selectedTimeEntries: Array,
 	enableEstimatedTime: Boolean,
 	canCreateProject: Boolean,
@@ -95,7 +94,6 @@ function onSelectChange(event) {
 							:show-badge-border="false"
 							:project="timeEntry.project_id"
 							:enable-estimated-time
-							:currency="currency"
 							:task="timeEntry.task_id"
 							@changed="updateProjectAndTask"
 						></TimeTrackerProjectTaskDropdown>
@@ -149,7 +147,6 @@ function onSelectChange(event) {
 				:update-time-entry="(timeEntry) => updateTimeEntry(timeEntry)"
 				:on-start-stop-click="() => onStartStopClick(subEntry)"
 				:delete-time-entry="() => deleteTimeEntries([subEntry])"
-				:currency="currency"
 				:time-entry="subEntry"
 				@selected="emit('selected', [subEntry])"
 				@unselected="emit('unselected', [subEntry])"

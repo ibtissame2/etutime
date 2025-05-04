@@ -21,9 +21,11 @@ const showCreateTagModal = ref(false);
 				<TagTableHeading></TagTableHeading>
 				<div v-if="taches.length === 0" class="col-span-5 py-24 text-center">
 					<FolderPlusIcon class="w-8 text-icon-default inline pb-2"></FolderPlusIcon>
-					<h3 class="text-text-primary font-semibold">No taches found</h3>
-					<p class="pb-5">Create your first tag now!</p>
-					<SecondaryButton :icon="PlusIcon" @click="showCreateTagModal = true">Create your First Tag</SecondaryButton>
+					<h3 class="text-text-primary font-semibold">Aucun tâche trouvé</h3>
+					<p class="pb-5">Créez votre premier tâche maintenant !</p>
+					<SecondaryButton :icon="PlusIcon" @click="showCreateTagModal = true"
+						>Créez votre premier tâche</SecondaryButton
+					>
 				</div>
 				<template v-for="tag in taches" :key="tag.id">
 					<TagTableRow :tag="tag"></TagTableRow>

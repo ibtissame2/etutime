@@ -25,7 +25,6 @@ const props = defineProps({
 	onStartStopClick: Function,
 	deleteTimeEntry: Function,
 	updateTimeEntry: Function,
-	currency: String,
 	showMember: {
 		type: Boolean,
 		required: false,
@@ -107,7 +106,6 @@ function onSelectChange(event) {
 						:tasks="tasks"
 						:show-badge-border="false"
 						:project="timeEntry.project_id"
-						:currency="currency"
 						:enable-estimated-time
 						:task="timeEntry.task_id"
 						@changed="updateProjectAndTask"

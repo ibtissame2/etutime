@@ -1,4 +1,3 @@
-import * as money from './utils/money';
 import * as color from './utils/color';
 import * as random from './utils/random';
 import * as time from './utils/time';
@@ -23,7 +22,6 @@ import TimeEntryCreateModal from './TimeEntry/TimeEntryCreateModal.vue';
 import MoreOptionsDropdown from './MoreOptionsDropdown.vue';
 
 export {
-	money,
 	color,
 	random,
 	time,

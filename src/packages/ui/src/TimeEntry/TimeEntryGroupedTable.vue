@@ -18,7 +18,6 @@ const props = defineProps({
 	deleteTimeEntries: Function,
 	createTimeEntry: Function,
 	createClient: Function,
-	currency: String,
 	enableEstimatedTime: Boolean,
 	canCreateProject: Boolean,
 });
@@ -123,7 +122,6 @@ function unselectAllTimeEntries(value) {
 				:update-time-entries
 				:update-time-entry
 				:delete-time-entries
-				:currency="currency"
 				:time-entry="entry"
 				@selected="
 					(timeEntries) => {
@@ -151,7 +149,6 @@ function unselectAllTimeEntries(value) {
 				:update-time-entry
 				:on-start-stop-click="() => startTimeEntryFromExisting(entry)"
 				:delete-time-entry="() => deleteTimeEntries([entry])"
-				:currency="currency"
 				:time-entry="entry.timeEntries[0]"
 				@selected="selectedTimeEntries.push(entry)"
 				@unselected="selectedTimeEntries = selectedTimeEntries.filter((item) => item.id !== entry.id)"
