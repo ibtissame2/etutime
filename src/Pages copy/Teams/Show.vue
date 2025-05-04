@@ -7,7 +7,6 @@ import UpdateTeamNameForm from '@/Pages/Teams/Partials/UpdateTeamNameForm.vue';
 defineProps({
 	team: Object,
 	availableRoles: Array,
-	permissions: Object,
 });
 </script>
 
@@ -19,12 +18,12 @@ defineProps({
 
 		<div>
 			<div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
-				<UpdateTeamNameForm :team="team" :permissions="permissions" />
+				<UpdateTeamNameForm :team="team" />
 
 				<SectionBorder />
 				<SectionBorder />
 
-				<template v-if="permissions.canDeleteTeam && !team.personal_team">
+				<template>
 					<DeleteTeamForm class="mt-10 sm:mt-0" :team="team" />
 				</template>
 			</div>

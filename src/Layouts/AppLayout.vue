@@ -8,7 +8,6 @@ import NotificationContainer from '@/Components/NotificationContainer.vue';
 import NavigationSidebarItem from '@/Components/NavigationSidebarItem.vue';
 import UserSettingsIcon from '@/Components/UserSettingsIcon.vue';
 import MainContainer from '@/packages/ui/src/MainContainer.vue';
-import { canUpdateOrganization, canViewNotes, canViewMembers, canViewProjects, canViewTags } from '@/utils/permissions';
 import { Head, route } from '@/utils/inertia';
 import { fetchToken, isTokenValid } from '@/utils/session';
 import HomeIcon from '@/Components/Icons/HomeIcon.vue';
@@ -20,7 +19,6 @@ import Cog6ToothIcon from '@/Components/Icons/Cog6ToothIcon.vue';
 import NotesIcon from '@/Components/Icons/NotesIcon.vue';
 import FolderIcon from '@/Components/Icons/FolderIcon.vue';
 import TagIcon from '@/Components/Icons/TagIcon.vue';
-import UserGroupIcon from '@/Components/Icons/UserGroupIcon.vue';
 import EnvGroupIcon from '@/Components/Icons/EnvGroupIcon.vue';
 
 defineProps({
@@ -120,7 +118,6 @@ onMounted(async () => {
 					<nav>
 						<ul>
 							<NavigationSidebarItem
-								v-if="canViewProjects()"
 								title="Modules"
 								:icon="FolderIcon"
 								:href="route('modules')"
@@ -128,15 +125,6 @@ onMounted(async () => {
 							></NavigationSidebarItem>
 
 							<NavigationSidebarItem
-								v-if="canViewMembers()"
-								title="Etudiants"
-								:icon="UserGroupIcon"
-								:current="route.current('etudiants')"
-								:href="route('etudiants')"
-							></NavigationSidebarItem>
-
-							<NavigationSidebarItem
-								v-if="canViewTags()"
 								title="Tâches"
 								:icon="TagIcon"
 								:current="route.current('taches')"
@@ -144,14 +132,11 @@ onMounted(async () => {
 							></NavigationSidebarItem>
 						</ul>
 					</nav>
-					<div v-if="canUpdateOrganization()" class="text-text-tertiary text-sm font-semibold pt-5 pb-1.5">
-						Documents
-					</div>
+					<div class="text-text-tertiary text-sm font-semibold pt-5 pb-1.5">Documents</div>
 
 					<nav>
 						<ul>
 							<NavigationSidebarItem
-								v-if="canViewNotes()"
 								title="Notes"
 								:icon="NotesIcon"
 								:current="route.current('notes')"
@@ -159,7 +144,6 @@ onMounted(async () => {
 							></NavigationSidebarItem>
 
 							<NavigationSidebarItem
-								v-if="canUpdateOrganization()"
 								title="Import"
 								:icon="ArrowsRightLeftIcon"
 								:current="route.current('import')"
@@ -168,6 +152,7 @@ onMounted(async () => {
 						</ul>
 					</nav>
 				</div>
+
 				<div class="justify-self-end">
 					<ul class="border-t border-default-background-separator pt-3 flex justify-between pr-4 items-center">
 						<NavigationSidebarItem

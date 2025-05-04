@@ -2789,7 +2789,7 @@ const endpoints = makeApi([
 		path: '/v1/organizations/:organization/time-entries',
 		alias: 'getTimeEntries',
 		description: `If you only need time entries for a specific user, you can filter by &#x60;user_id&#x60;.
-Users with the permission &#x60;time-entries:view:own&#x60; can only use this endpoint with their own user ID in the user_id filter.`,
+Users with  &#x60;time-entries:view:own&#x60; can only use this endpoint with their own user ID in the user_id filter.`,
 		requestFormat: 'json',
 		parameters: [
 			{

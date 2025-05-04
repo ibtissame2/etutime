@@ -6,7 +6,6 @@ import { computed, ref } from 'vue';
 import ProjectCreateModal from '@/packages/ui/src/Project/ProjectCreateModal.vue';
 import ProjectTableHeading from '@/Components/Common/Project/ProjectTableHeading.vue';
 import ProjectTableRow from '@/Components/Common/Project/ProjectTableRow.vue';
-import { canCreateModule } from '@/utils/permissions';
 import { useModulesStore } from '@/store/modules';
 import { useClientsStore } from '@/utils/useClients';
 import { storeToRefs } from 'pinia';
@@ -49,17 +48,9 @@ const gridTemplate = computed(() => {
 				<ProjectTableHeading></ProjectTableHeading>
 				<div v-if="projects.length === 0" class="col-span-5 py-24 text-center">
 					<FolderPlusIcon class="w-8 text-icon-default inline pb-2"></FolderPlusIcon>
-					<h3 class="text-text-primary font-semibold">
-						{{ canCreateModule() ? 'Aucun module trouvé' : "Vous n'êtes membre d'aucun module" }}
-					</h3>
-					<p class="pb-5 max-w-md mx-auto text-sm pt-1">
-						{{
-							canCreateModule()
-								? 'Créez votre premier module dès maintenant !'
-								: 'Demandez à votre responsable de vous ajouter à un module en tant que membre de l’équipe.'
-						}}
-					</p>
-					<SecondaryButton v-if="canCreateModule()" :icon="PlusIcon" @click="showCreateProjectModal = true"
+					<h3 class="text-text-primary font-semibold">Aucun module trouvé</h3>
+					<p class="pb-5 max-w-md mx-auto text-sm pt-1">Créez votre premier module dès maintenant !</p>
+					<SecondaryButton :icon="PlusIcon" @click="showCreateProjectModal = true"
 						>Créez votre premier module
 					</SecondaryButton>
 				</div>

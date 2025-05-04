@@ -20,13 +20,11 @@ import Card from '@/Components/Common/Card.vue';
 import ProjectMemberTable from '@/Components/Common/ProjectMember/ProjectMemberTable.vue';
 import ProjectMemberCreateModal from '@/Components/Common/ProjectMember/ProjectMemberCreateModal.vue';
 import { useProjectMembersStore } from '@/utils/useProjectMembers';
-import { canCreateModule, canCreateTasks, canViewProjectMembers } from '@/utils/permissions';
 import TabBarItem from '@/Components/Common/TabBar/TabBarItem.vue';
 import TabBar from '@/Components/Common/TabBar/TabBar.vue';
 import { useTasksStore } from '@/utils/useTasks';
 import ProjectEditModal from '@/Components/Common/Project/ProjectEditModal.vue';
 import { Badge } from '@/packages/ui/src';
-import { formatCents } from '../packages/ui/src/utils/money';
 
 const { modules } = storeToRefs(useModulesStore());
 
@@ -41,9 +39,7 @@ const projectId = route()?.params?.project;
 const { projectMembers } = storeToRefs(useProjectMembersStore());
 
 onMounted(() => {
-	if (canViewProjectMembers()) {
-		useProjectMembersStore().fetchProjectMembers(projectId);
-	}
+	useProjectMembersStore().fetchProjectMembers(projectId);
 	useTasksStore().fetchTasks();
 });
 
@@ -97,9 +93,7 @@ const shownTasks = computed(() => {
 				</ol>
 			</nav>
 			<div>
-				<SecondaryButton v-if="canCreateModule()" :icon="PencilSquareIcon" @click="showEditProjectModal = true">
-					Edit Project
-				</SecondaryButton>
+				<SecondaryButton :icon="PencilSquareIcon" @click="showEditProjectModal = true"> Edit Project </SecondaryButton>
 				<ProjectEditModal
 					v-if="project"
 					v-model:show="showEditProjectModal"
@@ -119,9 +113,7 @@ const shownTasks = computed(() => {
 										<TabBarItem :active="isActiveTab('done')" @click="activeTab = 'done'">Done </TabBarItem>
 									</TabBar>
 								</div>
-								<SecondaryButton v-if="canCreateTasks()" :icon="PlusIcon" @click="createTask = true"
-									>Create Task
-								</SecondaryButton>
+								<SecondaryButton :icon="PlusIcon" @click="createTask = true">Create Task </SecondaryButton>
 								<TaskCreateModal v-model:show="createTask" :project-id="projectId"></TaskCreateModal>
 							</div>
 						</template>
@@ -130,7 +122,7 @@ const shownTasks = computed(() => {
 						<TaskTable :tasks="shownTasks" :project-id="projectId"></TaskTable>
 					</Card>
 				</div>
-				<div v-if="canViewProjectMembers()">
+				<div>
 					<CardTitle title="Project Members" :icon="UserGroupIcon">
 						<template #actions>
 							<SecondaryButton :icon="PlusIcon" @click="createProjectMember = true"> Add Member </SecondaryButton>

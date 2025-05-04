@@ -7,11 +7,9 @@ import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import { api } from '@/packages/api/src';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { useNotificationsStore } from '@/utils/notification';
-import { canInvitePlaceholderMembers } from '@/utils/permissions';
 import { useMembersStore } from '@/utils/useMembers';
 import { computed, ref } from 'vue';
 import MemberEditModal from '@/Components/Common/Member/MemberEditModal.vue';
-import { formatCents } from '@/packages/ui/src/utils/money';
 import MemberMergeModal from '@/Components/Common/Member/MemberMergeModal.vue';
 import MemberMakePlaceholderModal from '@/Components/Common/Member/MemberMakePlaceholderModal.vue';
 
@@ -78,7 +76,7 @@ const userHasValidMailAddress = computed(() => {
 			class="relative whitespace-nowrap flex items-center pl-3 text-right text-sm font-medium sm:pr-0 pr-4 sm:pr-6 lg:pr-8 3xl:pr-12"
 		>
 			<SecondaryButton
-				v-if="props.member.is_placeholder === true && canInvitePlaceholderMembers() && userHasValidMailAddress"
+				v-if="props.member.is_placeholder === true && userHasValidMailAddress"
 				size="small"
 				@click="invitePlaceholder(props.member.id)"
 			>

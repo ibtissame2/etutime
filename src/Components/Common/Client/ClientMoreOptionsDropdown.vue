@@ -1,7 +1,6 @@
 <script setup>
 import { ArchiveBoxIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/20/solid';
 import MoreOptionsDropdown from '@/packages/ui/src/MoreOptionsDropdown.vue';
-import { canDeleteClients, canUpdateClients } from '@/utils/permissions';
 
 const emit = defineEmits(['delete', 'edit', 'archive']);
 const props = defineProps({
@@ -16,7 +15,6 @@ const props = defineProps({
 	<MoreOptionsDropdown :label="'Actions for Client ' + props.client.name">
 		<div class="min-w-[150px]">
 			<button
-				v-if="canUpdateClients()"
 				:aria-label="'Edit Client ' + props.client.name"
 				data-testid="client_edit"
 				class="flex items-center space-x-3 w-full px-3 py-2.5 text-start text-sm font-medium leading-5 text-text-primary hover:bg-card-background-active focus:outline-none focus:bg-card-background-active transition duration-150 ease-in-out"
@@ -26,7 +24,6 @@ const props = defineProps({
 				<span>Edit</span>
 			</button>
 			<button
-				v-if="canUpdateClients()"
 				:aria-label="'Archive Client ' + props.client.name"
 				class="flex items-center space-x-3 w-full px-3 py-2.5 text-start text-sm font-medium leading-5 text-text-primary hover:bg-card-background-active focus:outline-none focus:bg-card-background-active transition duration-150 ease-in-out"
 				@click.prevent="emit('archive')"
@@ -35,7 +32,6 @@ const props = defineProps({
 				<span>{{ client.is_archived ? 'Unarchive' : 'Archive' }}</span>
 			</button>
 			<button
-				v-if="canDeleteClients()"
 				:aria-label="'Delete Client ' + props.client.name"
 				data-testid="client_delete"
 				class="flex items-center space-x-3 w-full px-3 py-2.5 text-start text-sm font-medium leading-5 text-text-primary hover:bg-card-background-active focus:outline-none focus:bg-card-background-active transition duration-150 ease-in-out"

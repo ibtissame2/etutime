@@ -8,7 +8,6 @@ import { computed, onMounted, ref } from 'vue';
 import { useModulesStore } from '@/store/modules';
 import ProjectCreateModal from '@/packages/ui/src/Project/ProjectCreateModal.vue';
 import PageTitle from '@/Components/Common/PageTitle.vue';
-import { canCreateModule } from '@/utils/permissions';
 import TabBarItem from '@/Components/Common/TabBar/TabBarItem.vue';
 import TabBar from '@/Components/Common/TabBar/TabBar.vue';
 import { storeToRefs } from 'pinia';
@@ -51,9 +50,7 @@ async function createClient(client) {
 					<TabBarItem :active="isActiveTab('archived')" @click="activeTab = 'archived'"> Archived </TabBarItem>
 				</TabBar>
 			</div>
-			<SecondaryButton v-if="canCreateModule()" :icon="PlusIcon" @click="showCreateProjectModal = true"
-				>Créer un module
-			</SecondaryButton>
+			<SecondaryButton :icon="PlusIcon" @click="showCreateProjectModal = true">Créer un module </SecondaryButton>
 			<ProjectCreateModal
 				v-model:show="showCreateProjectModal"
 				:create-client="createClient"

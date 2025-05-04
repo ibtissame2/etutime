@@ -1,7 +1,6 @@
 <script setup>
 import { TrashIcon, PencilSquareIcon } from '@heroicons/vue/20/solid';
 import MoreOptionsDropdown from '@/packages/ui/src/MoreOptionsDropdown.vue';
-import { canDeleteReport, canUpdateReport } from '@/utils/permissions';
 
 const emit = defineEmits(['delete', 'edit', 'archive']);
 
@@ -17,7 +16,6 @@ const props = defineProps({
 	<MoreOptionsDropdown :label="'Actions for Project ' + props.report.name">
 		<div class="min-w-[150px]">
 			<button
-				v-if="canUpdateReport()"
 				:aria-label="'Edit Report ' + props.report.name"
 				class="flex items-center space-x-3 w-full px-3 py-2.5 text-start text-sm font-medium leading-5 text-text-primary hover:bg-card-background-active focus:outline-none focus:bg-card-background-active transition duration-150 ease-in-out"
 				@click.prevent="emit('edit')"
@@ -26,7 +24,6 @@ const props = defineProps({
 				<span>Edit</span>
 			</button>
 			<button
-				v-if="canDeleteReport()"
 				:aria-label="'Delete Report ' + props.report.name"
 				class="border-b border-card-background-separator flex items-center space-x-3 w-full px-3 py-2.5 text-start text-sm font-medium leading-5 text-text-primary hover:bg-card-background-active focus:outline-none focus:bg-card-background-active transition duration-150 ease-in-out"
 				@click.prevent="emit('delete')"

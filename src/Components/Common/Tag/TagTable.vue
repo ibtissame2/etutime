@@ -8,7 +8,6 @@ import { useTachesStore } from '@/store/taches';
 import TagTableRow from '@/Components/Common/Tag/TagTableRow.vue';
 import TagCreateModal from '@/packages/ui/src/Tag/TagCreateModal.vue';
 import TagTableHeading from '@/Components/Common/Tag/TagTableHeading.vue';
-import { canCreateTags } from '@/utils/permissions';
 
 const { taches } = storeToRefs(useTachesStore());
 const showCreateTagModal = ref(false);
@@ -23,10 +22,8 @@ const showCreateTagModal = ref(false);
 				<div v-if="taches.length === 0" class="col-span-5 py-24 text-center">
 					<FolderPlusIcon class="w-8 text-icon-default inline pb-2"></FolderPlusIcon>
 					<h3 class="text-text-primary font-semibold">No taches found</h3>
-					<p v-if="canCreateTags()" class="pb-5">Create your first tag now!</p>
-					<SecondaryButton v-if="canCreateTags()" :icon="PlusIcon" @click="showCreateTagModal = true"
-						>Create your First Tag</SecondaryButton
-					>
+					<p class="pb-5">Create your first tag now!</p>
+					<SecondaryButton :icon="PlusIcon" @click="showCreateTagModal = true">Create your First Tag</SecondaryButton>
 				</div>
 				<template v-for="tag in taches" :key="tag.id">
 					<TagTableRow :tag="tag"></TagTableRow>

@@ -10,7 +10,6 @@ import { CreditCardIcon } from '@heroicons/vue/20/solid';
 
 const props = defineProps({
 	team: Object,
-	permissions: Object,
 });
 
 const form = useForm({
@@ -59,13 +58,7 @@ const updateTeamName = () => {
 			<div class="col-span-6 sm:col-span-4">
 				<InputLabel for="name" value="Organization Name" />
 
-				<TextInput
-					id="name"
-					v-model="form.name"
-					type="text"
-					class="mt-1 block w-full"
-					:disabled="!permissions.canUpdateTeam"
-				/>
+				<TextInput id="name" v-model="form.name" type="text" class="mt-1 block w-full" />
 
 				<InputError :message="form.errors.name" class="mt-2" />
 			</div>
@@ -76,7 +69,6 @@ const updateTeamName = () => {
 					id="currency"
 					v-model="form.currency"
 					name="currency"
-					:disabled="!permissions.canUpdateTeam"
 					class="mt-1 block w-full border-input-border bg-input-background text-text-primary focus:border-input-border-active rounded-md shadow-sm"
 				>
 					<option value="" disabled>Select a currency</option>
@@ -92,7 +84,7 @@ const updateTeamName = () => {
 			</div>
 		</template>
 
-		<template v-if="permissions.canUpdateTeam" #actions>
+		<template #actions>
 			<ActionMessage :on="form.recentlySuccessful" class="me-3"> Saved. </ActionMessage>
 
 			<PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing"> Save </PrimaryButton>

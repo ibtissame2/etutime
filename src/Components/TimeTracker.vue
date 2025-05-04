@@ -16,7 +16,6 @@ import { useTasksStore } from '@/utils/useTasks';
 import { useClientsStore } from '@/utils/useClients';
 import TimeTrackerControls from '@/packages/ui/src/TimeTracker/TimeTrackerControls.vue';
 import TimeTrackerRunningInDifferentOrganizationOverlay from '@/packages/ui/src/TimeTracker/TimeTrackerRunningInDifferentOrganizationOverlay.vue';
-import { canCreateModule } from '@/utils/permissions';
 
 const page = usePage();
 dayjs.extend(duration);
@@ -96,7 +95,7 @@ const { taches } = storeToRefs(useTachesStore());
 			v-model:current-time-entry="currentTimeEntry"
 			v-model:live-timer="now"
 			:enable-estimated-time="true"
-			:can-create-project="canCreateModule()"
+			:can-create-project="true"
 			:create-client="createClient"
 			:clients="clients"
 			:tags="taches"

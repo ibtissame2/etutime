@@ -1,6 +1,5 @@
 <script setup>
 import { TrashIcon, PencilSquareIcon, CheckCircleIcon } from '@heroicons/vue/20/solid';
-import { canDeleteTasks, canUpdateTasks } from '@/utils/permissions';
 import MoreOptionsDropdown from '@/packages/ui/src/MoreOptionsDropdown.vue';
 
 const emit = defineEmits(['delete', 'edit', 'done']);
@@ -17,7 +16,6 @@ const props = defineProps({
 	<MoreOptionsDropdown :label="'Actions for Task ' + props.task.name">
 		<div class="min-w-[150px]">
 			<button
-				v-if="canUpdateTasks()"
 				:aria-label="'Edit Task ' + props.task.name"
 				data-testid="task_edit"
 				class="flex items-center space-x-3 w-full px-3 py-2.5 text-start text-sm font-medium leading-5 text-text-primary hover:bg-card-background-active focus:outline-none focus:bg-card-background-active transition duration-150 ease-in-out"
@@ -27,7 +25,6 @@ const props = defineProps({
 				<span>Edit</span>
 			</button>
 			<button
-				v-if="canUpdateTasks()"
 				:aria-label="'Mark Task ' + props.task.name + ' as done'"
 				class="flex items-center space-x-3 w-full px-3 py-2.5 text-start text-sm font-medium leading-5 text-text-primary hover:bg-card-background-active focus:outline-none focus:bg-card-background-active transition duration-150 ease-in-out"
 				@click="emit('done')"
@@ -37,7 +34,6 @@ const props = defineProps({
 				<span v-else>Mark as done</span>
 			</button>
 			<button
-				v-if="canDeleteTasks()"
 				:aria-label="'Delete Task ' + props.task.name"
 				data-testid="task_delete"
 				class="flex items-center space-x-3 w-full px-3 py-2.5 text-start text-sm font-medium leading-5 text-text-primary hover:bg-card-background-active focus:outline-none focus:bg-card-background-active transition duration-150 ease-in-out"

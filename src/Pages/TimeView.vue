@@ -18,7 +18,6 @@ import { useTachesStore } from '@/store/taches';
 import { useClientsStore } from '@/utils/useClients';
 import TimeEntryCreateModal from '@/packages/ui/src/TimeEntry/TimeEntryCreateModal.vue';
 import TimeEntryMassActionRow from '@/packages/ui/src/TimeEntry/TimeEntryMassActionRow.vue';
-import { canCreateModule } from '@/utils/permissions';
 
 const timeEntriesStore = useTimeEntriesStore();
 const { timeEntries, allTimeEntriesLoaded } = storeToRefs(timeEntriesStore);
@@ -117,7 +116,7 @@ function deleteSelected() {
 		<TimeEntryMassActionRow
 			:selected-time-entries="selectedTimeEntries"
 			:enable-estimated-time="true"
-			:can-create-project="canCreateModule()"
+			:can-create-project="true"
 			:all-selected="selectedTimeEntries.length === timeEntries.length"
 			:delete-selected="deleteSelected"
 			:projects="modules"
@@ -140,7 +139,7 @@ function deleteSelected() {
 		<TimeEntryGroupedTable
 			v-model:selected="selectedTimeEntries"
 			:enable-estimated-time="true"
-			:can-create-project="canCreateModule()"
+			:can-create-project="true"
 			:clients="clients"
 			:create-client="createClient"
 			:update-time-entry="updateTimeEntry"

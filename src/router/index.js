@@ -25,7 +25,7 @@ const routes = [
 	{
 		path: '/env',
 		name: 'Envirenement du travail',
-		component: EnvView,
+		component: EtudiantsView,
 	},
 	{
 		path: '/time',
@@ -41,11 +41,6 @@ const routes = [
 		path: '/modules',
 		name: 'Modules',
 		component: ModulesView,
-	},
-	{
-		path: '/etudiants',
-		name: 'Etudiants',
-		component: EtudiantsView,
 	},
 	{
 		path: '/taches',

@@ -6,7 +6,6 @@ import { ref } from 'vue';
 import TaskTableRow from '@/Components/Common/Task/TaskTableRow.vue';
 import TaskTableHeading from '@/Components/Common/Task/TaskTableHeading.vue';
 import TaskCreateModal from '@/Components/Common/Task/TaskCreateModal.vue';
-import { canCreateTasks } from '@/utils/permissions';
 
 const props = defineProps({
 	projectId: {
@@ -36,10 +35,8 @@ const createTask = ref(false);
 				<div v-if="tasks.length === 0" class="col-span-5 py-24 text-center">
 					<PlusCircleIcon class="w-8 text-icon-default inline pb-2" />
 					<h3 class="text-text-primary font-semibold">No tasks found</h3>
-					<p v-if="canCreateTasks()" class="pb-5">Create your first task now!</p>
-					<SecondaryButton v-if="canCreateTasks()" :icon="PlusIcon" @click="createTask = true">
-						Create your First Task
-					</SecondaryButton>
+					<p class="pb-5">Create your first task now!</p>
+					<SecondaryButton :icon="PlusIcon" @click="createTask = true"> Create your First Task </SecondaryButton>
 				</div>
 				<template v-for="task in tasks" :key="task.id">
 					<TaskTableRow :task="task" />

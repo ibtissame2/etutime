@@ -8,7 +8,6 @@ import TimeTrackerProjectTaskDropdown from '@/packages/ui/src/TimeTracker/TimeTr
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
 import { TagIcon } from '@heroicons/vue/20/solid';
 import { getDayJsInstance, getLocalizedDayJs } from '@/packages/ui/src/utils/time';
-import { canCreateModule } from '@/utils/permissions';
 import TagDropdown from '@/packages/ui/src/Tag/TagDropdown.vue';
 import { Badge } from '@/packages/ui/src';
 import DatePicker from '@/packages/ui/src/Input/DatePicker.vue';
@@ -104,7 +103,7 @@ async function submit() {
 							v-model:task="timeEntry.task_id"
 							:clients
 							:create-client
-							:can-create-project="canCreateModule()"
+							:can-create-project="true"
 							:currency="'MAD'"
 							size="xlarge"
 							class="bg-input-background"

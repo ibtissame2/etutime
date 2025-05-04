@@ -7,7 +7,6 @@ import { ref } from 'vue';
 import TagTable from '@/Components/Common/Tag/TagTable.vue';
 // import TagCreateModal from '@/packages/ui/src/Tag/TagCreateModal.vue';
 import PageTitle from '@/Components/Common/PageTitle.vue';
-import { canCreateNotes } from '@/utils/permissions';
 // import { useNotesStore } from '@/store/notes';
 
 const showCreateNoteModal = ref(false);
@@ -23,9 +22,7 @@ async function createNote(tag) {
 			<div class="flex items-center space-x-6">
 				<PageTitle :icon="TagIcon" title="Notes"></PageTitle>
 			</div>
-			<SecondaryButton v-if="canCreateNotes()" :icon="PlusIcon" @click="showCreateNoteModal = true"
-				>Créer une note
-			</SecondaryButton>
+			<SecondaryButton :icon="PlusIcon" @click="showCreateNoteModal = true">Créer une note </SecondaryButton>
 			<!-- <TagCreateModal v-model:show="showCreateNoteModal"></TagCreateModal> -->
 		</MainContainer>
 		<!-- <TagTable></TagTable> -->
