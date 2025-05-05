@@ -1,8 +1,8 @@
 <script setup>
-import MainContainer from '@/packages/ui/src/MainContainer.vue';
+import MainContainer from '@/Components/src/MainContainer.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { TagIcon, PlusIcon } from '@heroicons/vue/16/solid';
-import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import { ref } from 'vue';
 // import TagTable from '@/Components/Common/Tag/TagTable.vue';
 // import TagCreateModal from '@/Components/Common/Tag/TagCreateModal.vue';

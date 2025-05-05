@@ -1,7 +1,7 @@
 <script setup>
-import { SecondaryButton } from '@/packages/ui/src';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import { ArrowDownTrayIcon, LockClosedIcon } from '@heroicons/vue/20/solid';
-import Dropdown from '@/packages/ui/src/Input/Dropdown.vue';
+import Dropdown from '@/Components/src/Input/Dropdown.vue';
 import { ref } from 'vue';
 import UpgradeModal from '@/Components/Common/UpgradeModal.vue';
 

@@ -2,21 +2,21 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import TimeTracker from '@/Components/TimeTracker.vue';
 import { onMounted, ref, watch } from 'vue';
-import MainContainer from '@/packages/ui/src/MainContainer.vue';
+import MainContainer from '@/Components/src/MainContainer.vue';
 import { useTimeEntriesStore } from '@/utils/useTimeEntries';
 import { storeToRefs } from 'pinia';
 import { useElementVisibility } from '@vueuse/core';
 import { ClockIcon } from '@heroicons/vue/20/solid';
-import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import { PlusIcon } from '@heroicons/vue/16/solid';
-import LoadingSpinner from '@/packages/ui/src/LoadingSpinner.vue';
+import LoadingSpinner from '@/Components/src/LoadingSpinner.vue';
 import { useCurrentTimeEntryStore } from '@/utils/useCurrentTimeEntry';
 import { useTasksStore } from '@/utils/useTasks';
 import { useModulesStore } from '@/store/modules';
-import TimeEntryGroupedTable from '@/packages/ui/src/TimeEntry/TimeEntryGroupedTable.vue';
+import TimeEntryGroupedTable from '@/Components/TimeEntry/TimeEntryGroupedTable.vue';
 import { useTachesStore } from '@/store/taches';
-import TimeEntryCreateModal from '@/packages/ui/src/TimeEntry/TimeEntryCreateModal.vue';
-import TimeEntryMassActionRow from '@/packages/ui/src/TimeEntry/TimeEntryMassActionRow.vue';
+import TimeEntryCreateModal from '@/Components/TimeEntry/TimeEntryCreateModal.vue';
+import TimeEntryMassActionRow from '@/Components/TimeEntry/TimeEntryMassActionRow.vue';
 
 const timeEntriesStore = useTimeEntriesStore();
 const { timeEntries, allTimeEntriesLoaded } = storeToRefs(timeEntriesStore);

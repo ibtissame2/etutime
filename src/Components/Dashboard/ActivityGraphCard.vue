@@ -8,11 +8,11 @@ import { HeatmapChart } from 'echarts/charts';
 import { CalendarComponent, TitleComponent, TooltipComponent, VisualMapComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import dayjs from 'dayjs';
-import { firstDayIndex, formatDate, formatHumanReadableDuration, getDayJsInstance } from '@/packages/ui/src/utils/time';
+import { firstDayIndex, formatDate, formatHumanReadableDuration, getDayJsInstance } from '@/Components/src/utils/time';
 import { useCssVar } from '@vueuse/core';
 import { useQuery } from '@/utils/tanstack';
 import { getCurrentOrganizationId } from '@/utils/useUser';
-import { LoadingSpinner } from '@/packages/ui/src';
+import LoadingSpinner from '@/Components/src/LoadingSpinner.vue';
 
 use([TitleComponent, TooltipComponent, VisualMapComponent, CalendarComponent, HeatmapChart, CanvasRenderer]);
 

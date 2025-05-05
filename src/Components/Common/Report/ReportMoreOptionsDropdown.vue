@@ -1,6 +1,6 @@
 <script setup>
 import { TrashIcon, PencilSquareIcon } from '@heroicons/vue/20/solid';
-import MoreOptionsDropdown from '@/packages/ui/src/MoreOptionsDropdown.vue';
+import MoreOptionsDropdown from '@/Components/src/MoreOptionsDropdown.vue';
 
 const emit = defineEmits(['delete', 'edit', 'archive']);
 

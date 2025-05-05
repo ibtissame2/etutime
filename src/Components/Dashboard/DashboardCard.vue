@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import CardTitle from '@/packages/ui/src/CardTitle.vue';
+import CardTitle from '@/Components/src/CardTitle.vue';
 
 defineProps({
 	title: String,

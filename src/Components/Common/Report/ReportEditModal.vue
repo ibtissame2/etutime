@@ -1,14 +1,14 @@
 <script setup>
-import TextInput from '../../../packages/ui/src/Input/TextInput.vue';
-import SecondaryButton from '../../../packages/ui/src/Buttons/SecondaryButton.vue';
-import DialogModal from '@/packages/ui/src/DialogModal.vue';
+import TextInput from '@/Components/src/Input/TextInput.vue';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
+import DialogModal from '@/Components/src/DialogModal.vue';
 import { ref, watch } from 'vue';
-import PrimaryButton from '../../../packages/ui/src/Buttons/PrimaryButton.vue';
-import InputLabel from '../../../packages/ui/src/Input/InputLabel.vue';
+import PrimaryButton from '@/Components/src/Buttons/PrimaryButton.vue';
+import InputLabel from '@/Components/src/Input/InputLabel.vue';
 import { useMutation, useQueryClient } from '@/utils/tanstack';
 import { getCurrentOrganizationId } from '@/utils/useUser';
-import { Checkbox } from '@/packages/ui/src';
-import DatePicker from '@/packages/ui/src/Input/DatePicker.vue';
+import Checkbox from '@/Components/src/Input/Checkbox.vue';
+import DatePicker from '@/Components/src/Input/DatePicker.vue';
 import { useNotificationsStore } from '@/utils/notification';
 
 const show = defineModel('show', { default: false });

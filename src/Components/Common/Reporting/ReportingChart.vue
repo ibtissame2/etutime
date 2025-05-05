@@ -2,7 +2,7 @@
 import VChart, { THEME_KEY } from 'vue-echarts';
 import { computed, provide } from 'vue';
 import LinearGradient from 'zrender/lib/graphic/LinearGradient';
-import { formatDate, formatHumanReadableDuration, formatWeek } from '@/packages/ui/src/utils/time';
+import { formatDate, formatHumanReadableDuration, formatWeek } from '@/Components/src/utils/time';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { BarChart } from 'echarts/charts';

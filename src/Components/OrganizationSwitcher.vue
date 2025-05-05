@@ -1,8 +1,8 @@
 <script setup>
 import { ChevronDownIcon } from '@heroicons/vue/20/solid';
-import Dropdown from '@/packages/ui/src/Input/Dropdown.vue';
+import Dropdown from '@/Components/src/Input/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
-import { usePage, route } from '../utils/inertia';
+import { usePage, route } from '@/utils/inertia';
 import { switchOrganization } from '@/utils/useOrganization';
 
 const page = usePage();

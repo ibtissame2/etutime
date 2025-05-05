@@ -1,17 +1,16 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 
-import DashboardView from '../Pages/DashboardView.vue';
-import EmploiView from '../Pages/EmploiView.vue';
-import EnvView from '../Pages/EnvView.vue';
-import TimeView from '../Pages/TimeView.vue';
-import ReportingView from '../Pages/ReportingView.vue';
-import ModulesView from '../Pages/ModulesView.vue';
-import ModuleDetailView from '../Pages/ModuleDetailView.vue';
-import ChapitresView from '../Pages/ChapitresView.vue';
-import TagsView from '../Pages/TagsView.vue';
-import NotesView from '../Pages/NotesView.vue';
-import ImportView from '../Pages/ImportView.vue';
-import ProfileView from '../Pages/ProfileView.vue';
+import DashboardView from '@/Pages/DashboardView.vue';
+import EmploiView from '@/Pages/EmploiView.vue';
+import EnvView from '@/Pages/EnvView.vue';
+import TimeView from '@/Pages/TimeView.vue';
+import ReportingView from '@/Pages/ReportingView.vue';
+import ModulesView from '@/Pages/ModulesView.vue';
+import ChapitresView from '@/Pages/ChapitresView.vue';
+import TagsView from '@/Pages/TagsView.vue';
+import NotesView from '@/Pages/NotesView.vue';
+import ImportView from '@/Pages/ImportView.vue';
+import ProfileView from '@/Pages/ProfileView.vue';
 
 const routes = [
 	{
@@ -43,11 +42,6 @@ const routes = [
 		path: '/modules',
 		name: 'Modules',
 		component: ModulesView,
-	},
-	{
-		path: '/modules/:id',
-		name: 'ModuleDetail',
-		component: ModuleDetailView,
 	},
 	{
 		path: '/chapitres',

@@ -1,6 +1,6 @@
 <script setup>
-import { formatHumanReadableDuration } from '@/packages/ui/src/utils/time';
-import GroupedItemsCountButton from '@/packages/ui/src/GroupedItemsCountButton.vue';
+import { formatHumanReadableDuration } from '@/Components/src/utils/time';
+import GroupedItemsCountButton from '@/Components/src/GroupedItemsCountButton.vue';
 import { ref } from 'vue';
 import { twMerge } from 'tailwind-merge';
 

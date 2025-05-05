@@ -1,7 +1,7 @@
 <script setup>
 import DropdownLink from '@/Components/DropdownLink.vue';
-import Dropdown from '@/packages/ui/src/Input/Dropdown.vue';
-import { router, usePage, route } from '../utils/inertia';
+import Dropdown from '@/Components/src/Input/Dropdown.vue';
+import { router, usePage, route } from '@/utils/inertia';
 
 const page = usePage();
 

@@ -1,5 +1,5 @@
 <script setup>
-import { SecondaryButton } from '@/packages/ui/src';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import ReportCreateModal from '@/Components/Common/Report/ReportCreateModal.vue';
 import { h, ref } from 'vue';
 import UpgradeModal from '@/Components/Common/UpgradeModal.vue';

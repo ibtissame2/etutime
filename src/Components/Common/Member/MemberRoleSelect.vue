@@ -1,6 +1,6 @@
 <script setup>
-import SelectDropdown from '@/packages/ui/src/Input/SelectDropdown.vue';
-import Badge from '@/packages/ui/src/Badge.vue';
+import SelectDropdown from '@/Components/src/Input/SelectDropdown.vue';
+import Badge from '@/Components/src/Badge.vue';
 import { ChevronDownIcon } from '@heroicons/vue/20/solid';
 import { usePage } from '@/utils/inertia';
 

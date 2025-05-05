@@ -1,7 +1,7 @@
 <script setup>
-import DialogModal from '@/packages/ui/src/DialogModal.vue';
+import DialogModal from '@/Components/src/DialogModal.vue';
 import { CreditCardIcon, UserGroupIcon } from '@heroicons/vue/20/solid';
-import { SecondaryButton } from '@/packages/ui/src';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 
 const show = defineModel('show', { default: false });
 </script>

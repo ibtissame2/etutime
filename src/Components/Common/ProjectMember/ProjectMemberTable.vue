@@ -1,5 +1,5 @@
 <script setup>
-import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import { PlusIcon } from '@heroicons/vue/16/solid';
 import { ref } from 'vue';
 import ProjectMemberTableRow from '@/Components/Common/ProjectMember/ProjectMemberTableRow.vue';

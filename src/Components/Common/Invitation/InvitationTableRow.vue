@@ -1,6 +1,6 @@
 <script setup>
 import TableRow from '@/Components/TableRow.vue';
-import { capitalizeFirstLetter } from '../../../utils/format';
+import { capitalizeFirstLetter } from '@/utils/format';
 import InvitationMoreOptionsDropdown from '@/Components/Common/Invitation/InvitationMoreOptionsDropdown.vue';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { useNotificationsStore } from '@/utils/notification';

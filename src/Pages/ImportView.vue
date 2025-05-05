@@ -1,5 +1,5 @@
 <script setup>
-import MainContainer from '@/packages/ui/src/MainContainer.vue';
+import MainContainer from '@/Components/src/MainContainer.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { ArrowsRightLeftIcon } from '@heroicons/vue/16/solid';
 import PageTitle from '@/Components/Common/PageTitle.vue';

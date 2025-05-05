@@ -1,11 +1,11 @@
 <script setup>
-import ProjectBadge from '@/packages/ui/src/Project/ProjectBadge.vue';
-import TimeTrackerStartStop from '@/packages/ui/src/TimeTrackerStartStop.vue';
+import ModuleBadge from '@/Components/Module/ModuleBadge.vue';
+import TimeTrackerStartStop from '@/Components/TimeTracker/TimeTrackerStartStop.vue';
 import { useModulesStore } from '@/store/modules';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import { useCurrentTimeEntryStore } from '@/utils/useCurrentTimeEntry';
-import { getDayJsInstance } from '@/packages/ui/src/utils/time';
+import { getDayJsInstance } from '@/Components/src/utils/time';
 import { useTasksStore } from '@/utils/useTasks';
 import { ChevronRightIcon } from '@heroicons/vue/16/solid';
 
@@ -49,7 +49,7 @@ async function startTaskTimer() {
 				<span v-if="timeEntry.description"> {{ timeEntry.description }}</span>
 				<span v-else class="text-text-tertiary">No description</span>
 			</p>
-			<ProjectBadge size="base" class="min-w-0 max-w-full" :color="project?.color">
+			<ModuleBadge size="base" class="min-w-0 max-w-full" :color="project?.color">
 				<div class="flex items-center lg:space-x-0.5 min-w-0">
 					<span class="whitespace-nowrap">
 						{{ project?.name ?? 'No Project' }}
@@ -59,7 +59,7 @@ async function startTaskTimer() {
 						{{ task.name }}
 					</div>
 				</div>
-			</ProjectBadge>
+			</ModuleBadge>
 		</div>
 		<div class="flex items-center justify-center">
 			<TimeTrackerStartStop @changed="startTaskTimer"></TimeTrackerStartStop>

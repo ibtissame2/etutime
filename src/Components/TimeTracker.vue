@@ -1,6 +1,6 @@
 <script setup>
 import { ClockIcon } from '@heroicons/vue/20/solid';
-import CardTitle from '@/packages/ui/src/CardTitle.vue';
+import CardTitle from '@/Components/src/CardTitle.vue';
 import { usePage } from '@/utils/inertia';
 import { computed, onMounted, watch } from 'vue';
 import dayjs from 'dayjs';
@@ -13,8 +13,8 @@ import { switchOrganization } from '@/utils/useOrganization';
 import { useModulesStore } from '@/store/modules';
 import { useTachesStore } from '@/store/taches';
 import { useTasksStore } from '@/utils/useTasks';
-import TimeTrackerControls from '@/packages/ui/src/TimeTracker/TimeTrackerControls.vue';
-import TimeTrackerRunningInDifferentOrganizationOverlay from '@/packages/ui/src/TimeTracker/TimeTrackerRunningInDifferentOrganizationOverlay.vue';
+import TimeTrackerControls from '@/Components/TimeTracker/TimeTrackerControls.vue';
+import TimeTrackerRunningInDifferentOrganizationOverlay from '@/Components/TimeTracker/TimeTrackerRunningInDifferentOrganizationOverlay.vue';
 
 const page = usePage();
 dayjs.extend(duration);

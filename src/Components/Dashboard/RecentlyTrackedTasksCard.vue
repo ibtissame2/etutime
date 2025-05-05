@@ -4,11 +4,11 @@ import { computed } from 'vue';
 import RecentlyTrackedTasksCardEntry from '@/Components/Dashboard/RecentlyTrackedTasksCardEntry.vue';
 import DashboardCard from '@/Components/Dashboard/DashboardCard.vue';
 import { CheckCircleIcon } from '@heroicons/vue/20/solid';
-import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import { PlusCircleIcon } from '@heroicons/vue/24/solid';
 import { router, route } from '@/utils/inertia';
 import { getCurrentMembershipId, getCurrentOrganizationId } from '@/utils/useUser';
-import { LoadingSpinner } from '@/packages/ui/src';
+import LoadingSpinner from '@/Components/src/LoadingSpinner.vue';
 
 const organizationId = computed(() => getCurrentOrganizationId());
 

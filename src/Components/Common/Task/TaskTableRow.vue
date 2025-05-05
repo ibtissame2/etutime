@@ -5,8 +5,8 @@ import TaskMoreOptionsDropdown from '@/Components/Common/Task/TaskMoreOptionsDro
 import TableRow from '@/Components/TableRow.vue';
 import TaskEditModal from '@/Components/Common/Task/TaskEditModal.vue';
 import { ref } from 'vue';
-import EstimatedTimeProgress from '@/packages/ui/src/EstimatedTimeProgress.vue';
-import { formatHumanReadableDuration } from '../../../packages/ui/src/utils/time';
+import EstimatedTimeProgress from '@/Components/src/EstimatedTimeProgress.vue';
+import { formatHumanReadableDuration } from '@/Components/src/utils/time';
 
 const props = defineProps({
 	task: {

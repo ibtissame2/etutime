@@ -1,8 +1,8 @@
 <script setup>
-import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
-import DialogModal from '@/packages/ui/src/DialogModal.vue';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
+import DialogModal from '@/Components/src/DialogModal.vue';
 import { ref } from 'vue';
-import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
+import PrimaryButton from '@/Components/src/Buttons/PrimaryButton.vue';
 import { useFocus } from '@vueuse/core';
 import { useProjectMembersStore } from '@/utils/useProjectMembers';
 import MemberCombobox from '@/Components/Common/Member/MemberCombobox.vue';

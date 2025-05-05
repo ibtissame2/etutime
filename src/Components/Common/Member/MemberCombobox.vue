@@ -4,7 +4,8 @@ import { storeToRefs } from 'pinia';
 import { useMembersStore } from '@/utils/useMembers';
 import { UserIcon, ChevronDownIcon } from '@heroicons/vue/24/solid';
 import { useFocus } from '@vueuse/core';
-import { Badge, SelectDropdown } from '@/packages/ui/src';
+import Badge from '@/Components/src/Badge.vue';
+import SelectDropdown from '@/Components/src/Input/SelectDropdown.vue';
 
 const membersStore = useMembersStore();
 const { members } = storeToRefs(membersStore);

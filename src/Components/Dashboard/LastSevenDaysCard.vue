@@ -5,7 +5,7 @@ import DashboardCard from '@/Components/Dashboard/DashboardCard.vue';
 import DayOverviewCardEntry from '@/Components/Dashboard/DayOverviewCardEntry.vue';
 import { CalendarIcon } from '@heroicons/vue/20/solid';
 import { getCurrentOrganizationId } from '@/utils/useUser';
-import { LoadingSpinner } from '@/packages/ui/src';
+import LoadingSpinner from '@/Components/src/LoadingSpinner.vue';
 
 const organizationId = computed(() => getCurrentOrganizationId());
 

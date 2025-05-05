@@ -1,6 +1,7 @@
 <script setup>
 import { ArrowDownTrayIcon, CheckCircleIcon, XMarkIcon } from '@heroicons/vue/20/solid';
-import { Modal, PrimaryButton } from '@/packages/ui/src';
+import PrimaryButton from '@/Components/src/Buttons/PrimaryButton.vue';
+import Modal from '@/Components/src/Modal.vue';
 
 const props = defineProps({
 	exportUrl: {

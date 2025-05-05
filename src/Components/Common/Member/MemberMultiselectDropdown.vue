@@ -1,5 +1,5 @@
 <script setup>
-import MultiselectDropdown from '@/packages/ui/src/Input/MultiselectDropdown.vue';
+import MultiselectDropdown from '@/Components/src/Input/MultiselectDropdown.vue';
 import { useMembersStore } from '@/utils/useMembers';
 import { storeToRefs } from 'pinia';
 

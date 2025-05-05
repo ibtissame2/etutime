@@ -1,5 +1,5 @@
 <script setup>
-import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import { PlusCircleIcon } from '@heroicons/vue/24/solid';
 import { PlusIcon } from '@heroicons/vue/16/solid';
 import { ref } from 'vue';

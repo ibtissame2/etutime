@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import TableRow from '@/Components/TableRow.vue';
 import ReportMoreOptionsDropdown from '@/Components/Common/Report/ReportMoreOptionsDropdown.vue';
 import ReportEditModal from '@/Components/Common/Report/ReportEditModal.vue';
-import { SecondaryButton } from '@/packages/ui/src';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import { useClipboard } from '@vueuse/core';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/vue/24/solid';
 import { useMutation, useQueryClient } from '@/utils/tanstack';

@@ -1,12 +1,12 @@
 <script setup>
-import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
+import PrimaryButton from '@/Components/src/Buttons/PrimaryButton.vue';
 import { ref } from 'vue';
 import { useNotificationsStore } from '@/utils/notification';
 import { getCurrentOrganizationId } from '@/utils/useUser';
-import DialogModal from '@/packages/ui/src/DialogModal.vue';
-import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
+import DialogModal from '@/Components/src/DialogModal.vue';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import { ArrowUpOnSquareIcon, InformationCircleIcon } from '@heroicons/vue/24/outline';
-import { CardTitle } from '@/packages/ui/src';
+import CardTitle from '@/Components/src/CardTitle.vue';
 import Card from '@/Components/Common/Card.vue';
 import { useOrganizationStore } from '@/utils/useOrganization';
 

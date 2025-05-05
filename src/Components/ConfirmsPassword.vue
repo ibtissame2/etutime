@@ -1,10 +1,10 @@
 <script setup>
 import { ref, reactive, nextTick } from 'vue';
-import DialogModal from '@/packages/ui/src/DialogModal.vue';
-import InputError from '@/packages/ui/src/Input/InputError.vue';
-import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
-import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
-import TextInput from '@/packages/ui/src/Input/TextInput.vue';
+import DialogModal from '@/Components/src/DialogModal.vue';
+import InputError from '@/Components/src/Input/InputError.vue';
+import PrimaryButton from '@/Components/src/Buttons/PrimaryButton.vue';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
+import TextInput from '@/Components/src/Input/TextInput.vue';
 import axios from 'axios';
 import { route } from '@/utils/inertia';
 

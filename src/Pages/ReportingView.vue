@@ -1,17 +1,17 @@
 <script setup>
-import MainContainer from '@/packages/ui/src/MainContainer.vue';
+import MainContainer from '@/Components/src/MainContainer.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { FolderIcon, ChartBarIcon, UserGroupIcon, CheckCircleIcon, TagIcon } from '@heroicons/vue/20/solid';
 import PageTitle from '@/Components/Common/PageTitle.vue';
-import DateRangePicker from '@/packages/ui/src/Input/DateRangePicker.vue';
+import DateRangePicker from '@/Components/src/Input/DateRangePicker.vue';
 import ReportingChart from '@/Components/Common/Reporting/ReportingChart.vue';
 import { computed, onMounted, ref } from 'vue';
-import { formatHumanReadableDuration, getDayJsInstance, getLocalizedDayJs } from '@/packages/ui/src/utils/time';
+import { formatHumanReadableDuration, getDayJsInstance, getLocalizedDayJs } from '@/Components/src/utils/time';
 import { useReportingStore } from '@/utils/useReporting';
 import { storeToRefs } from 'pinia';
 import TagDropdown from '@/Components/Common/Tag/TagDropdown.vue';
 import ReportingFilterBadge from '@/Components/Common/Reporting/ReportingFilterBadge.vue';
-import ProjectMultiselectDropdown from '@/Components/Common/Project/ProjectMultiselectDropdown.vue';
+import ModuleMultiselectDropdown from '@/Components/Module/ModuleMultiselectDropdown.vue';
 import MemberMultiselectDropdown from '@/Components/Common/Member/MemberMultiselectDropdown.vue';
 import TaskMultiselectDropdown from '@/Components/Common/Task/TaskMultiselectDropdown.vue';
 import ReportingGroupBySelect from '@/Components/Common/Reporting/ReportingGroupBySelect.vue';
@@ -24,7 +24,7 @@ import ReportingTabNavbar from '@/Components/Common/Reporting/ReportingTabNavbar
 import { useNotificationsStore } from '@/utils/notification';
 import ReportingExportButton from '@/Components/Common/Reporting/ReportingExportButton.vue';
 import ReportSaveButton from '@/Components/Common/Report/ReportSaveButton.vue';
-import { getRandomColorWithSeed } from '@/packages/ui/src/utils/color';
+import { getRandomColorWithSeed } from '@/Components/src/utils/color';
 
 const { handleApiRequestNotifications } = useNotificationsStore();
 
@@ -226,7 +226,7 @@ const tableData = computed(() => {
 							></ReportingFilterBadge>
 						</template>
 					</MemberMultiselectDropdown>
-					<ProjectMultiselectDropdown v-model="selectedProjects" @submit="updateReporting">
+					<ModuleMultiselectDropdown v-model="selectedProjects" @submit="updateReporting">
 						<template #trigger>
 							<ReportingFilterBadge
 								:count="selectedProjects.length"
@@ -235,7 +235,7 @@ const tableData = computed(() => {
 								:icon="FolderIcon"
 							></ReportingFilterBadge>
 						</template>
-					</ProjectMultiselectDropdown>
+					</ModuleMultiselectDropdown>
 					<TaskMultiselectDropdown v-model="selectedTasks" @submit="updateReporting">
 						<template #trigger>
 							<ReportingFilterBadge

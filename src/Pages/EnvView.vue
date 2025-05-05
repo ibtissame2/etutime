@@ -1,9 +1,9 @@
 <script setup>
-import MainContainer from '@/packages/ui/src/MainContainer.vue';
+import MainContainer from '@/Components/src/MainContainer.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { PlusIcon } from '@heroicons/vue/16/solid';
 import { UserGroupIcon } from '@heroicons/vue/20/solid';
-import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import TabBar from '@/Components/Common/TabBar/TabBar.vue';
 import TabBarItem from '@/Components/Common/TabBar/TabBarItem.vue';
 import { ref } from 'vue';

@@ -1,9 +1,9 @@
 <script setup>
 import { PlusCircleIcon } from '@heroicons/vue/20/solid';
-import Dropdown from '@/packages/ui/src/Input/Dropdown.vue';
+import Dropdown from '@/Components/src/Input/Dropdown.vue';
 import { computed, nextTick, ref, watch } from 'vue';
-import TacheForm from '@/Components/Global/Forms/TacheForm.vue';
-import MultiselectDropdownItem from '@/packages/ui/src/Input/MultiselectDropdownItem.vue';
+import TacheForm from '@/Components//Forms/TacheForm.vue';
+import MultiselectDropdownItem from '@/Components/src/Input/MultiselectDropdownItem.vue';
 import { UseFocusTrap } from '@vueuse/integrations/useFocusTrap/component';
 
 const props = defineProps({

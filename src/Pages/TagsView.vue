@@ -2,7 +2,7 @@
 import { storeToRefs } from 'pinia';
 import { useTachesStore } from '@/store/taches';
 import TablePageView from '@/Layouts/TablePageView.vue';
-import TacheForm from '@/Components/Global/Forms/TacheForm.vue';
+import TacheForm from '@/Components//Forms/TacheForm.vue';
 import TagIcon from '@/Components/Icons/TagIcon.vue';
 
 const { taches } = storeToRefs(useTachesStore());

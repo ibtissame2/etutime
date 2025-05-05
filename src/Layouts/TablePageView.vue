@@ -6,11 +6,11 @@ import { FolderPlusIcon } from '@heroicons/vue/24/solid';
 import { TrashIcon, PencilSquareIcon } from '@heroicons/vue/20/solid';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageTitle from '@/Components/Common/PageTitle.vue';
-import MainContainer from '@/packages/ui/src/MainContainer.vue';
-import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
+import MainContainer from '@/Components/src/MainContainer.vue';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import TableHeading from '@/Components/Common/TableHeading.vue';
 import TableRow from '@/Components/TableRow.vue';
-import MoreOptionsDropdown from '@/packages/ui/src/MoreOptionsDropdown.vue';
+import MoreOptionsDropdown from '@/Components/src/MoreOptionsDropdown.vue';
 
 const emit = defineEmits(['fetch']);
 

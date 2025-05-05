@@ -5,7 +5,7 @@ import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { PieChart } from 'echarts/charts';
 import { GridComponent, LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
-import { formatHumanReadableDuration } from '@/packages/ui/src/utils/time';
+import { formatHumanReadableDuration } from '@/Components/src/utils/time';
 import { useCssVar } from '@vueuse/core';
 
 use([CanvasRenderer, PieChart, TitleComponent, GridComponent, TooltipComponent, LegendComponent]);

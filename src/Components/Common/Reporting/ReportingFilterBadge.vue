@@ -1,5 +1,5 @@
 <script setup>
-import Badge from '@/packages/ui/src/Badge.vue';
+import Badge from '@/Components/src/Badge.vue';
 import { computed } from 'vue';
 import { twMerge } from 'tailwind-merge';
 

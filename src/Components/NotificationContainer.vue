@@ -2,9 +2,9 @@
 import Notification from '@/Components/Common/Notification/Notification.vue';
 import { storeToRefs } from 'pinia';
 import { useNotificationsStore } from '@/utils/notification';
-import DialogModal from '@/packages/ui/src/DialogModal.vue';
+import DialogModal from '@/Components/src/DialogModal.vue';
 import { CreditCardIcon, XCircleIcon } from '@heroicons/vue/20/solid';
-import SecondaryButton from '../packages/ui/src/Buttons/SecondaryButton.vue';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 
 const { notifications, showActionBlockedModal } = storeToRefs(useNotificationsStore());
 </script>

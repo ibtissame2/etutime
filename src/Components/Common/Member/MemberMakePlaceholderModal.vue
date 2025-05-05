@@ -1,8 +1,8 @@
 <script setup>
-import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
-import DialogModal from '@/packages/ui/src/DialogModal.vue';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
+import DialogModal from '@/Components/src/DialogModal.vue';
 import { ref } from 'vue';
-import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
+import PrimaryButton from '@/Components/src/Buttons/PrimaryButton.vue';
 import { useMutation } from '@/utils/tanstack';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { useNotificationsStore } from '@/utils/notification';

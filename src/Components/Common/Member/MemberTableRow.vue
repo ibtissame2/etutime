@@ -2,8 +2,8 @@
 import { CheckCircleIcon, UserCircleIcon } from '@heroicons/vue/20/solid';
 import MemberMoreOptionsDropdown from '@/Components/Common/Member/MemberMoreOptionsDropdown.vue';
 import TableRow from '@/Components/TableRow.vue';
-import { capitalizeFirstLetter } from '../../../utils/format';
-import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
+import { capitalizeFirstLetter } from '@/utils/format';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { useNotificationsStore } from '@/utils/notification';
 import { useMembersStore } from '@/utils/useMembers';

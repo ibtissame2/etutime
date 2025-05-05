@@ -1,10 +1,10 @@
 <script setup>
-import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
-import DialogModal from '@/packages/ui/src/DialogModal.vue';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
+import DialogModal from '@/Components/src/DialogModal.vue';
 import { computed, ref } from 'vue';
-import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
+import PrimaryButton from '@/Components/src/Buttons/PrimaryButton.vue';
 import { useMembersStore } from '@/utils/useMembers';
-import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
+import InputLabel from '@/Components/src/Input/InputLabel.vue';
 import MemberRoleSelect from '@/Components/Common/Member/MemberRoleSelect.vue';
 import MemberOwnershipTransferConfirmModal from '@/Components/Common/Member/MemberOwnershipTransferConfirmModal.vue';
 

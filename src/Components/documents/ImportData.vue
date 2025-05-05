@@ -1,16 +1,16 @@
 <script setup>
-import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
+import PrimaryButton from '@/Components/src/Buttons/PrimaryButton.vue';
 import { computed, onMounted, ref } from 'vue';
 import { useNotificationsStore } from '@/utils/notification';
-import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
+import InputLabel from '@/Components/src/Input/InputLabel.vue';
 import { DocumentIcon } from '@heroicons/vue/24/solid';
 import { ArrowDownOnSquareIcon, InformationCircleIcon } from '@heroicons/vue/24/outline';
 
 import { getCurrentOrganizationId } from '@/utils/useUser';
-import DialogModal from '@/packages/ui/src/DialogModal.vue';
-import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
+import DialogModal from '@/Components/src/DialogModal.vue';
+import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import { initializeStores } from '@/utils/init';
-import { CardTitle } from '@/packages/ui/src';
+import CardTitle from '@/Components/src/CardTitle.vue';
 import Card from '@/Components/Common/Card.vue';
 
 const importTypeOptions = ref([]);

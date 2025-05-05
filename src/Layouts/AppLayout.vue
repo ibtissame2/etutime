@@ -7,7 +7,7 @@ import CurrentSidebarTimer from '@/Components/CurrentSidebarTimer.vue';
 import NotificationContainer from '@/Components/NotificationContainer.vue';
 import NavigationSidebarItem from '@/Components/NavigationSidebarItem.vue';
 import UserSettingsIcon from '@/Components/UserSettingsIcon.vue';
-import MainContainer from '@/packages/ui/src/MainContainer.vue';
+import MainContainer from '@/Components/src/MainContainer.vue';
 import { Head, route } from '@/utils/inertia';
 import { fetchToken, isTokenValid } from '@/utils/session';
 import HomeIcon from '@/Components/Icons/HomeIcon.vue';

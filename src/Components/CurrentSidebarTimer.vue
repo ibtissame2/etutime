@@ -3,8 +3,8 @@ import { useCurrentTimeEntryStore } from '@/utils/useCurrentTimeEntry';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import dayjs from 'dayjs';
-import { formatHumanReadableDuration } from '@/packages/ui/src/utils/time';
-import TimeTrackerStartStop from '@/packages/ui/src/TimeTrackerStartStop.vue';
+import { formatHumanReadableDuration } from '@/Components/src/utils/time';
+import TimeTrackerStartStop from '@/Components/TimeTracker/TimeTrackerStartStop.vue';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 
 const store = useCurrentTimeEntryStore();
