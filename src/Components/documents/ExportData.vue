@@ -2,7 +2,6 @@
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import { ref } from 'vue';
 import { useNotificationsStore } from '@/utils/notification';
-import { api } from '@/packages/api/src';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import DialogModal from '@/packages/ui/src/DialogModal.vue';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
@@ -71,8 +70,8 @@ async function exportData() {
 			<div class="py-2 px-3 sm:px-4 text-sm flex items-center space-x-3">
 				<InformationCircleIcon class="h-5 min-w-0 w-5 text-bg-tertiary" />
 				<p class="flex-1">
-					Export your organization data. This will include all clients, projects, tasks, and time entries. You will
-					receive a zip file with json files for each entity.
+					Export your organization data. This will include all projects, tasks, and time entries. You will receive a zip
+					file with json files for each entity.
 				</p>
 			</div>
 		</Card>

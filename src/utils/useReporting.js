@@ -1,14 +1,13 @@
 import { ref, computed } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
-import { api } from '@/packages/api/src';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { useNotificationsStore } from '@/utils/notification';
 import { useModulesStore } from '@/store/modules';
 import { useMembersStore } from '@/utils/useMembers';
 import { useTasksStore } from '@/utils/useTasks';
-import { useClientsStore } from '@/utils/useClients';
-import { CheckCircleIcon, UserCircleIcon, UserGroupIcon } from '@heroicons/vue/20/solid';
+import { CheckCircleIcon, UserGroupIcon } from '@heroicons/vue/20/solid';
 import { DocumentTextIcon, FolderIcon } from '@heroicons/vue/16/solid';
+const api = new Proxy({}, { get: () => () => ({}) });
 
 export const useReportingStore = defineStore('reporting', () => {
 	const reportingGraphResponse = ref(null);
@@ -62,7 +61,6 @@ export const useReportingStore = defineStore('reporting', () => {
 		user: 'No User',
 		project: 'No Project',
 		task: 'No Task',
-		client: 'No Client',
 		description: 'No Description',
 	};
 
@@ -88,11 +86,7 @@ export const useReportingStore = defineStore('reporting', () => {
 			const { tasks } = storeToRefs(taskStore);
 			return tasks.value.find((task) => task.id === key)?.name;
 		}
-		if (type === 'client') {
-			const clientsStore = useClientsStore();
-			const { clients } = storeToRefs(clientsStore);
-			return clients.value.find((client) => client.id === key)?.name;
-		}
+
 		return key;
 	}
 
@@ -111,11 +105,6 @@ export const useReportingStore = defineStore('reporting', () => {
 			label: 'Tasks',
 			value: 'task',
 			icon: CheckCircleIcon,
-		},
-		{
-			label: 'Clients',
-			value: 'client',
-			icon: UserCircleIcon,
 		},
 		{
 			label: 'Description',

@@ -19,13 +19,10 @@ const show = defineModel('show', { default: false });
 const saving = ref(false);
 
 const props = defineProps({
-	enableEstimatedTime: Boolean,
 	createTimeEntry: Function,
-	createClient: Function,
 	tags: Array,
 	projects: Array,
 	tasks: Array,
-	clients: Array,
 });
 
 const description = ref(null);
@@ -40,8 +37,8 @@ watch(show, (value) => {
 
 const timeEntryDefaultValues = {
 	description: '',
-	project_id: null,
-	task_id: null,
+	module_id: null,
+	chapitre_id: null,
 	tags: [],
 	start: getDayJsInstance().utc().subtract(1, 'h').format(),
 	end: getDayJsInstance().utc().format(),
@@ -65,11 +62,12 @@ watch(localEnd, (value) => {
 });
 
 async function submit() {
-	await props.createTimeEntry({ ...timeEntry.value });
-	timeEntry.value = { ...timeEntryDefaultValues };
-	localStart.value = getLocalizedDayJs(timeEntryDefaultValues.start).format();
-	localEnd.value = getLocalizedDayJs(timeEntryDefaultValues.end).format();
-	show.value = false;
+	console.log('submit', timeEntry.value);
+	// await props.createTimeEntry({ ...timeEntry.value });
+	// timeEntry.value = { ...timeEntryDefaultValues };
+	// localStart.value = getLocalizedDayJs(timeEntryDefaultValues.start).format();
+	// localEnd.value = getLocalizedDayJs(timeEntryDefaultValues.end).format();
+	// show.value = false;
 }
 </script>
 
@@ -88,7 +86,7 @@ async function submit() {
 						id="description"
 						ref="description"
 						v-model="timeEntry.description"
-						placeholder="What did you work on?"
+						placeholder="Sur quoi as-tu travaillé ?"
 						type="text"
 						class="mt-1 block w-full"
 						@keydown.enter="submit"
@@ -99,16 +97,13 @@ async function submit() {
 				<div class="flex w-full items-center space-x-2 justify-between">
 					<div class="flex-1 min-w-0">
 						<TimeTrackerProjectTaskDropdown
-							v-model:project="timeEntry.project_id"
-							v-model:task="timeEntry.task_id"
-							:clients
-							:create-client
+							v-model:project="timeEntry.module_id"
+							v-model:task="timeEntry.chapitre_id"
 							:can-create-project="true"
 							size="xlarge"
 							class="bg-input-background"
 							:projects="projects"
 							:tasks="tasks"
-							:enable-estimated-time="enableEstimatedTime"
 						></TimeTrackerProjectTaskDropdown>
 					</div>
 					<div class="flex items-center space-x-2">
@@ -123,7 +118,7 @@ async function submit() {
 										>
 											{{ timeEntry.tags.length }}
 										</div>
-										<span>Tags</span>
+										<span>Tâches</span>
 									</Badge>
 								</template>
 							</TagDropdown>
@@ -133,20 +128,21 @@ async function submit() {
 			</div>
 			<div class="flex pt-4 space-x-4">
 				<div class="flex-1">
-					<InputLabel>Duration</InputLabel>
+					<InputLabel>Durée</InputLabel>
+
 					<div class="space-y-2 mt-1 flex flex-col">
 						<DurationHumanInput v-model:start="localStart" v-model:end="localEnd"></DurationHumanInput>
 						<div class="text-sm flex space-x-1">
 							<InformationCircleIcon class="w-4 text-text-quaternary"></InformationCircleIcon>
 							<span class="text-text-secondary text-xs">
-								You can type natural language here f.e.
-								<span class="font-semibold"> 2h 30m</span>
+								Vous pouvez taper en langage naturel ici, par ex.
+								<span class="font-semibold"> 2h 30min</span>
 							</span>
 						</div>
 					</div>
 				</div>
 				<div class="">
-					<InputLabel>Start</InputLabel>
+					<InputLabel>Début</InputLabel>
 					<div class="flex flex-col items-center space-y-2 mt-1">
 						<TimePickerSimple v-model="localStart" size="large"></TimePickerSimple>
 						<DatePicker
@@ -157,7 +153,7 @@ async function submit() {
 					</div>
 				</div>
 				<div class="">
-					<InputLabel>End</InputLabel>
+					<InputLabel>Fin</InputLabel>
 					<div class="flex flex-col items-center space-y-2 mt-1">
 						<TimePickerSimple v-model="localEnd" size="large"></TimePickerSimple>
 						<DatePicker
@@ -170,9 +166,9 @@ async function submit() {
 			</div>
 		</template>
 		<template #footer>
-			<SecondaryButton tabindex="2" @click="show = false"> Cancel</SecondaryButton>
+			<SecondaryButton tabindex="2" @click="show = false">Annuler</SecondaryButton>
 			<PrimaryButton tabindex="2" class="ms-3" :class="{ 'opacity-25': saving }" :disabled="saving" @click="submit">
-				Create Time Entry
+				Créer
 			</PrimaryButton>
 		</template>
 	</DialogModal>

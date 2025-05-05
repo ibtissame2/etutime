@@ -6,7 +6,6 @@ import TeamActivityCardEntry from '@/Components/Dashboard/TeamActivityCardEntry.
 import { UserGroupIcon } from '@heroicons/vue/20/solid';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import { getCurrentOrganizationId } from '@/utils/useUser';
-import { api } from '@/packages/api/src';
 import { LoadingSpinner } from '@/packages/ui/src';
 import { router, route } from '@/utils/inertia';
 

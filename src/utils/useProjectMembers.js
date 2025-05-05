@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
-import { api } from '@/packages/api/src';
 import { computed, ref } from 'vue';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { useNotificationsStore } from '@/utils/notification';
+const api = new Proxy({}, { get: () => () => ({}) });
 
 export const useProjectMembersStore = defineStore('project-members', () => {
 	const projectMemberResponse = ref(null);

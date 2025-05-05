@@ -10,7 +10,6 @@ import { formatHumanReadableDuration, getDayJsInstance, getLocalizedDayJs } from
 import { useReportingStore } from '@/utils/useReporting';
 import { storeToRefs } from 'pinia';
 import TagDropdown from '@/packages/ui/src/Tag/TagDropdown.vue';
-import { api } from '@/packages/api/src';
 import ReportingFilterBadge from '@/Components/Common/Reporting/ReportingFilterBadge.vue';
 import ProjectMultiselectDropdown from '@/Components/Common/Project/ProjectMultiselectDropdown.vue';
 import MemberMultiselectDropdown from '@/Components/Common/Member/MemberMultiselectDropdown.vue';
@@ -19,7 +18,6 @@ import ReportingGroupBySelect from '@/Components/Common/Reporting/ReportingGroup
 import ReportingRow from '@/Components/Common/Reporting/ReportingRow.vue';
 import ReportingPieChart from '@/Components/Common/Reporting/ReportingPieChart.vue';
 import { getCurrentMembershipId, getCurrentOrganizationId, getCurrentRole } from '@/utils/useUser';
-import ClientMultiselectDropdown from '@/Components/Common/Client/ClientMultiselectDropdown.vue';
 import { useTachesStore } from '@/store/taches';
 import { useSessionStorage, useStorage } from '@vueuse/core';
 import ReportingTabNavbar from '@/Components/Common/Reporting/ReportingTabNavbar.vue';
@@ -40,7 +38,6 @@ const selectedTags = ref([]);
 const selectedProjects = ref([]);
 const selectedMembers = ref([]);
 const selectedTasks = ref([]);
-const selectedClients = ref([]);
 
 const group = useStorage('reporting-group', 'project');
 const subGroup = useStorage('reporting-sub-group', 'task');
@@ -60,7 +57,6 @@ function getFilterAttributes() {
 		member_ids: selectedMembers.value.length > 0 ? selectedMembers.value : undefined,
 		project_ids: selectedProjects.value.length > 0 ? selectedProjects.value : undefined,
 		task_ids: selectedTasks.value.length > 0 ? selectedTasks.value : undefined,
-		client_ids: selectedClients.value.length > 0 ? selectedClients.value : undefined,
 		tag_ids: selectedTags.value.length > 0 ? selectedTags.value : undefined,
 	};
 
@@ -250,11 +246,7 @@ const tableData = computed(() => {
 							></ReportingFilterBadge>
 						</template>
 					</TaskMultiselectDropdown>
-					<ClientMultiselectDropdown v-model="selectedClients" @submit="updateReporting">
-						<template #trigger>
-							<ReportingFilterBadge title="Clients" :icon="FolderIcon"></ReportingFilterBadge>
-						</template>
-					</ClientMultiselectDropdown>
+
 					<TagDropdown v-model="selectedTags" :tags="taches" @submit="updateReporting">
 						<template #trigger>
 							<ReportingFilterBadge

@@ -47,25 +47,25 @@ CREATE TABLE `taches` (
   KEY `taches_team_id_foreign` (`team_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `tasks` (
+CREATE TABLE `chapitres` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` varchar(500) NOT NULL,
   `module_id` INT NOT NULL,
   `user_id` INT NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `tasks_module_id_foreign` (`module_id`)
+  KEY `chapitres_module_id_foreign` (`module_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `timers` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `task_id` char(36) DEFAULT NULL,
+  `chapitre_id` char(36) DEFAULT NULL,
   `description` varchar(500) NOT NULL,
   `start` timestamp NOT NULL,
   `end` timestamp NULL DEFAULT NULL,
   `tags` json DEFAULT NULL,
   `is_imported` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY `timers_task_id_foreign` (`task_id`)
+  KEY `timers_chapitre_id_foreign` (`chapitre_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- To Delete

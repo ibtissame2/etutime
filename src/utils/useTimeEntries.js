@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
 import { getCurrentMembershipId, getCurrentOrganizationId } from '@/utils/useUser';
 import { reactive, ref } from 'vue';
-import { api } from '@/packages/api/src';
 import dayjs from 'dayjs';
 import { useNotificationsStore } from '@/utils/notification';
+const api = new Proxy({}, { get: () => () => ({}) });
 
 export const useTimeEntriesStore = defineStore('timeEntries', () => {
 	const timeEntries = ref(reactive([]));

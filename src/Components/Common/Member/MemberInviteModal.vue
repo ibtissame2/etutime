@@ -4,14 +4,11 @@ import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import DialogModal from '@/packages/ui/src/DialogModal.vue';
 import { ref } from 'vue';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
-import { useFocus } from '@vueuse/core';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
 import InputError from '@/packages/ui/src/Input/InputError.vue';
 import { useForm } from '@/utils/inertia';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { filterRoles } from '@/utils/roles';
-import { CreditCardIcon, UserGroupIcon } from '@heroicons/vue/20/solid';
-import { api } from '@/packages/api/src';
 import { useNotificationsStore } from '@/utils/notification';
 import { z } from 'zod';
 
@@ -65,9 +62,6 @@ async function submit() {
 		);
 	}
 }
-
-const clientNameInput = ref(null);
-useFocus(clientNameInput, { initialValue: true });
 </script>
 
 <template>

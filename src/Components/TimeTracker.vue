@@ -13,7 +13,6 @@ import { switchOrganization } from '@/utils/useOrganization';
 import { useModulesStore } from '@/store/modules';
 import { useTachesStore } from '@/store/taches';
 import { useTasksStore } from '@/utils/useTasks';
-import { useClientsStore } from '@/utils/useClients';
 import TimeTrackerControls from '@/packages/ui/src/TimeTracker/TimeTrackerControls.vue';
 import TimeTrackerRunningInDifferentOrganizationOverlay from '@/packages/ui/src/TimeTracker/TimeTrackerRunningInDifferentOrganizationOverlay.vue';
 
@@ -28,8 +27,6 @@ const { startLiveTimer, stopLiveTimer, setActiveState } = currentTimeEntryStore;
 const { modules } = storeToRefs(useModulesStore());
 const taskStore = useTasksStore();
 const { tasks } = storeToRefs(taskStore);
-const clientStore = useClientsStore();
-const { clients } = storeToRefs(clientStore);
 
 const emit = defineEmits(['change']);
 
@@ -85,7 +82,6 @@ const { taches } = storeToRefs(useTachesStore());
 			:projects="modules"
 			:tasks="tasks"
 			:tags="taches"
-			:clients="clients"
 			:is-active="isActive"
 			v-model:current-time-entry="currentTimeEntry"
 			v-model:live-timer="now"

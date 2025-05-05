@@ -15,7 +15,6 @@ import { useTasksStore } from '@/utils/useTasks';
 import { useModulesStore } from '@/store/modules';
 import TimeEntryGroupedTable from '@/packages/ui/src/TimeEntry/TimeEntryGroupedTable.vue';
 import { useTachesStore } from '@/store/taches';
-import { useClientsStore } from '@/utils/useClients';
 import TimeEntryCreateModal from '@/packages/ui/src/TimeEntry/TimeEntryCreateModal.vue';
 import TimeEntryMassActionRow from '@/packages/ui/src/TimeEntry/TimeEntryMassActionRow.vue';
 
@@ -65,11 +64,6 @@ const showManualTimeEntryModal = ref(false);
 
 const { modules } = storeToRefs(useModulesStore());
 const { tasks } = storeToRefs(useTasksStore());
-const { clients } = storeToRefs(useClientsStore());
-
-async function createClient(body) {
-	return await useClientsStore().createClient(body);
-}
 
 const selectedTimeEntries = ref([]);
 
@@ -87,13 +81,10 @@ function deleteSelected() {
 <template>
 	<TimeEntryCreateModal
 		v-model:show="showManualTimeEntryModal"
-		:enable-estimated-time="true"
-		:create-client="createClient"
 		:create-time-entry="createTimeEntry"
 		:projects="modules"
 		:tasks="tasks"
 		:tags="taches"
-		:clients="clients"
 	></TimeEntryCreateModal>
 	<AppLayout title="Suivi du temps" data-testid="time_view">
 		<MainContainer class="pt-5 lg:pt-8 pb-4 lg:pb-6">
@@ -115,14 +106,12 @@ function deleteSelected() {
 		</MainContainer>
 		<TimeEntryMassActionRow
 			:selected-time-entries="selectedTimeEntries"
-			:enable-estimated-time="true"
 			:can-create-project="true"
 			:all-selected="selectedTimeEntries.length === timeEntries.length"
 			:delete-selected="deleteSelected"
 			:projects="modules"
 			:tasks="tasks"
 			:tags="taches"
-			:clients="clients"
 			:update-time-entries="
 				(args) =>
 					updateTimeEntries(
@@ -130,17 +119,13 @@ function deleteSelected() {
 						args
 					)
 			"
-			:create-client="createClient"
 			@submit="clearSelectionAndState"
 			@select-all="selectedTimeEntries = [...timeEntries]"
 			@unselect-all="selectedTimeEntries = []"
 		></TimeEntryMassActionRow>
 		<TimeEntryGroupedTable
 			v-model:selected="selectedTimeEntries"
-			:enable-estimated-time="true"
 			:can-create-project="true"
-			:clients="clients"
-			:create-client="createClient"
 			:update-time-entry="updateTimeEntry"
 			:update-time-entries="updateTimeEntries"
 			:delete-time-entries="deleteTimeEntries"

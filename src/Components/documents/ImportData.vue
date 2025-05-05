@@ -2,7 +2,6 @@
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import { computed, onMounted, ref } from 'vue';
 import { useNotificationsStore } from '@/utils/notification';
-import { api } from '@/packages/api/src';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
 import { DocumentIcon } from '@heroicons/vue/24/solid';
 import { ArrowDownOnSquareIcon, InformationCircleIcon } from '@heroicons/vue/24/outline';
@@ -124,11 +123,6 @@ const showResultModal = ref(false);
 		<template #title>Import Result</template>
 		<template #content>
 			<div class="pb-6">The import was successful! Here is an overview of the imported data:</div>
-
-			<div class="py-2.5 px-3 border-t border-t-card-background-separator">
-				<span class="text-text-primary font-semibold">Clients created:</span>
-				{{ reportResult?.report.clients.created }}
-			</div>
 			<div class="py-2.5 px-3 border-t border-t-card-background-separator">
 				<span class="text-text-primary font-semibold">Projects created:</span>
 				{{ reportResult?.report.projects.created }}

@@ -7,7 +7,6 @@ import PrimaryButton from '../../../packages/ui/src/Buttons/PrimaryButton.vue';
 import InputLabel from '../../../packages/ui/src/Input/InputLabel.vue';
 import { useMutation, useQueryClient } from '@/utils/tanstack';
 import { getCurrentOrganizationId } from '@/utils/useUser';
-import { api } from '@/packages/api/src';
 import { Checkbox } from '@/packages/ui/src';
 import DatePicker from '@/packages/ui/src/Input/DatePicker.vue';
 import { useNotificationsStore } from '@/utils/notification';

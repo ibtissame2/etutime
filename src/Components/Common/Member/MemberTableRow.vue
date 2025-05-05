@@ -4,7 +4,6 @@ import MemberMoreOptionsDropdown from '@/Components/Common/Member/MemberMoreOpti
 import TableRow from '@/Components/TableRow.vue';
 import { capitalizeFirstLetter } from '../../../utils/format';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
-import { api } from '@/packages/api/src';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { useNotificationsStore } from '@/utils/notification';
 import { useMembersStore } from '@/utils/useMembers';

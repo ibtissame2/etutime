@@ -141,7 +141,7 @@ const highlightedItem = computed(() => {
 					:value="searchValue"
 					data-testid="tag_dropdown_search"
 					class="bg-card-background border-0 placeholder-muted text-sm text-text-primary py-2.5 focus:ring-0 border-b border-card-background-separator focus:border-card-background-separator w-full"
-					placeholder="Search for a Tag..."
+					placeholder="Rechercher une tâche..."
 					@input="updateSearchValue"
 					@keydown.enter="addTagIfNoneExists"
 					@keydown.up.prevent="moveHighlightUp"
@@ -173,7 +173,7 @@ const highlightedItem = computed(() => {
 						"
 					>
 						<PlusCircleIcon class="w-5 flex-shrink-0 text-icon-default"></PlusCircleIcon>
-						<span>Create new Tag</span>
+						<span>Créer une nouvelle tâche</span>
 					</button>
 				</div>
 			</UseFocusTrap>

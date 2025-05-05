@@ -20,10 +20,7 @@ const props = defineProps({
 	projects: Array,
 	tasks: Array,
 	tags: Array,
-	clients: Array,
-	createClient: Function,
 	isActive: Boolean,
-	enableEstimatedTime: Boolean,
 });
 
 const emit = defineEmits(['startTimer', 'stopTimer', 'updateTimeEntry', 'startLiveTimer', 'stopLiveTimer']);
@@ -169,7 +166,7 @@ useSelectEvents(filteredRecentlyTrackedTimeEntries, highlightedDropdownEntryId, 
 				<input
 					ref="currentTimeEntryDescriptionInput"
 					v-model="tempDescription"
-					placeholder="What are you working on?"
+					placeholder="Sur quoi travaillez-vous ?"
 					data-testid="time_entry_description"
 					class="w-full rounded-l-lg py-4 sm:py-2.5 px-3.5 border-b border-b-card-background-separator @2xl:px-4 text-base @4xl:text-lg text-text-primary font-medium bg-transparent border-none placeholder-muted focus:ring-0 transition"
 					type="text"
@@ -209,12 +206,9 @@ useSelectEvents(filteredRecentlyTrackedTimeEntries, highlightedDropdownEntryId, 
 					<TimeTrackerProjectTaskDropdown
 						v-model:project="currentTimeEntry.project_id"
 						v-model:task="currentTimeEntry.task_id"
-						:create-client
 						:can-create-project="true"
-						:clients
 						:projects="projects"
 						:tasks="tasks"
-						:enable-estimated-time="enableEstimatedTime"
 						@changed="updateProject"
 					></TimeTrackerProjectTaskDropdown>
 				</div>

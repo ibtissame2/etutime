@@ -3,7 +3,6 @@ import FormSection from '@/Components/FormSection.vue';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import { computed, ref } from 'vue';
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
-import { api } from '@/packages/api/src';
 import SectionBorder from '@/Components/SectionBorder.vue';
 import DangerButton from '@/packages/ui/src/Buttons/DangerButton.vue';
 import TextInput from '../../../packages/ui/src/Input/TextInput.vue';

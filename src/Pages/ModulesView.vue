@@ -11,7 +11,6 @@ import PageTitle from '@/Components/Common/PageTitle.vue';
 import TabBarItem from '@/Components/Common/TabBar/TabBarItem.vue';
 import TabBar from '@/Components/Common/TabBar/TabBar.vue';
 import { storeToRefs } from 'pinia';
-import { useClientsStore } from '@/utils/useClients';
 import { useOrganizationStore } from '@/utils/useOrganization';
 
 const { fetchModules, createModule } = useModulesStore();
@@ -22,7 +21,6 @@ onMounted(() => {
 	useOrganizationStore().fetchOrganization();
 });
 
-const { clients } = storeToRefs(useClientsStore());
 const showCreateProjectModal = ref(false);
 const activeTab = ref('active');
 
@@ -34,10 +32,6 @@ const shownModules = computed(() => {
 	if (activeTab.value !== 'archived') return modules.value.filter((module) => module.is_public);
 	return modules.value.filter((module) => !module.is_public);
 });
-
-async function createClient(client) {
-	return await useClientsStore().createClient(client);
-}
 </script>
 
 <template>
@@ -51,12 +45,7 @@ async function createClient(client) {
 				</TabBar>
 			</div>
 			<SecondaryButton :icon="PlusIcon" @click="showCreateProjectModal = true">Créer un module </SecondaryButton>
-			<ProjectCreateModal
-				v-model:show="showCreateProjectModal"
-				:create-client="createClient"
-				:clients="clients"
-				@submit="createModule"
-			></ProjectCreateModal>
+			<ProjectCreateModal v-model:show="showCreateProjectModal" @submit="createModule"></ProjectCreateModal>
 		</MainContainer>
 		<ProjectTable :projects="shownModules"></ProjectTable>
 	</AppLayout>

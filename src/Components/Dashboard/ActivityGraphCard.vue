@@ -12,7 +12,6 @@ import { firstDayIndex, formatDate, formatHumanReadableDuration, getDayJsInstanc
 import { useCssVar } from '@vueuse/core';
 import { useQuery } from '@/utils/tanstack';
 import { getCurrentOrganizationId } from '@/utils/useUser';
-import { api } from '@/packages/api/src';
 import { LoadingSpinner } from '@/packages/ui/src';
 
 use([TitleComponent, TooltipComponent, VisualMapComponent, CalendarComponent, HeatmapChart, CanvasRenderer]);

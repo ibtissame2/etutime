@@ -16,12 +16,10 @@ const props = defineProps({
 	projects: Array,
 	tasks: Array,
 	tags: Array,
-	clients: Array,
 	members: {
 		type: Array,
 		required: false,
 	},
-	createClient: Function,
 	onStartStopClick: Function,
 	deleteTimeEntry: Function,
 	updateTimeEntry: Function,
@@ -38,7 +36,6 @@ const props = defineProps({
 		required: false,
 	},
 	canCreateProject: Boolean,
-	enableEstimatedTime: Boolean,
 });
 
 const emit = defineEmits(['selected', 'unselected']);
@@ -99,14 +96,11 @@ function onSelectChange(event) {
 						@changed="updateTimeEntryDescription"
 					></TimeEntryDescriptionInput>
 					<TimeTrackerProjectTaskDropdown
-						:create-client
 						:can-create-project
-						:clients
 						:projects="projects"
 						:tasks="tasks"
 						:show-badge-border="false"
 						:project="timeEntry.project_id"
-						:enable-estimated-time
 						:task="timeEntry.task_id"
 						@changed="updateProjectAndTask"
 					></TimeTrackerProjectTaskDropdown>

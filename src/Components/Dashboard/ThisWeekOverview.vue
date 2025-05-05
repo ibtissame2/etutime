@@ -15,7 +15,6 @@ import { getWeekStart } from '@/packages/ui/src/utils/settings';
 import { useCssVar } from '@vueuse/core';
 import { useQuery } from '@/utils/tanstack';
 import { getCurrentOrganizationId } from '@/utils/useUser';
-import { api } from '@/packages/api/src';
 
 use([CanvasRenderer, BarChart, TitleComponent, GridComponent, TooltipComponent, LegendComponent]);
 

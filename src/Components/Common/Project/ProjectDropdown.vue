@@ -13,7 +13,6 @@ import {
 } from 'radix-vue';
 import { PlusCircleIcon } from '@heroicons/vue/20/solid';
 import { storeToRefs } from 'pinia';
-import { api } from '@/packages/api/src';
 import { usePage } from '@/utils/inertia';
 import { getRandomColor } from '@/packages/ui/src/utils/color';
 import ProjectDropdownItem from '@/packages/ui/src/Project/ProjectDropdownItem.vue';
@@ -122,7 +121,7 @@ function updateValue(project) {
 						<ComboboxInput
 							ref="searchInput"
 							class="bg-card-background border-0 placeholder-muted text-sm text-text-primary py-2.5 focus:ring-0 border-b border-card-background-separator focus:border-card-background-separator w-full"
-							placeholder="Search for a project..."
+							placeholder="Rechercher un module..."
 							@keydown.enter="addProjectIfNoneExists"
 						/>
 					</ComboboxAnchor>

@@ -7,8 +7,6 @@ import ProjectCreateModal from '@/packages/ui/src/Project/ProjectCreateModal.vue
 import ProjectTableHeading from '@/Components/Common/Project/ProjectTableHeading.vue';
 import ProjectTableRow from '@/Components/Common/Project/ProjectTableRow.vue';
 import { useModulesStore } from '@/store/modules';
-import { useClientsStore } from '@/utils/useClients';
-import { storeToRefs } from 'pinia';
 
 const props = defineProps({
 	projects: {
@@ -23,24 +21,13 @@ async function createProject(project) {
 	return await useModulesStore().createModule(project);
 }
 
-async function createClient(client) {
-	return await useClientsStore().createClient(client);
-}
-
-const { clients } = storeToRefs(useClientsStore());
-
 const gridTemplate = computed(() => {
 	return `grid-template-columns: minmax(300px, 1fr) minmax(140px, auto) minmax(130px, auto) minmax(120px, auto) 80px;`;
 });
 </script>
 
 <template>
-	<!-- :enable-estimated-time="isAllowedToPerformPremiumAction" -->
-	<ProjectCreateModal
-		v-model:show="showCreateProjectModal"
-		:create-client="createClient"
-		:clients="clients"
-	></ProjectCreateModal>
+	<ProjectCreateModal v-model:show="showCreateProjectModal"></ProjectCreateModal>
 	<div class="flow-root max-w-[100vw] overflow-x-auto">
 		<div class="inline-block min-w-full align-middle">
 			<div data-testid="project_table" class="grid min-w-full" :style="gridTemplate">

@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue';
 import TableRow from '@/Components/TableRow.vue';
-import { api } from '@/packages/api/src';
 import ReportMoreOptionsDropdown from '@/Components/Common/Report/ReportMoreOptionsDropdown.vue';
 import ReportEditModal from '@/Components/Common/Report/ReportEditModal.vue';
 import { SecondaryButton } from '@/packages/ui/src';

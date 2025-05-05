@@ -40,7 +40,7 @@ const roleDescriptionTexts = {
 		'The owner has full access of the organization. The owner is the only role that can: delete the organization, transfer the ownership to another user',
 	admin: 'The admin has full access to the organization, except for the stuff that only the owner can do.',
 	manager:
-		'The manager has full access to projects, clients, tags, time entries, and reports, but can not manage the organization or the users.',
+		'The manager has full access to modules, tâches, time entries, and reports, but can not manage the organization or the users.',
 	employee: 'An employee is a user that is only using the application to track time, but has no administrative rights.',
 	placeholder:
 		'Placeholder users can not do anything in the organization. They can be used to remove users from the organization without deleting their time entries.',

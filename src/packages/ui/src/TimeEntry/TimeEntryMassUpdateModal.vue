@@ -16,11 +16,8 @@ const props = defineProps({
 	timeEntries: Array,
 	projects: Array,
 	tasks: Array,
-	clients: Array,
 	tags: Array,
-	createClient: Function,
 	updateTimeEntries: Function,
-	enableEstimatedTime: Boolean,
 	canCreateProject: Boolean,
 });
 
@@ -113,14 +110,11 @@ watch(removeAllTags, () => {
 					<TimeTrackerProjectTaskDropdown
 						v-model:project="projectId"
 						v-model:task="taskId"
-						:clients
-						:create-client
 						:can-create-project
 						class="mt-1"
 						empty-placeholder="Select project..."
 						allow-reset
 						size="xlarge"
-						:enable-estimated-time
 						:projects="projects"
 						:tasks="tasks"
 					></TimeTrackerProjectTaskDropdown>

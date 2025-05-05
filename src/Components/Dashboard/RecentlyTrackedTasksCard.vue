@@ -8,7 +8,6 @@ import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import { PlusCircleIcon } from '@heroicons/vue/24/solid';
 import { router, route } from '@/utils/inertia';
 import { getCurrentMembershipId, getCurrentOrganizationId } from '@/utils/useUser';
-import { api } from '@/packages/api/src';
 import { LoadingSpinner } from '@/packages/ui/src';
 
 const organizationId = computed(() => getCurrentOrganizationId());

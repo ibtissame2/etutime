@@ -22,11 +22,8 @@ const props = defineProps({
 	size: { type: String, default: 'large' },
 	projects: Array,
 	tasks: Array,
-	clients: Array,
-	createClient: Function,
-	emptyPlaceholder: { type: String, default: 'No Project' },
+	emptyPlaceholder: { type: String, default: 'Aucun module' },
 	allowReset: { type: Boolean, default: false },
-	enableEstimatedTime: Boolean,
 	canCreateProject: Boolean,
 	class: { type: String, required: false },
 });
@@ -43,68 +40,31 @@ watch(open, (isOpen) => {
 const filteredResults = ref([]);
 
 const filteredProjects = computed(() => {
-	return filteredResults.value.map((client) => client.projects).flat();
+	return filteredResults.value[0].projects;
 });
 
-function addProjectToFilterObject(tempFilteredClients, project, filteredTasks, expanded = false) {
-	const projectClientIndex = tempFilteredClients.findIndex((client) => client.id === project.client_id);
-
-	const client = props.clients.find((client) => client.id === project.client_id);
-
-	if (projectClientIndex !== -1) {
-		tempFilteredClients[projectClientIndex].projects.push({
-			...project,
-			expanded: expanded,
-			tasks: filteredTasks,
-		});
-	} else if (client) {
-		tempFilteredClients.push({
-			...client,
-			projects: [
-				{
-					...project,
-					expanded: expanded,
-					tasks: filteredTasks,
-				},
-			],
-		});
-	} else {
-		const customNoClientId = 'no_client';
-		const noClientIndex = tempFilteredClients.findIndex((client) => client.id === customNoClientId);
-
-		if (noClientIndex !== -1) {
-			tempFilteredClients[noClientIndex].projects.push({
-				...project,
-				expanded: expanded,
-				tasks: filteredTasks,
-			});
-		} else {
-			tempFilteredClients.push({
-				id: customNoClientId,
-				name: 'No Client',
-				color: 'var(--theme-color-icon-default)',
-				created_at: '',
-				value: '',
-				is_archived: false,
-				projects: [
-					{
-						...project,
-						expanded: expanded,
-						tasks: filteredTasks,
-					},
-				],
-			});
-		}
-	}
+function addProjectToFilterObject(tempFilteredModules, project, filteredTasks, expanded = false) {
+	tempFilteredModules[0] = tempFilteredModules[0] || {
+		name: 'Modules',
+		color: 'var(--theme-color-icon-default)',
+		created_at: '',
+		value: '',
+		is_archived: false,
+		projects: [],
+	};
+	tempFilteredModules[0].projects.push({
+		...project,
+		expanded: expanded,
+		tasks: filteredTasks,
+	});
 }
 
 watchEffect(() => {
-	const tempFilteredClients = [];
+	const tempFilteredModules = [];
 
 	if (searchValue.value.length === 0) {
-		tempFilteredClients.push({
-			id: 'no_project_no_client',
-			name: 'No Client',
+		tempFilteredModules.push({
+			name: 'Modules',
 			color: 'var(--theme-color-icon-default)',
 			created_at: '',
 			value: '',
@@ -112,10 +72,9 @@ watchEffect(() => {
 			projects: [
 				{
 					id: '',
-					name: 'No Project',
+					name: 'Aucun module',
 					color: 'var(--theme-color-icon-default)',
 					value: '',
-					client_id: null,
 					is_archived: false,
 					expanded: false,
 					tasks: [],
@@ -144,41 +103,13 @@ watchEffect(() => {
 		});
 
 		if (projectNameIncludesSearchTerm && (!filterProject.is_archived || project.value === filterProject.id)) {
-			addProjectToFilterObject(tempFilteredClients, filterProject, filteredTasks, false);
+			addProjectToFilterObject(tempFilteredModules, filterProject, filteredTasks, false);
 		} else if (filteredTasks.length > 0 && !filterProject.is_archived) {
-			addProjectToFilterObject(tempFilteredClients, filterProject, filteredTasks, true);
+			addProjectToFilterObject(tempFilteredModules, filterProject, filteredTasks, true);
 		}
 	}
-
-	tempFilteredClients.sort((a, b) => {
-		if (a.id === 'no_project_no_client') {
-			return -1;
-		}
-		if (b.id === 'no_project_no_client') {
-			return 1;
-		}
-		if (a.id === 'no_client') {
-			return -1;
-		}
-		if (b.id === 'no_client') {
-			return 1;
-		}
-
-		if (a.name < b.name) {
-			return -1;
-		}
-		if (a.name > b.name) {
-			return 1;
-		}
-		return 0;
-	});
-
-	filteredResults.value = tempFilteredClients;
+	filteredResults.value = tempFilteredModules;
 });
-
-async function addClientIfNoneExists() {
-	setProjectAndClientBasedOnHighlightedItem();
-}
 
 function isProjectSelected(project) {
 	return project.value === project.id;
@@ -194,7 +125,7 @@ watch(filteredProjects, () => {
 	initializeHighlightedItem();
 });
 
-function setProjectAndClientBasedOnHighlightedItem() {
+function setModuleBasedOnHighlightedItem() {
 	const highlightedProject = filteredProjects.value.find((project) => project.id === highlightedItemId.value);
 	const highlightedTask = filteredProjects.value
 		.map((project) => project.tasks)
@@ -212,7 +143,7 @@ function updateSearchValue(event) {
 	const newInput = event.target.value;
 	if (newInput === ' ') {
 		searchValue.value = '';
-		setProjectAndClientBasedOnHighlightedItem();
+		setModuleBasedOnHighlightedItem();
 	} else {
 		searchValue.value = newInput;
 	}
@@ -357,7 +288,7 @@ const selectedProjectName = computed(() => {
 		return props.emptyPlaceholder;
 	}
 	if (project.value === '') {
-		return 'No Project';
+		return 'Aucun module';
 	}
 	return currentProject.value?.name;
 });
@@ -442,11 +373,9 @@ const showCreateProject = ref(false);
 				<input
 					ref="searchInput"
 					:value="searchValue"
-					data-testid="client_dropdown_search"
 					class="bg-card-background border-0 placeholder-muted text-sm text-text-primary py-2.5 focus:ring-0 border-b border-card-background-separator focus:border-card-background-separator w-full"
-					placeholder="Search for a project or task..."
+					placeholder="Rechercher un module..."
 					@input="updateSearchValue"
-					@keydown.enter.prevent="addClientIfNoneExists"
 					@keydown.up.prevent="moveHighlightUp"
 					@keydown.down.prevent="moveHighlightDown"
 					@keydown.right.prevent="expandProject"
@@ -457,81 +386,71 @@ const showCreateProject = ref(false);
 					class="min-w-[350px] max-h-[350px] overflow-y-scroll relative"
 					@mousemove="mouseEnterHighlightActivated = true"
 				>
-					<template v-for="client in filteredResults" :key="client.id">
+					<template v-for="projectWithTasks in filteredResults[0].projects" :key="projectWithTasks.id">
 						<div
-							v-if="client.id !== 'no_project_no_client'"
-							class="w-full pb-1 pt-2 px-2 text-text-tertiary text-xs font-semibold flex space-x-1 items-center"
+							role="option"
+							class="px-1 py-0.5 cursor-default"
+							:value="projectWithTasks.id"
+							:data-project-id="projectWithTasks.id"
+							@click="selectProject(projectWithTasks.id)"
 						>
-							<span>
-								{{ client.name }}
-							</span>
-						</div>
-						<template v-for="projectWithTasks in client.projects" :key="projectWithTasks.id">
 							<div
-								role="option"
-								class="px-1 py-0.5 cursor-default"
-								:value="projectWithTasks.id"
-								:data-project-id="projectWithTasks.id"
-								@click="selectProject(projectWithTasks.id)"
+								class="rounded-lg"
+								:class="{
+									'bg-card-background-active': projectWithTasks.id === highlightedItemId,
+								}"
 							>
-								<div
-									class="rounded-lg"
-									:class="{
-										'bg-card-background-active': projectWithTasks.id === highlightedItemId,
-									}"
+								<ProjectDropdownItem
+									class="hover:!bg-transparent"
+									:selected="isProjectSelected(projectWithTasks)"
+									:name="projectWithTasks.name"
+									:color="projectWithTasks.color"
+									@mouseenter="setHighlightItemId(projectWithTasks.id)"
 								>
-									<ProjectDropdownItem
-										class="hover:!bg-transparent"
-										:selected="isProjectSelected(projectWithTasks)"
-										:name="projectWithTasks.name"
-										:color="projectWithTasks.color"
-										@mouseenter="setHighlightItemId(projectWithTasks.id)"
-									>
-										<template #actions>
-											<button
-												v-if="projectWithTasks.tasks.length > 0"
-												tabindex="-1"
-												class="px-2 py-0.5 mr-2 relative transition items-center rounded flex space-x-0.5 text-xs"
+									<template #actions>
+										<button
+											v-if="projectWithTasks.tasks.length > 0"
+											tabindex="-1"
+											class="px-2 py-0.5 mr-2 relative transition items-center rounded flex space-x-0.5 text-xs"
+											:class="{
+												'bg-white/5 text-text-secondary': projectWithTasks.expanded,
+												'hover:bg-white/5 hover:text-text-secondary text-text-tertiary': !projectWithTasks.expanded,
+											}"
+											@click.prevent.stop="
+												() => {
+													projectWithTasks.expanded = !projectWithTasks.expanded;
+													searchInput?.focus();
+												}
+											"
+										>
+											<span>{{ projectWithTasks.tasks.length }} Tasks</span>
+											<ChevronDownIcon
 												:class="{
-													'bg-white/5 text-text-secondary': projectWithTasks.expanded,
-													'hover:bg-white/5 hover:text-text-secondary text-text-tertiary': !projectWithTasks.expanded,
+													'transform rotate-180': projectWithTasks.expanded,
 												}"
-												@click.prevent.stop="
-													() => {
-														projectWithTasks.expanded = !projectWithTasks.expanded;
-														searchInput?.focus();
-													}
-												"
-											>
-												<span>{{ projectWithTasks.tasks.length }} Tasks</span>
-												<ChevronDownIcon
-													:class="{
-														'transform rotate-180': projectWithTasks.expanded,
-													}"
-													class="w-4"
-												></ChevronDownIcon>
-											</button>
-										</template>
-									</ProjectDropdownItem>
-								</div>
+												class="w-4"
+											></ChevronDownIcon>
+										</button>
+									</template>
+								</ProjectDropdownItem>
 							</div>
-							<div v-if="projectWithTasks.expanded" class="bg-quaternary">
-								<div
-									v-for="task in projectWithTasks.tasks"
-									:key="task.id"
-									:data-task-id="task.id"
-									:class="{
-										'bg-card-background-active': task.id === highlightedItemId,
-									}"
-									class="flex items-center space-x-2 w-full px-5 py-1.5 text-start text-xs font-semibold leading-5 text-text-primary focus:outline-none focus:bg-card-background-active transition duration-150 ease-in-out"
-									@click="selectTask(task.id)"
-									@mouseenter="setHighlightItemId(task.id)"
-								>
-									<MinusIcon class="w-3 h-3 text-text-quaternary"></MinusIcon>
-									<span>{{ task.name }}</span>
-								</div>
+						</div>
+						<div v-if="projectWithTasks.expanded" class="bg-quaternary">
+							<div
+								v-for="task in projectWithTasks.tasks"
+								:key="task.id"
+								:data-task-id="task.id"
+								:class="{
+									'bg-card-background-active': task.id === highlightedItemId,
+								}"
+								class="flex items-center space-x-2 w-full px-5 py-1.5 text-start text-xs font-semibold leading-5 text-text-primary focus:outline-none focus:bg-card-background-active transition duration-150 ease-in-out"
+								@click="selectTask(task.id)"
+								@mouseenter="setHighlightItemId(task.id)"
+							>
+								<MinusIcon class="w-3 h-3 text-text-quaternary"></MinusIcon>
+								<span>{{ task.name }}</span>
 							</div>
-						</template>
+						</div>
 					</template>
 				</div>
 				<div v-if="canCreateProject" class="hover:bg-card-background-active rounded-b-lg">
@@ -543,7 +462,7 @@ const showCreateProject = ref(false);
 						"
 					>
 						<PlusCircleIcon class="w-5 flex-shrink-0 text-icon-default"></PlusCircleIcon>
-						<span>Create new Project</span>
+						<span>Créer un module</span>
 					</button>
 				</div>
 			</UseFocusTrap>

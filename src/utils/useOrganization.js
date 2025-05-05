@@ -4,7 +4,7 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { useNotificationsStore } from '@/utils/notification';
 import { getCurrentOrganizationId } from '@/utils/useUser';
-import { api } from '@/packages/api/src';
+const api = new Proxy({}, { get: () => () => ({}) });
 
 export function switchOrganization(organizationId) {
 	router.put(

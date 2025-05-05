@@ -12,13 +12,10 @@ const props = defineProps({
 	projects: Array,
 	tasks: Array,
 	tags: Array,
-	clients: Array,
 	updateTimeEntry: Function,
 	updateTimeEntries: Function,
 	deleteTimeEntries: Function,
 	createTimeEntry: Function,
-	createClient: Function,
-	enableEstimatedTime: Boolean,
 	canCreateProject: Boolean,
 });
 
@@ -111,13 +108,10 @@ function unselectAllTimeEntries(value) {
 			<TimeEntryAggregateRow
 				v-if="'timeEntries' in entry && entry.timeEntries.length > 1"
 				:can-create-project
-				:enable-estimated-time
 				:selected-time-entries="selectedTimeEntries"
-				:create-client
 				:projects="projects"
 				:tasks="tasks"
 				:tags="tags"
-				:clients
 				:on-start-stop-click="startTimeEntryFromExisting"
 				:update-time-entries
 				:update-time-entry
@@ -138,14 +132,11 @@ function unselectAllTimeEntries(value) {
 			></TimeEntryAggregateRow>
 			<TimeEntryRow
 				v-else
-				:create-client
-				:enable-estimated-time
 				:can-create-project
 				:projects="projects"
 				:selected="!!selectedTimeEntries.find((filterEntry) => filterEntry.id === entry.id)"
 				:tasks="tasks"
 				:tags="tags"
-				:clients
 				:update-time-entry
 				:on-start-stop-click="() => startTimeEntryFromExisting(entry)"
 				:delete-time-entry="() => deleteTimeEntries([entry])"

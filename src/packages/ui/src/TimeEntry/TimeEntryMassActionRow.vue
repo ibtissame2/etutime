@@ -17,10 +17,7 @@ const props = defineProps({
 	projects: Array,
 	tasks: Array,
 	tags: Array,
-	clients: Array,
-	createClient: Function,
 	updateTimeEntries: Function,
-	enableEstimatedTime: Boolean,
 	canCreateProject: Boolean,
 });
 
@@ -35,10 +32,7 @@ const showMassUpdateModal = ref(false);
 		:projects
 		:tasks
 		:tags
-		:clients
-		:create-client
 		:update-time-entries
-		:enable-estimated-time
 		:can-create-project
 		:time-entries="selectedTimeEntries"
 		@submit="emit('submit')"

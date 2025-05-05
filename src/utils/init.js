@@ -2,7 +2,6 @@ import { useModulesStore } from '@/store/modules';
 import { useTachesStore } from '@/store/taches';
 import { useTasksStore } from '@/utils/useTasks';
 import { useCurrentTimeEntryStore } from '@/utils/useCurrentTimeEntry';
-import { useClientsStore } from '@/utils/useClients';
 import { useMembersStore } from '@/utils/useMembers';
 import { useTimeEntriesStore } from '@/utils/useTimeEntries';
 
@@ -17,5 +16,4 @@ export function refreshStores() {
 	useCurrentTimeEntryStore().fetchCurrentTimeEntry();
 	useTimeEntriesStore().patchTimeEntries();
 	useMembersStore().fetchMembers();
-	useClientsStore().fetchClients();
 }

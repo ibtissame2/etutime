@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 import { getCurrentOrganizationId } from '@/utils/useUser';
-import { api } from '@/packages/api/src';
 import { reactive, ref } from 'vue';
 import { useNotificationsStore } from '@/utils/notification';
+const api = new Proxy({}, { get: () => () => ({}) });
 
 export const useTasksStore = defineStore('tasks', () => {
 	const tasks = ref(reactive([]));

@@ -2,7 +2,6 @@
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import DialogModal from '@/packages/ui/src/DialogModal.vue';
 import { ref } from 'vue';
-import { api } from '@/packages/api/src';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import MemberCombobox from '@/Components/Common/Member/MemberCombobox.vue';
 import { UserIcon, ArrowRightIcon } from '@heroicons/vue/24/solid';

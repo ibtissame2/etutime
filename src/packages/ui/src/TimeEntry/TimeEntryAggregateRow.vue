@@ -16,14 +16,11 @@ const props = defineProps({
 	projects: Array,
 	tasks: Array,
 	tags: Array,
-	clients: Array,
-	createClient: Function,
 	onStartStopClick: Function,
 	updateTimeEntries: Function,
 	updateTimeEntry: Function,
 	deleteTimeEntries: Function,
 	selectedTimeEntries: Array,
-	enableEstimatedTime: Boolean,
 	canCreateProject: Boolean,
 });
 
@@ -86,14 +83,11 @@ function onSelectChange(event) {
 							@changed="updateTimeEntryDescription"
 						></TimeEntryDescriptionInput>
 						<TimeTrackerProjectTaskDropdown
-							:clients
-							:create-client
 							:can-create-project
 							:projects="projects"
 							:tasks="tasks"
 							:show-badge-border="false"
 							:project="timeEntry.project_id"
-							:enable-estimated-time
 							:task="timeEntry.task_id"
 							@changed="updateProjectAndTask"
 						></TimeTrackerProjectTaskDropdown>
@@ -136,12 +130,9 @@ function onSelectChange(event) {
 				v-for="subEntry in timeEntry.timeEntries"
 				:key="subEntry.id"
 				:projects="projects"
-				:enable-estimated-time
 				:can-create-project
 				:tasks="tasks"
 				:selected="!!selectedTimeEntries.find((filterEntry) => filterEntry.id === subEntry.id)"
-				:create-client
-				:clients
 				:tags="tags"
 				indent
 				:update-time-entry="(timeEntry) => updateTimeEntry(timeEntry)"
