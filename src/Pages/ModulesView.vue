@@ -6,10 +6,10 @@ import { formatHumanReadableDuration } from '@/Components/src/utils/time';
 import { CheckCircleIcon, ArchiveBoxIcon } from '@heroicons/vue/20/solid';
 import { FolderIcon } from '@heroicons/vue/16/solid';
 import TablePageView from '@/Layouts/TablePageView.vue';
-import ModuleForm from '@/Components//Forms/ModuleForm.vue';
+import ModuleForm from '@/Components/Forms/ModuleForm.vue';
 import TabBarItem from '@/Components/Common/TabBar/TabBarItem.vue';
 import TabBar from '@/Components/Common/TabBar/TabBar.vue';
-import ModuleProgress from '@/Components//Module/ModuleProgress.vue';
+import ModuleProgress from '@/Components/Module/ModuleProgress.vue';
 
 const { modules } = storeToRefs(useModulesStore());
 const { fetchModules, updateModule, deleteModule } = useModulesStore();

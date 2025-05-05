@@ -6,7 +6,7 @@ import ProjectDropdownItem from '@/Components/Module/ModuleDropdownItem.vue';
 import ModuleBadge from '@/Components/Module/ModuleBadge.vue';
 import Badge from '@/Components/src/Badge.vue';
 import { PlusIcon, PlusCircleIcon, MinusIcon, XMarkIcon } from '@heroicons/vue/16/solid';
-import ModuleForm from '@/Components//Forms/ModuleForm.vue';
+import ModuleForm from '@/Components/Forms/ModuleForm.vue';
 import { twMerge } from 'tailwind-merge';
 import { UseFocusTrap } from '@vueuse/integrations/useFocusTrap/component';
 

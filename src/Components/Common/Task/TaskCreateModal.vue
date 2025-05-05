@@ -6,7 +6,7 @@ import { ref, watch } from 'vue';
 import PrimaryButton from '@/Components/src/Buttons/PrimaryButton.vue';
 import { useFocus } from '@vueuse/core';
 import { useTasksStore } from '@/utils/useTasks';
-import ModuleDropdown from '@/Components//Module/ModuleDropdown.vue';
+import ModuleDropdown from '@/Components/Module/ModuleDropdown.vue';
 import EstimatedTimeSection from '@/Components/src/EstimatedTimeSection.vue';
 
 const { createTask } = useTasksStore();

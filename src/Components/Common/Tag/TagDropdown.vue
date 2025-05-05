@@ -2,7 +2,7 @@
 import { PlusCircleIcon } from '@heroicons/vue/20/solid';
 import Dropdown from '@/Components/src/Input/Dropdown.vue';
 import { computed, nextTick, ref, watch } from 'vue';
-import TacheForm from '@/Components//Forms/TacheForm.vue';
+import TacheForm from '@/Components/Forms/TacheForm.vue';
 import MultiselectDropdownItem from '@/Components/src/Input/MultiselectDropdownItem.vue';
 import { UseFocusTrap } from '@vueuse/integrations/useFocusTrap/component';
 

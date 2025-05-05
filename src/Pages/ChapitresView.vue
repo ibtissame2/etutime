@@ -3,8 +3,8 @@ import { storeToRefs } from 'pinia';
 import { useChapitresStore } from '@/store/chapitres';
 import { formatHumanReadableDuration } from '@/Components/src/utils/time';
 import TablePageView from '@/Layouts/TablePageView.vue';
-import ChapitreForm from '@/Components//Forms/ChapitreForm.vue';
-import ModuleDropdown from '@/Components//Module/ModuleDropdown.vue';
+import ChapitreForm from '@/Components/Forms/ChapitreForm.vue';
+import ModuleDropdown from '@/Components/Module/ModuleDropdown.vue';
 import BookCheckIcon from '@/Components/Icons/BookCheckIcon.vue';
 import DoneIcon from '@/Components/Icons/DoneIcon.vue';
 

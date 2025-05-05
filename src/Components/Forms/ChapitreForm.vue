@@ -6,7 +6,7 @@ import DialogModal from '@/Components/src/DialogModal.vue';
 import TextInput from '@/Components/src/Input/TextInput.vue';
 import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import PrimaryButton from '@/Components/src/Buttons/PrimaryButton.vue';
-import ModuleDropdown from '@/Components//Module/ModuleDropdown.vue';
+import ModuleDropdown from '@/Components/Module/ModuleDropdown.vue';
 
 const { createChapitre, updateChapitre } = useChapitresStore();
 
