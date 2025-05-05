@@ -4,27 +4,14 @@ import Modal from './Modal.vue';
 const emit = defineEmits(['close']);
 
 defineProps({
-	show: {
-		type: Boolean,
-		default: false,
-	},
-	maxWidth: {
-		type: String,
-		default: '2xl',
-	},
-	closeable: {
-		type: Boolean,
-		default: true,
-	},
+	show: { type: Boolean, default: false },
+	maxWidth: { type: String, default: '2xl' },
+	closeable: { type: Boolean, default: true },
 });
-
-const close = () => {
-	emit('close');
-};
 </script>
 
 <template>
-	<Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="close">
+	<Modal :show="show" :max-width="maxWidth" :closeable="closeable" @close="emit('close')">
 		<div class="px-6 py-4">
 			<div class="text-lg font-medium text-text-primary" role="heading">
 				<slot name="title" />

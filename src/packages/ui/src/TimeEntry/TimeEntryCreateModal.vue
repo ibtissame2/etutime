@@ -8,7 +8,7 @@ import TimeTrackerProjectTaskDropdown from '@/packages/ui/src/TimeTracker/TimeTr
 import InputLabel from '@/packages/ui/src/Input/InputLabel.vue';
 import { TagIcon } from '@heroicons/vue/20/solid';
 import { getDayJsInstance, getLocalizedDayJs } from '@/packages/ui/src/utils/time';
-import TagDropdown from '@/packages/ui/src/Tag/TagDropdown.vue';
+import TagDropdown from '@/Components/Common/Tag/TagDropdown.vue';
 import { Badge } from '@/packages/ui/src';
 import DatePicker from '@/packages/ui/src/Input/DatePicker.vue';
 import DurationHumanInput from '@/packages/ui/src/Input/DurationHumanInput.vue';

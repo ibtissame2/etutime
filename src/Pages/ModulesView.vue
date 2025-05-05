@@ -1,32 +1,51 @@
 <script setup>
-import MainContainer from '@/packages/ui/src/MainContainer.vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
-import { FolderIcon, PlusIcon } from '@heroicons/vue/16/solid';
-import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
-import ProjectTable from '@/Components/Common/Project/ProjectTable.vue';
-import { computed, onMounted, ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { computed, ref } from 'vue';
 import { useModulesStore } from '@/store/modules';
-import ProjectCreateModal from '@/packages/ui/src/Project/ProjectCreateModal.vue';
-import PageTitle from '@/Components/Common/PageTitle.vue';
+import { formatHumanReadableDuration } from '@/packages/ui/src/utils/time';
+import { CheckCircleIcon, ArchiveBoxIcon } from '@heroicons/vue/20/solid';
+import TablePageView from '@/Components/Global/TablePageView.vue';
+import ModuleForm from '@/Components/Global/Forms/ModuleForm.vue';
 import TabBarItem from '@/Components/Common/TabBar/TabBarItem.vue';
 import TabBar from '@/Components/Common/TabBar/TabBar.vue';
-import { storeToRefs } from 'pinia';
-import { useOrganizationStore } from '@/utils/useOrganization';
+import ModuleProgress from '@/Components/Common/Module/ModuleProgress.vue';
 
-const { fetchModules, createModule } = useModulesStore();
 const { modules } = storeToRefs(useModulesStore());
+const { fetchModules, updateModule, deleteModule } = useModulesStore();
 
-onMounted(() => {
-	fetchModules();
-	useOrganizationStore().fetchOrganization();
-});
+const tableColumns = [
+	{ id: 'name', label: 'Name', size: 'minmax(300px, 1fr)' },
+	{ id: 'time', label: 'Total Time', size: 'minmax(140px, auto)' },
+	{ id: 'progress', label: 'Progress', size: 'minmax(130px, auto)' },
+	{ id: 'status', label: 'Status', size: 'minmax(120px, auto)' },
+];
 
-const showCreateProjectModal = ref(false);
+const noData = {
+	title: 'Aucun module trouvé',
+	description: 'Créez votre premier module maintenant !',
+	button: 'Créez votre premier module',
+};
+
+const dropdown = [
+	{
+		icon: 'edit',
+		label: 'Modifier',
+		onclick: (module, showForm) => showForm(module),
+	},
+	{
+		icon: ArchiveBoxIcon,
+		label: (module) => (module.is_public ? 'Archiver' : 'Désarchiver'),
+		onclick: (module) => updateModule(module.id, { is_public: !module.is_public }),
+	},
+	{
+		border: true,
+		icon: 'delete',
+		label: 'Supprimer',
+		onclick: (module) => deleteModule(module.id),
+	},
+];
+
 const activeTab = ref('active');
-
-function isActiveTab(tab) {
-	return activeTab.value === tab;
-}
 
 const shownModules = computed(() => {
 	if (activeTab.value !== 'archived') return modules.value.filter((module) => module.is_public);
@@ -35,18 +54,46 @@ const shownModules = computed(() => {
 </script>
 
 <template>
-	<AppLayout title="Modules" data-testid="projects_view">
-		<MainContainer class="py-3 sm:py-5 border-b border-default-background-separator flex justify-between items-center">
-			<div class="flex items-center space-x-3 sm:space-x-6">
-				<PageTitle :icon="FolderIcon" title="Modules"></PageTitle>
-				<TabBar>
-					<TabBarItem :active="isActiveTab('active')" @click="activeTab = 'active'">Active</TabBarItem>
-					<TabBarItem :active="isActiveTab('archived')" @click="activeTab = 'archived'"> Archived </TabBarItem>
-				</TabBar>
-			</div>
-			<SecondaryButton :icon="PlusIcon" @click="showCreateProjectModal = true">Créer un module </SecondaryButton>
-			<ProjectCreateModal v-model:show="showCreateProjectModal" @submit="createModule"></ProjectCreateModal>
-		</MainContainer>
-		<ProjectTable :projects="shownModules"></ProjectTable>
-	</AppLayout>
+	<TablePageView
+		title="Modules"
+		create="Créer un module"
+		:data="shownModules"
+		:modal="ModuleForm"
+		:columns="tableColumns"
+		:dropdown="dropdown"
+		:no-data="noData"
+		:dropdown-min-width="150"
+		@fetch="fetchModules()"
+	>
+		<template #table-filters>
+			<TabBar>
+				<TabBarItem :active="activeTab === 'active'" @click="activeTab = 'active'">Active</TabBarItem>
+				<TabBarItem :active="activeTab === 'archived'" @click="activeTab = 'archived'"> Archived </TabBarItem>
+			</TabBar>
+		</template>
+
+		<template #name="{ data: module }">
+			<div
+				:style="{
+					backgroundColor: module.color,
+					boxShadow: `var(--tw-ring-inset) 0 0 0 calc(4px + var(--tw-ring-offset-width)) ${module.color}30`,
+				}"
+				class="w-3 h-3 mr-2 rounded-full"
+			></div>
+			<span class="overflow-ellipsis overflow-hidden">{{ module.name }} </span>
+		</template>
+
+		<template #time="{ data: module }">
+			{{ module.spent_time ? formatHumanReadableDuration(module.spent_time) : '--' }}
+		</template>
+
+		<template #progress="{ data: module }">
+			<ModuleProgress :module="module" />
+		</template>
+
+		<template #status="{ data: module }">
+			<CheckCircleIcon class="w-5 mr-1"></CheckCircleIcon>
+			<span>{{ module.is_public ? 'Actif' : 'Archivé' }}</span>
+		</template>
+	</TablePageView>
 </template>

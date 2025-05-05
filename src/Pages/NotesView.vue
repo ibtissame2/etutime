@@ -4,8 +4,8 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import { TagIcon, PlusIcon } from '@heroicons/vue/16/solid';
 import SecondaryButton from '@/packages/ui/src/Buttons/SecondaryButton.vue';
 import { ref } from 'vue';
-import TagTable from '@/Components/Common/Tag/TagTable.vue';
-// import TagCreateModal from '@/packages/ui/src/Tag/TagCreateModal.vue';
+// import TagTable from '@/Components/Common/Tag/TagTable.vue';
+// import TagCreateModal from '@/Components/Common/Tag/TagCreateModal.vue';
 import PageTitle from '@/Components/Common/PageTitle.vue';
 // import { useNotesStore } from '@/store/notes';
 

@@ -1,7 +1,7 @@
 <script setup>
-import TagDropdown from '@/packages/ui/src/Tag/TagDropdown.vue';
 import { computed } from 'vue';
-import TagBadge from '@/packages/ui/src/Tag/TagBadge.vue';
+import TagDropdown from '@/Components/Common/Tag/TagDropdown.vue';
+import TagBadge from '@/Components/Common/Tag/TagBadge.vue';
 
 const props = defineProps({
 	tags: Array,

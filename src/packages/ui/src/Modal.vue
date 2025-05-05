@@ -5,48 +5,33 @@ import { isLastLayer, layers } from '@/packages/ui/src/utils/dismissableLayer';
 import { useFocusTrap } from '@vueuse/integrations/useFocusTrap';
 import { ref } from 'vue';
 
-const props = defineProps({
-	show: {
-		type: Boolean,
-		default: false,
-	},
-	maxWidth: {
-		type: String,
-		default: '2xl',
-	},
-	closeable: {
-		type: Boolean,
-		default: true,
-	},
-});
-
 const emit = defineEmits(['close']);
 
-watch(
-	() => props.show,
-	() => {
-		if (props.show) {
-			document.body.style.overflow = 'hidden';
-		} else {
-			document.body.style.overflow = 'visible';
-		}
-	}
-);
+const props = defineProps({
+	show: { type: Boolean, default: false },
+	maxWidth: { type: String, default: '2xl' },
+	closeable: { type: Boolean, default: true },
+});
 
-const close = () => {
-	if (props.closeable) {
-		emit('close');
-	}
-};
 const id = useId();
 
-const closeOnEscape = (e) => {
-	if (isLastLayer(id)) {
-		if (e.key === 'Escape' && props.show) {
-			close();
-		}
-	}
-};
+const maxWidthClass = computed(() => {
+	return {
+		sm: 'sm:max-w-sm',
+		md: 'sm:max-w-md',
+		lg: 'sm:max-w-lg',
+		xl: 'sm:max-w-xl',
+		'2xl': 'sm:max-w-2xl',
+	}[props.maxWidth];
+});
+
+const target = ref();
+
+const { activate, deactivate } = useFocusTrap(target, { allowOutsideClick: true });
+
+const close = () => props.closeable && emit('close');
+
+const closeOnEscape = (e) => isLastLayer(id) && e.key === 'Escape' && props.show && close();
 
 onMounted(() => {
 	document.addEventListener('keydown', closeOnEscape);
@@ -60,39 +45,10 @@ onUnmounted(() => {
 watch(
 	() => props.show,
 	(value) => {
-		if (value) {
-			layers.value.push(id);
-		} else {
-			layers.value = layers.value.filter((layer) => layer !== id);
-		}
-	}
-);
-const maxWidthClass = computed(() => {
-	return {
-		sm: 'sm:max-w-sm',
-		md: 'sm:max-w-md',
-		lg: 'sm:max-w-lg',
-		xl: 'sm:max-w-xl',
-		'2xl': 'sm:max-w-2xl',
-	}[props.maxWidth];
-});
-
-const target = ref();
-const { activate, deactivate } = useFocusTrap(target, {
-	allowOutsideClick: true,
-});
-watch(
-	() => props.show,
-	(value) => {
-		if (value) {
-			nextTick(() => {
-				activate();
-			});
-		} else {
-			nextTick(() => {
-				deactivate();
-			});
-		}
+		document.body.style.overflow = props.show ? 'hidden' : 'visible';
+		if (value) layers.value.push(id);
+		else layers.value = layers.value.filter((layer) => layer !== id);
+		nextTick(() => (value ? activate() : deactivate()));
 	}
 );
 </script>

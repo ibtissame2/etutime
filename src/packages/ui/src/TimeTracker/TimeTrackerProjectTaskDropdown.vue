@@ -6,7 +6,7 @@ import ProjectDropdownItem from '@/packages/ui/src/Project/ProjectDropdownItem.v
 import ProjectBadge from '@/packages/ui/src/Project/ProjectBadge.vue';
 import Badge from '@/packages/ui/src/Badge.vue';
 import { PlusIcon, PlusCircleIcon, MinusIcon, XMarkIcon } from '@heroicons/vue/16/solid';
-import ProjectCreateModal from '@/packages/ui/src/Project/ProjectCreateModal.vue';
+import ModuleForm from '@/Components/Global/Forms/ModuleForm.vue';
 import { twMerge } from 'tailwind-merge';
 import { UseFocusTrap } from '@vueuse/integrations/useFocusTrap/component';
 
@@ -466,7 +466,7 @@ const showCreateProject = ref(false);
 			</UseFocusTrap>
 		</template>
 	</Dropdown>
-	<ProjectCreateModal v-model:show="showCreateProject"></ProjectCreateModal>
+	<ModuleForm v-model:show="showCreateProject" />
 </template>
 
 <style scoped></style>

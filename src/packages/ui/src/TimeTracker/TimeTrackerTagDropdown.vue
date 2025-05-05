@@ -1,5 +1,5 @@
 <script setup>
-import TagDropdown from '@/packages/ui/src/Tag/TagDropdown.vue';
+import TagDropdown from '@/Components/Common/Tag/TagDropdown.vue';
 import { twMerge } from 'tailwind-merge';
 import { TagIcon } from '@heroicons/vue/20/solid';
 import { computed } from 'vue';

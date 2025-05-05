@@ -7,7 +7,7 @@ import PrimaryButton from '../Buttons/PrimaryButton.vue';
 import TimeTrackerProjectTaskDropdown from '@/packages/ui/src/TimeTracker/TimeTrackerProjectTaskDropdown.vue';
 import InputLabel from '../Input/InputLabel.vue';
 import { Badge, Checkbox } from '@/packages/ui/src';
-import TagDropdown from '@/packages/ui/src/Tag/TagDropdown.vue';
+import TagDropdown from '@/Components/Common/Tag/TagDropdown.vue';
 
 const show = defineModel('show', { default: false });
 const saving = ref(false);

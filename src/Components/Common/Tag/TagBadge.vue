@@ -1,6 +1,6 @@
 <script setup>
 import { twMerge } from 'tailwind-merge';
-import Badge from '../Badge.vue';
+import TagBadge from '@/Components/Common/Tag/TagBadge.vue';
 import { TagIcon } from '@heroicons/vue/20/solid';
 
 const props = defineProps({
@@ -34,12 +34,12 @@ const indicatorClasses = {
 </script>
 
 <template>
-	<Badge :name :size :tag :class="props.class" :color :border>
+	<TagBadge :name :size :tag :class="props.class" :color :border>
 		<TagIcon :class="twMerge(indicatorClasses[size])"></TagIcon>
 		<span v-if="name">
 			{{ name }}
 		</span>
-	</Badge>
+	</TagBadge>
 </template>
 
 <style scoped></style>

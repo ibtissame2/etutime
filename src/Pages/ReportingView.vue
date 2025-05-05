@@ -9,7 +9,7 @@ import { computed, onMounted, ref } from 'vue';
 import { formatHumanReadableDuration, getDayJsInstance, getLocalizedDayJs } from '@/packages/ui/src/utils/time';
 import { useReportingStore } from '@/utils/useReporting';
 import { storeToRefs } from 'pinia';
-import TagDropdown from '@/packages/ui/src/Tag/TagDropdown.vue';
+import TagDropdown from '@/Components/Common/Tag/TagDropdown.vue';
 import ReportingFilterBadge from '@/Components/Common/Reporting/ReportingFilterBadge.vue';
 import ProjectMultiselectDropdown from '@/Components/Common/Project/ProjectMultiselectDropdown.vue';
 import MemberMultiselectDropdown from '@/Components/Common/Member/MemberMultiselectDropdown.vue';

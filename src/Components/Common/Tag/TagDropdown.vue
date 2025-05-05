@@ -2,7 +2,7 @@
 import { PlusCircleIcon } from '@heroicons/vue/20/solid';
 import Dropdown from '@/packages/ui/src/Input/Dropdown.vue';
 import { computed, nextTick, ref, watch } from 'vue';
-import TagCreateModal from '@/packages/ui/src/Tag/TagCreateModal.vue';
+import TacheForm from '@/Components/Global/Forms/TacheForm.vue';
 import MultiselectDropdownItem from '@/packages/ui/src/Input/MultiselectDropdownItem.vue';
 import { UseFocusTrap } from '@vueuse/integrations/useFocusTrap/component';
 
@@ -129,7 +129,7 @@ const highlightedItem = computed(() => {
 </script>
 
 <template>
-	<TagCreateModal v-model:show="showCreateTagModal"></TagCreateModal>
+	<TacheForm v-model:show="showCreateTagModal"></TacheForm>
 	<Dropdown v-model="open" :align="align" :close-on-content-click="false" @submit="emit('submit')">
 		<template #trigger>
 			<slot name="trigger"></slot>
