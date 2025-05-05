@@ -47,13 +47,17 @@ function exequteSQL($db, $sql, $params = [])
 	if (!$statment->execute()) {
 		throw new Exception('SQL Execute failed: ' . $statment->error);
 	} else {
-		$result = $statment->get_result();
-		if (!is_bool($result)) {
-			$entries = array();
-			while ($row = $result->fetch_assoc()) {
-				$entries[] = $row;
+		if (stripos($sql, 'INSERT') === 0) {
+			$response = $statment->insert_id;
+		} else {
+			$result = $statment->get_result();
+			if (!is_bool($result)) {
+				$entries = array();
+				while ($row = $result->fetch_assoc()) {
+					$entries[] = $row;
+				}
+				$response = json_encode($entries);
 			}
-			$response = json_encode($entries);
 		}
 	}
 	$statment->close();

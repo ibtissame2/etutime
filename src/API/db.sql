@@ -50,7 +50,7 @@ CREATE TABLE `taches` (
 CREATE TABLE `chapitres` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` varchar(500) NOT NULL,
-  `module_id` INT NOT NULL,
+  `module_id` INT DEFAULT NULL,
   `user_id` INT NOT NULL,
   PRIMARY KEY (`id`),
   KEY `chapitres_module_id_foreign` (`module_id`)

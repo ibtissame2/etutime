@@ -12,6 +12,7 @@ import { UseFocusTrap } from '@vueuse/integrations/useFocusTrap/component';
 
 const task = defineModel('task', { default: null });
 const project = defineModel('project', { default: null });
+
 const searchInput = ref(null);
 const open = ref(false);
 const dropdownViewport = ref(null);
@@ -284,11 +285,8 @@ const currentTask = computed(() => {
 });
 
 const selectedProjectName = computed(() => {
-	if (project.value === null) {
+	if (project.value === null || project.value === '') {
 		return props.emptyPlaceholder;
-	}
-	if (project.value === '') {
-		return 'Aucun module';
 	}
 	return currentProject.value?.name;
 });
@@ -306,7 +304,7 @@ function setHighlightItemId(newId) {
 }
 
 function selectTask(taskId) {
-	task.value = taskId;
+	task.value = taskId || null;
 	project.value = props.tasks.find((task) => task.id === taskId)?.project_id || null;
 	open.value = false;
 	searchValue.value = '';
@@ -314,8 +312,8 @@ function selectTask(taskId) {
 }
 
 function selectProject(projectId) {
-	project.value = projectId;
 	task.value = null;
+	project.value = projectId || null;
 	open.value = false;
 	searchValue.value = '';
 	emit('changed', project.value, task.value);
@@ -357,7 +355,7 @@ const showCreateProject = ref(false);
 					</div>
 				</div>
 				<button
-					v-if="project !== null && allowReset"
+					v-if="project && allowReset"
 					class="absolute right-0 top-0 h-full flex items-center pr-3 text-text-quaternary hover:text-text-secondary"
 					@click.stop="
 						project = null;

@@ -4,7 +4,7 @@ require_once __DIR__ . '/../database.php';
 $data = getPostData();
 $db = openDatabase();
 $sql = 'INSERT INTO `modules` (`name`, `color`, `team_id`) VALUES (?, ?, ?);';
-exequteSQL($db, $sql, [$data['name'], $data['color'], $data['team']]);
+$id = exequteSQL($db, $sql, [$data['name'], $data['color'], $data['team']]);
 $db->close();
-echo 'done';
+echo $id;
 ?>
