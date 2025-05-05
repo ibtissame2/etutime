@@ -51,18 +51,20 @@ CREATE TABLE `chapitres` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` varchar(500) NOT NULL,
   `module_id` INT DEFAULT NULL,
+  `team_id` INT NOT NULL,
   `user_id` INT NOT NULL,
+   `is_done` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  KEY `chapitres_module_id_foreign` (`module_id`)
+  KEY `chapitres_module_id_foreign` (`module_id`),
+  KEY `chapitres_team_id_foreign` (`team_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `timers` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `chapitre_id` char(36) DEFAULT NULL,
-  `description` varchar(500) NOT NULL,
+  `chapitre_id` INT NOT NULL,
   `start` timestamp NOT NULL,
   `end` timestamp NULL DEFAULT NULL,
-  `tags` json DEFAULT NULL,
+  `taches` json DEFAULT NULL,
   `is_imported` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `timers_chapitre_id_foreign` (`chapitre_id`)

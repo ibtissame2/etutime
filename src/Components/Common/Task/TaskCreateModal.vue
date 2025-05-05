@@ -6,7 +6,7 @@ import { ref, watch } from 'vue';
 import PrimaryButton from '@/packages/ui/src/Buttons/PrimaryButton.vue';
 import { useFocus } from '@vueuse/core';
 import { useTasksStore } from '@/utils/useTasks';
-import ProjectDropdown from '@/Components/Common/Project/ProjectDropdown.vue';
+import ModuleDropdown from '@/Components/Common/Module/ModuleDropdown.vue';
 import EstimatedTimeSection from '@/packages/ui/src/EstimatedTimeSection.vue';
 
 const { createTask } = useTasksStore();
@@ -75,7 +75,7 @@ useFocus(taskNameInput, { initialValue: true });
 					/>
 				</div>
 				<div class="col-span-6 sm:col-span-4">
-					<ProjectDropdown v-model="taskProjectId"></ProjectDropdown>
+					<ModuleDropdown v-model="taskProjectId"></ModuleDropdown>
 				</div>
 			</div>
 			<EstimatedTimeSection v-model="estimatedTime" @submit="submit()"></EstimatedTimeSection>

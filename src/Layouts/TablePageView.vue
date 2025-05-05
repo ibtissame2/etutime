@@ -1,7 +1,7 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue';
 import { useOrganizationStore } from '@/utils/useOrganization';
-import { FolderIcon, PlusIcon } from '@heroicons/vue/16/solid';
+import { PlusIcon } from '@heroicons/vue/16/solid';
 import { FolderPlusIcon } from '@heroicons/vue/24/solid';
 import { TrashIcon, PencilSquareIcon } from '@heroicons/vue/20/solid';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -16,6 +16,7 @@ const emit = defineEmits(['fetch']);
 
 const props = defineProps({
 	title: String,
+	icon: [Object, Function],
 	create: { type: String, required: false },
 	data: Array,
 	modal: [Object, Function],
@@ -54,7 +55,7 @@ onMounted(async () => {
 	<AppLayout :title="title">
 		<MainContainer class="py-3 sm:py-5 border-b border-default-background-separator flex justify-between items-center">
 			<div class="flex items-center space-x-3 sm:space-x-6">
-				<PageTitle :icon="FolderIcon" :title="title"></PageTitle>
+				<PageTitle :icon="icon" :title="title"></PageTitle>
 				<slot name="table-filters"></slot>
 			</div>
 
@@ -93,19 +94,21 @@ onMounted(async () => {
 					<template v-for="element in data" :key="element.id">
 						<TableRow>
 							<div
-								class="py-4 pl-4 pr-3 sm:pl-6 lg:pl-8 3xl:pl-12 whitespace-nowrap flex items-center text-text-primary min-w-0"
+								class="py-1.5 pl-4 pr-3 sm:pl-6 lg:pl-8 3xl:pl-12 whitespace-nowrap flex items-center text-text-primary min-w-0"
 							>
 								<slot :name="getId(columns[0])" :data="element" :show-form="showForm"></slot>
 							</div>
 							<div
 								v-for="column in sliceList"
 								:key="getId(column)"
-								class="px-3 py-4 whitespace-nowrap flex items-center text-sm text-muted"
+								class="py-1.5 pl-3 pr-3 whitespace-nowrap flex items-center text-sm text-muted"
 							>
 								<slot :name="getId(column)" :data="element" :show-form="showForm"></slot>
 							</div>
 
-							<div class="pl-3 pr-4 sm:pr-6 lg:pr-8 3xl:pr-12 whitespace-nowrap flex items-center text-right relative">
+							<div
+								class="py-1.5 pl-3 pr-4 sm:pr-6 lg:pr-8 3xl:pr-12 whitespace-nowrap flex items-center text-right relative"
+							>
 								<MoreOptionsDropdown>
 									<div :class="dropdownMinWidth ? `min-w-[${dropdownMinWidth}px]` : ''">
 										<button

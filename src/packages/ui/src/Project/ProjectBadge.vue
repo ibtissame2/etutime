@@ -14,7 +14,8 @@ const props = defineProps({
 const indicatorClasses = {
 	base: 'w-2.5 h-2.5',
 	large: 'w-2 sm:w-3 h-2 sm:h-3',
-	xlarge: 'w-3 sm:w-4 h-3 sm:h-4',
+	xlarge: 'w-3 h-3',
+	xlargeFull: 'w-3 h-3',
 };
 </script>
 

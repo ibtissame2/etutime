@@ -20,6 +20,7 @@ import NotesIcon from '@/Components/Icons/NotesIcon.vue';
 import FolderIcon from '@/Components/Icons/FolderIcon.vue';
 import TagIcon from '@/Components/Icons/TagIcon.vue';
 import EnvGroupIcon from '@/Components/Icons/EnvGroupIcon.vue';
+import BookCheckIcon from '@/Components/Icons/BookCheckIcon.vue';
 
 defineProps({
 	title: String,
@@ -122,6 +123,13 @@ onMounted(async () => {
 								:icon="FolderIcon"
 								:href="route('modules')"
 								:current="route.current('modules')"
+							></NavigationSidebarItem>
+
+							<NavigationSidebarItem
+								title="Chapitres"
+								:icon="BookCheckIcon"
+								:href="route('chapitres')"
+								:current="route.current('chapitres')"
 							></NavigationSidebarItem>
 
 							<NavigationSidebarItem

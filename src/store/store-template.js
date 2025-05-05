@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { useAxios } from '@/store/axios';
-import { getCurrentOrganizationId } from '@/utils/useUser';
+import { getCurrentOrganizationId, getCurrentUserId } from '@/utils/useUser';
 
 export const createCRUDStore = (typo) => {
 	return defineStore(typo.name, () => {
@@ -9,10 +9,11 @@ export const createCRUDStore = (typo) => {
 
 		async function fetchData() {
 			const team = getCurrentOrganizationId();
-			if (!team) return;
+			const user = getCurrentUserId();
+			if (!team || !user) return;
 			const response = await useAxios.post(
 				typo.name + '/all',
-				{ team },
+				{ team, user },
 				undefined,
 				undefined,
 				'Échec de la récupération des ' + typo.elements
@@ -25,21 +26,26 @@ export const createCRUDStore = (typo) => {
 
 		async function createElement(object, onSuccess, refresh = true) {
 			const team = getCurrentOrganizationId();
-			if (!team) return;
+			const user = getCurrentUserId();
+			if (!team || !user) return;
 			const id = await useAxios.post(
 				typo.name + '/create',
-				{ ...object, team },
-				() => (onSuccess?.(), refresh && fetchData()),
+				{ team, user, ...object },
+				() => onSuccess?.(),
 				typo.Element + ' créé avec succès',
 				'Échec de la création du ' + typo.element
 			);
-			return id;
+			const fetching = refresh ? fetchData() : undefined;
+			return { id, fetching };
 		}
 
 		async function updateElement(id, object, onSuccess, refresh = true) {
+			const team = getCurrentOrganizationId();
+			const user = getCurrentUserId();
+			if (!team || !user) return;
 			const response = await useAxios.post(
 				typo.name + '/update',
-				{ id, ...object },
+				{ id, team, user, ...object },
 				() => (onSuccess?.(), refresh && fetchData()),
 				typo.Element + ' mis à jour avec succès',
 				'Échec de la mise à jour du ' + typo.element
@@ -48,9 +54,12 @@ export const createCRUDStore = (typo) => {
 		}
 
 		async function deleteElement(id, onSuccess, refresh = true) {
+			const team = getCurrentOrganizationId();
+			const user = getCurrentUserId();
+			if (!team || !user) return;
 			const response = await useAxios.post(
 				typo.name + '/delete',
-				{ id },
+				{ id, team, user },
 				() => (onSuccess?.(), refresh && fetchData()),
 				typo.Element + ' supprimé avec succès',
 				'Échec de la suppression du ' + typo.element

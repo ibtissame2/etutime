@@ -4,7 +4,8 @@ import { computed, ref } from 'vue';
 import { useModulesStore } from '@/store/modules';
 import { formatHumanReadableDuration } from '@/packages/ui/src/utils/time';
 import { CheckCircleIcon, ArchiveBoxIcon } from '@heroicons/vue/20/solid';
-import TablePageView from '@/Components/Global/TablePageView.vue';
+import { FolderIcon } from '@heroicons/vue/16/solid';
+import TablePageView from '@/Layouts/TablePageView.vue';
 import ModuleForm from '@/Components/Global/Forms/ModuleForm.vue';
 import TabBarItem from '@/Components/Common/TabBar/TabBarItem.vue';
 import TabBar from '@/Components/Common/TabBar/TabBar.vue';
@@ -14,9 +15,9 @@ const { modules } = storeToRefs(useModulesStore());
 const { fetchModules, updateModule, deleteModule } = useModulesStore();
 
 const tableColumns = [
-	{ id: 'name', label: 'Name', size: 'minmax(300px, 1fr)' },
-	{ id: 'time', label: 'Total Time', size: 'minmax(140px, auto)' },
-	{ id: 'progress', label: 'Progress', size: 'minmax(130px, auto)' },
+	{ id: 'name', label: 'Nom', size: 'minmax(300px, 1fr)' },
+	{ id: 'time', label: 'Durée totale', size: 'minmax(140px, auto)' },
+	{ id: 'progress', label: 'Progrès', size: 'minmax(130px, auto)' },
 	{ id: 'status', label: 'Status', size: 'minmax(120px, auto)' },
 ];
 
@@ -57,6 +58,7 @@ const shownModules = computed(() => {
 	<TablePageView
 		title="Modules"
 		create="Créer un module"
+		:icon="FolderIcon"
 		:data="shownModules"
 		:modal="ModuleForm"
 		:columns="tableColumns"
@@ -80,7 +82,7 @@ const shownModules = computed(() => {
 				}"
 				class="w-3 h-3 mr-2 rounded-full"
 			></div>
-			<span class="overflow-ellipsis overflow-hidden">{{ module.name }} </span>
+			<span class="overflow-ellipsis overflow-hidden flex-1">{{ module.name }} </span>
 		</template>
 
 		<template #time="{ data: module }">
@@ -92,7 +94,8 @@ const shownModules = computed(() => {
 		</template>
 
 		<template #status="{ data: module }">
-			<CheckCircleIcon class="w-5 mr-1"></CheckCircleIcon>
+			<CheckCircleIcon v-if="module.is_public" class="w-5 mr-1"></CheckCircleIcon>
+			<ArchiveBoxIcon v-else class="w-5 mr-1"></ArchiveBoxIcon>
 			<span>{{ module.is_public ? 'Actif' : 'Archivé' }}</span>
 		</template>
 	</TablePageView>

@@ -7,6 +7,7 @@ import TimeView from '../Pages/TimeView.vue';
 import ReportingView from '../Pages/ReportingView.vue';
 import ModulesView from '../Pages/ModulesView.vue';
 import ModuleDetailView from '../Pages/ModuleDetailView.vue';
+import ChapitresView from '../Pages/ChapitresView.vue';
 import TagsView from '../Pages/TagsView.vue';
 import NotesView from '../Pages/NotesView.vue';
 import ImportView from '../Pages/ImportView.vue';
@@ -40,13 +41,18 @@ const routes = [
 	},
 	{
 		path: '/modules',
-		name: 'ModuleList',
+		name: 'Modules',
 		component: ModulesView,
 	},
 	{
 		path: '/modules/:id',
 		name: 'ModuleDetail',
 		component: ModuleDetailView,
+	},
+	{
+		path: '/chapitres',
+		name: 'Chapitres',
+		component: ChapitresView,
 	},
 	{
 		path: '/taches',
