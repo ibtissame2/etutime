@@ -1,6 +1,6 @@
 <script setup>
 defineProps({
-	icon: Function,
+	icon: [Object, Function],
 	title: String,
 });
 </script>

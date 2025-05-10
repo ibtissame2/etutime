@@ -141,28 +141,19 @@ const showResultModal = ref(false);
 		</template>
 	</DialogModal>
 	<div>
-		<CardTitle title="Import Data" :icon="ArrowDownOnSquareIcon"></CardTitle>
-		<Card class="mb-3">
-			<div class="py-2 px-3 sm:px-4 text-sm flex items-center space-x-3">
-				<InformationCircleIcon class="h-5 min-w-0 w-5 text-bg-tertiary" />
-				<p class="flex-1">
-					Import existing data from Toggl, Clockify or a different solidtime instance. Please select the type of data
-					you want to import and follow the instructions.
-				</p>
-			</div>
-		</Card>
+		<CardTitle title="Importer des données" :icon="ArrowDownOnSquareIcon"></CardTitle>
 
 		<Card>
 			<div class="px-4 py-5 sm:px-5">
 				<div>
-					<InputLabel for="importType" value="Import Type" />
+					<InputLabel for="importType" value="Type d'importation" />
 					<select
 						id="importType"
 						v-model="importType"
 						name="importType"
 						class="mt-1 block w-full border-input-border bg-input-background text-text-primary focus:border-input-border-active rounded-md shadow-sm"
 					>
-						<option :value="null" selected disabled>Select an import type to get instructions...</option>
+						<option :value="null" selected disabled>Sélectionnez un type d'importation...</option>
 						<option v-for="importTypeOption in importTypeOptions" :key="importTypeOption.key" :value="importTypeOption">
 							{{ importTypeOption.name }}
 						</option>
@@ -183,7 +174,7 @@ const showResultModal = ref(false);
 								class="relative cursor-pointer rounded-md font-semibold text-text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 focus-within:ring-offset-gray-900 hover:text-indigo-500"
 							>
 								<span v-if="files">{{ filenames }}</span>
-								<span v-else>Upload a Toggl/Clockify Export</span>
+								<span v-else>Désposez vos fichiers ici</span>
 								<input
 									id="file-upload"
 									ref="importFile"
@@ -194,7 +185,10 @@ const showResultModal = ref(false);
 								/>
 							</label>
 						</div>
-						<p class="text-xs leading-5 text-muted">CSV and ZIP are supported</p>
+						<p class="text-xs leading-5 text-muted">
+							Support pour PDF,<br />
+							DOCX,XLSX,Images
+						</p>
 					</div>
 				</div>
 			</div>
@@ -202,7 +196,7 @@ const showResultModal = ref(false);
 			<div
 				class="flex items-center justify-end px-4 py-3 bg-card-background border-t border-card-background-separator text-end sm:px-6 shadow sm:rounded-bl-md sm:rounded-br-md"
 			>
-				<PrimaryButton :loading @click="importData">Import Data </PrimaryButton>
+				<PrimaryButton :loading @click="importData">Importer des données</PrimaryButton>
 			</div>
 		</Card>
 	</div>

@@ -41,8 +41,8 @@ async function submit() {
 	loading.value = false;
 }
 
-const projectNameInput = ref(null);
-useFocus(projectNameInput, { initialValue: true });
+const moduleNameInput = ref(null);
+useFocus(moduleNameInput, { initialValue: true });
 </script>
 
 <template>
@@ -62,16 +62,16 @@ useFocus(projectNameInput, { initialValue: true });
 					</div>
 				</div>
 				<div class="w-full">
-					<InputLabel for="projectName" value="Project name" />
+					<InputLabel for="moduleName" value="Nom du module" />
 					<TextInput
-						id="projectName"
-						ref="projectNameInput"
+						id="moduleName"
+						ref="moduleNameInput"
 						v-model="module.name"
 						type="text"
-						placeholder="Project Name"
+						placeholder="Nom du module"
 						class="mt-1 block w-full"
 						required
-						autocomplete="projectName"
+						autocomplete="moduleName"
 						@keydown.enter="submit()"
 					/>
 				</div>

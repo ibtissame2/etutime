@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { useAxios } from '@/store/axios';
 import { getCurrentOrganizationId, getCurrentUserId } from '@/utils/useUser';
 
-export const createCRUDStore = (typo) => {
+export const createCRUDStore = ({ typo, methods }) => {
 	return defineStore(typo.name, () => {
 		const list = ref([]);
 
@@ -73,6 +73,7 @@ export const createCRUDStore = (typo) => {
 			['create' + typo.method]: createElement,
 			['update' + typo.method]: updateElement,
 			['delete' + typo.method]: deleteElement,
+			...methods,
 		};
 	});
 };

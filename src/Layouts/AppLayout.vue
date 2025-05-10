@@ -152,7 +152,7 @@ onMounted(async () => {
 							></NavigationSidebarItem>
 
 							<NavigationSidebarItem
-								title="Import"
+								title="Importer"
 								:icon="ArrowsRightLeftIcon"
 								:current="route.current('import')"
 								:href="route('import')"
