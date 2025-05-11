@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, onMounted } from 'vue';
+import { computed, ref, watch, onMounted } from 'vue';
 import { useOrganizationStore } from '@/utils/useOrganization';
 import { PlusIcon } from '@heroicons/vue/16/solid';
 import { FolderPlusIcon } from '@heroicons/vue/24/solid';
@@ -27,9 +27,10 @@ const props = defineProps({
 	noData: Object,
 });
 
-const showModal = ref(false);
-const currentElement = ref(undefined);
+const modalRef = ref(null);
+
 const sliceList = computed(() => props.columns.slice(1));
+
 const gridColumnsSize = computed(() => {
 	if (props.gridSize) return props.gridSize + ' 80px';
 	const all = props.columns.map((c) => c?.size || '').join(' ');
@@ -37,8 +38,7 @@ const gridColumnsSize = computed(() => {
 });
 
 function showForm(element) {
-	currentElement.value = element || undefined;
-	showModal.value = true;
+	modalRef.value?.setDataOf(element);
 }
 
 function getId(column) {
@@ -60,7 +60,7 @@ onMounted(async () => {
 			</div>
 
 			<SecondaryButton v-if="create" :icon="PlusIcon" @click="showForm()">{{ create }}</SecondaryButton>
-			<component :is="modal" v-model:show="showModal" :origin="currentElement" />
+			<component ref="modalRef" :is="modal" />
 		</MainContainer>
 
 		<div class="flow-root">

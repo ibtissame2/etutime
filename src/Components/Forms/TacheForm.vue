@@ -11,24 +11,32 @@ const { createTache } = useTachesStore();
 
 const show = defineModel('show', { default: false });
 const loading = ref(false);
+const tache = ref({});
 
-const resetFormData = () => {
-	show.value = false;
-	return { name: '' };
+const extractData = (tache) => {
+	return { name: tache?.name || '' };
 };
 
-const tache = ref(resetFormData());
+const clearData = () => {
+	tache.value = extractData(null);
+	show.value = false;
+};
+
+function setDataOf(element) {
+	tache.value = extractData(element || null);
+	show.value = true;
+}
 
 async function submit() {
 	loading.value = true;
-	await createTache(tache.value, () => {
-		tache.value = resetFormData();
-	});
+	await createModule(module.value, () => clearData());
 	loading.value = false;
 }
 
 const tagNameInput = ref(null);
 useFocus(tagNameInput, { initialValue: true });
+
+defineExpose({ setDataOf });
 </script>
 
 <template>

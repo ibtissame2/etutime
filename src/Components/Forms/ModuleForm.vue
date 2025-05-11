@@ -12,44 +12,46 @@ import ProjectColorSelector from '@/Components/Module/ModuleColorSelector.vue';
 
 const { createModule, updateModule } = useModulesStore();
 
-const props = defineProps({
-	origin: { type: Object, required: false },
-});
-
 const show = defineModel('show', { default: false });
 const loading = ref(false);
 const module = ref({});
 
-const getFormData = () => {
-	return { name: props.origin?.name || '', color: props.origin?.color || getRandomColor() };
+const extractData = (module) => {
+	return {
+		id: module?.id,
+		name: module?.name || '',
+		color: module?.color || getRandomColor(),
+	};
 };
 
-const resetFormData = (hide = true) => {
-	module.value = getFormData();
-	if (hide) show.value = false;
+const clearData = () => {
+	module.value = extractData(null);
+	show.value = false;
 };
 
-watch(
-	() => props.origin,
-	() => resetFormData(false)
-);
+function setDataOf(element) {
+	module.value = extractData(element || null);
+	show.value = true;
+}
 
 async function submit() {
 	loading.value = true;
-	if (props.origin) await updateModule(props.origin.id, module.value, () => resetFormData());
-	else await createModule(module.value, () => resetFormData());
+	if (module.value.id) await updateModule(module.value.id, module.value, () => clearData());
+	else await createModule(module.value, () => clearData());
 	loading.value = false;
 }
 
 const moduleNameInput = ref(null);
 useFocus(moduleNameInput, { initialValue: true });
+
+defineExpose({ setDataOf });
 </script>
 
 <template>
-	<DialogModal closeable :show="show" @close="resetFormData()">
+	<DialogModal closeable :show="show" @close="clearData()">
 		<template #title>
 			<div class="flex space-x-2">
-				<span>{{ origin ? 'Modifier le module' : 'Créer un module' }}</span>
+				<span>{{ module.id ? 'Modifier le module' : 'Créer un module' }}</span>
 			</div>
 		</template>
 
@@ -79,9 +81,9 @@ useFocus(moduleNameInput, { initialValue: true });
 		</template>
 
 		<template #footer>
-			<SecondaryButton @click="resetFormData()">Annuler</SecondaryButton>
+			<SecondaryButton @click="clearData()">Annuler</SecondaryButton>
 			<PrimaryButton class="ms-3" :class="{ 'opacity-25': loading }" :disabled="loading" @click="submit">
-				{{ origin ? 'Modifier' : 'Créer' }}
+				{{ module.id ? 'Modifier' : 'Créer' }}
 			</PrimaryButton>
 		</template>
 	</DialogModal>

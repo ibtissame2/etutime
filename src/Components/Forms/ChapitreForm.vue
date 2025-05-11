@@ -10,44 +10,46 @@ import ModuleDropdown from '@/Components/Module/ModuleDropdown.vue';
 
 const { createChapitre, updateChapitre } = useChapitresStore();
 
-const props = defineProps({
-	origin: { type: Object, required: false },
-});
-
 const show = defineModel('show', { default: false });
 const loading = ref(false);
 const chapitre = ref({});
 
-const getFormData = () => {
-	return { name: props.origin?.name || '', module_id: props.origin?.module_id || null };
+const extractData = (chapitre) => {
+	return {
+		id: chapitre?.id,
+		name: chapitre?.name || '',
+		module_id: chapitre?.module_id || null,
+	};
 };
 
-const resetFormData = (hide = true) => {
-	chapitre.value = getFormData();
-	if (hide) show.value = false;
+const clearData = () => {
+	chapitre.value = extractData(null);
+	show.value = false;
 };
 
-watch(
-	() => props.origin,
-	() => resetFormData(false)
-);
+function setDataOf(element) {
+	chapitre.value = extractData(element || null);
+	show.value = true;
+}
 
 async function submit() {
 	loading.value = true;
-	if (props.origin) await updateChapitre(props.origin.id, chapitre.value, () => resetFormData());
-	else await createChapitre(chapitre.value, () => resetFormData());
+	if (chapitre.value.id) await updateChapitre(chapitre.value.id, chapitre.value, () => clearData());
+	else await createChapitre(chapitre.value, () => clearData());
 	loading.value = false;
 }
 
 const nameInput = ref(null);
 useFocus(nameInput, { initialValue: true });
+
+defineExpose({ setDataOf });
 </script>
 
 <template>
 	<DialogModal closeable :show="show" @close="show = false">
 		<template #title>
 			<div class="flex space-x-2">
-				<span>Saisie manuelle du temps</span>
+				<span>{{ chapitre.id ? 'Modifier le chapitre' : 'Créer un chapitre' }}</span>
 			</div>
 		</template>
 
@@ -73,7 +75,7 @@ useFocus(nameInput, { initialValue: true });
 		<template #footer>
 			<SecondaryButton tabindex="2" @click="show = false">Annuler</SecondaryButton>
 			<PrimaryButton tabindex="2" class="ms-3" :class="{ 'opacity-25': saving }" :disabled="saving" @click="submit">
-				Créer
+				{{ chapitre.id ? 'Modifier' : 'Créer' }}
 			</PrimaryButton>
 		</template>
 	</DialogModal>
