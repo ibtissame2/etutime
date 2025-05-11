@@ -4,7 +4,7 @@ import { getCurrentOrganizationId } from '@/utils/useUser';
 import { useNotificationsStore } from '@/utils/notification';
 import { useModulesStore } from '@/store/modules';
 import { useMembersStore } from '@/utils/useMembers';
-import { useTasksStore } from '@/utils/useTasks';
+import { useChapitresStore } from '@/store/chapitres';
 import { CheckCircleIcon, UserGroupIcon } from '@heroicons/vue/20/solid';
 import { DocumentTextIcon, FolderIcon } from '@heroicons/vue/16/solid';
 const api = new Proxy({}, { get: () => () => ({}) });
@@ -65,29 +65,18 @@ export const useReportingStore = defineStore('reporting', () => {
 	};
 
 	function getNameForReportingRowEntry(key, type) {
-		if (type === null) {
-			return null;
-		}
-		if (key === null) {
-			return emptyPlaceholder[type];
-		}
-
+		if (type === null) return null;
+		if (key === null) return emptyPlaceholder[type];
 		if (type === 'project') {
 			const { modules } = storeToRefs(useModulesStore());
-			return modules.value.find((project) => project.id === key)?.name;
-		}
-		if (type === 'user') {
-			const memberStore = useMembersStore();
-			const { members } = storeToRefs(memberStore);
+			return modules.value.find((module) => module.id === key)?.name;
+		} else if (type === 'task') {
+			const { chapitres } = storeToRefs(useChapitresStore());
+			return chapitres.value.find((chapitre) => chapitre.id === key)?.name;
+		} else if (type === 'user') {
+			const { members } = storeToRefs(useMembersStore());
 			return members.value.find((member) => member.user_id === key)?.name;
-		}
-		if (type === 'task') {
-			const taskStore = useTasksStore();
-			const { tasks } = storeToRefs(taskStore);
-			return tasks.value.find((task) => task.id === key)?.name;
-		}
-
-		return key;
+		} else return key;
 	}
 
 	const groupByOptions = [

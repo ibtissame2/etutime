@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted, toRef } from 'vue';
-import EditorJS from '@/editor/override-editor';
+import EditorJS from '@/Components/Editor/override-editor';
 
 const props = defineProps({ value: Object });
 

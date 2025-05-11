@@ -1,9 +1,9 @@
-import editor from '@/editor/editor.mjs';
-import Heading from '@/editor/editor-heading.js';
-import List from '@/editor/editor-list.js';
-import Checklist from '@/editor/editor-checklist.js';
-import Table from '@/editor/editor-table.js';
-import Delimiter from '@/editor/editor-delimiter.js';
+import editor from '@/Components/Editor/editor.mjs';
+import Heading from '@/Components/Editor/editor-heading.js';
+import List from '@/Components/Editor/editor-list.js';
+import Checklist from '@/Components/Editor/editor-checklist.js';
+import Table from '@/Components/Editor/editor-table.js';
+import Delimiter from '@/Components/Editor/editor-delimiter.js';
 
 class heading extends Heading {
 	static get toolbox() {

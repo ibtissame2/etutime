@@ -11,7 +11,7 @@ import Checkbox from '@/Components/src/Input/Checkbox.vue';
 import TagDropdown from '@/Components/Common/Tag/TagDropdown.vue';
 
 const show = defineModel('show', { default: false });
-const saving = ref(false);
+const loading = ref(false);
 
 const props = defineProps({
 	timeEntries: Array,
@@ -38,7 +38,7 @@ const projectId = ref(null);
 const selectedTags = ref([]);
 
 async function submit() {
-	saving.value = true;
+	loading.value = true;
 	const timeEntryUpdatesBody = {};
 	if (description.value && description.value !== '') {
 		timeEntryUpdatesBody.description = description.value;
@@ -71,10 +71,10 @@ async function submit() {
 		projectId.value = null;
 		taskId.value = undefined;
 		selectedTags.value = [];
-		saving.value = false;
+		loading.value = false;
 		removeAllTags.value = false;
 	} catch {
-		saving.value = false;
+		loading.value = false;
 	}
 }
 const removeAllTags = ref(false);
@@ -141,7 +141,7 @@ watch(removeAllTags, () => {
 		</template>
 		<template #footer>
 			<SecondaryButton @click="show = false"> Cancel</SecondaryButton>
-			<PrimaryButton class="ms-3" :class="{ 'opacity-25': saving }" :disabled="saving" @click="submit">
+			<PrimaryButton class="ms-3" :class="{ 'opacity-25': loading }" :disabled="loading" @click="submit">
 				Update Time Entries
 			</PrimaryButton>
 		</template>

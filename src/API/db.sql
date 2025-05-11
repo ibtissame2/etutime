@@ -65,7 +65,6 @@ CREATE TABLE `timers` (
   `start` timestamp NOT NULL,
   `end` timestamp NULL DEFAULT NULL,
   `taches` json DEFAULT NULL,
-  `is_imported` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `timers_chapitre_id_foreign` (`chapitre_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

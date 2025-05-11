@@ -11,8 +11,8 @@ import { storeToRefs } from 'pinia';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import { switchOrganization } from '@/utils/useOrganization';
 import { useModulesStore } from '@/store/modules';
+import { useChapitresStore } from '@/store/chapitres';
 import { useTachesStore } from '@/store/taches';
-import { useTasksStore } from '@/utils/useTasks';
 import TimeTrackerControls from '@/Components/TimeTracker/TimeTrackerControls.vue';
 import TimeTrackerRunningInDifferentOrganizationOverlay from '@/Components/TimeTracker/TimeTrackerRunningInDifferentOrganizationOverlay.vue';
 
@@ -25,8 +25,7 @@ const { currentTimeEntry, isActive, now } = storeToRefs(currentTimeEntryStore);
 const { startLiveTimer, stopLiveTimer, setActiveState } = currentTimeEntryStore;
 
 const { modules } = storeToRefs(useModulesStore());
-const taskStore = useTasksStore();
-const { tasks } = storeToRefs(taskStore);
+const { chapitres } = storeToRefs(useChapitresStore());
 
 const emit = defineEmits(['change']);
 
@@ -80,7 +79,7 @@ const { taches } = storeToRefs(useTachesStore());
 
 		<TimeTrackerControls
 			:projects="modules"
-			:tasks="tasks"
+			:tasks="chapitres"
 			:tags="taches"
 			:is-active="isActive"
 			v-model:current-time-entry="currentTimeEntry"

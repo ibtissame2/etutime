@@ -5,7 +5,7 @@ import { useNotesStore } from '@/store/notes';
 import DialogModal from '@/Components/src/DialogModal.vue';
 import InputLabel from '@/Components/src/Input/InputLabel.vue';
 import TextInput from '@/Components/src/Input/TextInput.vue';
-import EditorInput from '@/editor/EditorInput.vue';
+import EditorInput from '@/Components/Editor/EditorInput.vue';
 import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import PrimaryButton from '@/Components/src/Buttons/PrimaryButton.vue';
 

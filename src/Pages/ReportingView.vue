@@ -13,7 +13,7 @@ import TagDropdown from '@/Components/Common/Tag/TagDropdown.vue';
 import ReportingFilterBadge from '@/Components/Common/Reporting/ReportingFilterBadge.vue';
 import ModuleMultiselectDropdown from '@/Components/Module/ModuleMultiselectDropdown.vue';
 import MemberMultiselectDropdown from '@/Components/Common/Member/MemberMultiselectDropdown.vue';
-import TaskMultiselectDropdown from '@/Components/Common/Task/TaskMultiselectDropdown.vue';
+import ChapitreMultiselectDropdown from '@/Components/Chapitre/ChapitreMultiselectDropdown.vue';
 import ReportingGroupBySelect from '@/Components/Common/Reporting/ReportingGroupBySelect.vue';
 import ReportingRow from '@/Components/Common/Reporting/ReportingRow.vue';
 import ReportingPieChart from '@/Components/Common/Reporting/ReportingPieChart.vue';
@@ -236,7 +236,7 @@ const tableData = computed(() => {
 							></ReportingFilterBadge>
 						</template>
 					</ModuleMultiselectDropdown>
-					<TaskMultiselectDropdown v-model="selectedTasks" @submit="updateReporting">
+					<ChapitreMultiselectDropdown v-model="selectedTasks" @submit="updateReporting">
 						<template #trigger>
 							<ReportingFilterBadge
 								:count="selectedTasks.length"
@@ -245,7 +245,7 @@ const tableData = computed(() => {
 								:icon="CheckCircleIcon"
 							></ReportingFilterBadge>
 						</template>
-					</TaskMultiselectDropdown>
+					</ChapitreMultiselectDropdown>
 
 					<TagDropdown v-model="selectedTags" :tags="taches" @submit="updateReporting">
 						<template #trigger>

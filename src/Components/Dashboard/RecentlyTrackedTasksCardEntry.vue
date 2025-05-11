@@ -1,12 +1,12 @@
 <script setup>
+import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import ModuleBadge from '@/Components/Module/ModuleBadge.vue';
 import TimeTrackerStartStop from '@/Components/TimeTracker/TimeTrackerStartStop.vue';
 import { useModulesStore } from '@/store/modules';
-import { storeToRefs } from 'pinia';
-import { computed } from 'vue';
+import { useChapitresStore } from '@/store/chapitres';
 import { useCurrentTimeEntryStore } from '@/utils/useCurrentTimeEntry';
 import { getDayJsInstance } from '@/Components/src/utils/time';
-import { useTasksStore } from '@/utils/useTasks';
 import { ChevronRightIcon } from '@heroicons/vue/16/solid';
 
 const props = defineProps({
@@ -19,10 +19,10 @@ const project = computed(() => {
 	return modules.value.find((module) => module.id === props.timeEntry.project_id);
 });
 
-const { tasks } = storeToRefs(useTasksStore());
+const { chapitres } = storeToRefs(useChapitresStore());
 
 const task = computed(() => {
-	return tasks.value.find((task) => task.id === props.timeEntry.task_id);
+	return chapitres.value.find((task) => task.id === props.timeEntry.task_id);
 });
 
 const { currentTimeEntry } = storeToRefs(useCurrentTimeEntryStore());

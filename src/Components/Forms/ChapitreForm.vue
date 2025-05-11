@@ -74,7 +74,7 @@ defineExpose({ setDataOf });
 
 		<template #footer>
 			<SecondaryButton tabindex="2" @click="show = false">Annuler</SecondaryButton>
-			<PrimaryButton tabindex="2" class="ms-3" :class="{ 'opacity-25': saving }" :disabled="saving" @click="submit">
+			<PrimaryButton tabindex="2" class="ms-3" :class="{ 'opacity-25': loading }" :disabled="loading" @click="submit">
 				{{ chapitre.id ? 'Modifier' : 'Créer' }}
 			</PrimaryButton>
 		</template>
