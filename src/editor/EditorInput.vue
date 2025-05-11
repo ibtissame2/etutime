@@ -123,7 +123,7 @@ onUnmounted(async () => {
 </script>
 
 <template>
-	<div id="editor-element" class="w-full editor"></div>
+	<div id="editor-element" class="w-full editor rounded-md"></div>
 </template>
 
 <style scoped>
@@ -143,7 +143,10 @@ onUnmounted(async () => {
 	@apply border border-danger;
 }
 
-.editor {
-	background: #ffffff;
+.editor,
+.editor:hover {
+	min-height: 300px;
+	background: var(--theme-color-input-background);
+	border: 1px solid var(--theme-color-input-border);
 }
 </style>

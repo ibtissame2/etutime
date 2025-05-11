@@ -127,7 +127,6 @@ class delimiter extends Delimiter {
 }
 
 const create = async ({ holder, data, placeholder, disabled, i18n, onChange }) => {
-	console.log('Ibtissame', 1);
 	const instance = new editor({
 		holder,
 		i18n,
@@ -158,9 +157,7 @@ const create = async ({ holder, data, placeholder, disabled, i18n, onChange }) =
 			} catch {}
 		},
 	});
-	console.log('Ibtissame', 2);
 	await instance.isReady;
-	console.log('Ibtissame', 3);
 	return instance;
 };
 

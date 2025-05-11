@@ -1,30 +1,74 @@
 <script setup>
-import MainContainer from '@/Components/src/MainContainer.vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
-import { TagIcon, PlusIcon } from '@heroicons/vue/16/solid';
-import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
-import { ref } from 'vue';
-// import TagTable from '@/Components/Common/Tag/TagTable.vue';
-// import TagCreateModal from '@/Components/Common/Tag/TagCreateModal.vue';
-import PageTitle from '@/Components/Common/PageTitle.vue';
-// import { useNotesStore } from '@/store/notes';
+import { storeToRefs } from 'pinia';
+import { useNotesStore } from '@/store/notes';
+import TablePageView from '@/Layouts/TablePageView.vue';
+import NoteForm from '@/Components/Forms/NoteForm.vue';
+import NotesIcon from '@/Components/Icons/NotesIcon.vue';
 
-const showCreateNoteModal = ref(false);
+const { notes } = storeToRefs(useNotesStore());
+const { fetchNotes, deleteNote } = useNotesStore();
 
-async function createNote(tag) {
-	// return await useNotesStore().createNote(tag);
-}
+const tableColumns = [
+	{ id: 'title', label: 'Titre', size: '1fr' },
+	{ id: 'created_at', label: 'Créé à', size: '230px' },
+	{ id: 'updated_at', label: 'Modifié à', size: '230px' },
+];
+
+const noData = {
+	title: 'Aucun note trouvé',
+	description: 'Créez votre premier note maintenant !',
+	button: 'Créez votre premier note',
+};
+
+const dropdown = [
+	{
+		icon: 'edit',
+		label: 'Modifier',
+		onclick: (note, showForm) => showForm(note),
+	},
+	{
+		border: true,
+		icon: 'delete',
+		label: 'Supprimer',
+		onclick: (note) => deleteNote(note.id),
+	},
+];
+
+const formatDate = (date) => {
+	if (!date) return '--';
+	const d = new Date(date);
+	const day = String(d.getDate()).padStart(2, '0');
+	const month = String(d.getMonth() + 1).padStart(2, '0');
+	const year = d.getFullYear();
+	const hours = String(d.getHours()).padStart(2, '0');
+	const minutes = String(d.getMinutes()).padStart(2, '0');
+	return `${day}/${month}/${year} (${hours}:${minutes})`;
+};
 </script>
 
 <template>
-	<AppLayout title="Notes" data-testid="notes_view">
-		<MainContainer class="py-5 border-b border-default-background-separator flex justify-between items-center">
-			<div class="flex items-center space-x-6">
-				<PageTitle :icon="TagIcon" title="Notes"></PageTitle>
-			</div>
-			<SecondaryButton :icon="PlusIcon" @click="showCreateNoteModal = true">Créer une note </SecondaryButton>
-			<!-- <TagCreateModal v-model:show="showCreateNoteModal"></TagCreateModal> -->
-		</MainContainer>
-		<!-- <TagTable></TagTable> -->
-	</AppLayout>
+	<TablePageView
+		title="Notes"
+		create="Créer une note"
+		:icon="NotesIcon"
+		:data="notes"
+		:modal="NoteForm"
+		:columns="tableColumns"
+		:dropdown="dropdown"
+		:no-data="noData"
+		:dropdown-min-width="150"
+		@fetch="fetchNotes()"
+	>
+		<template #title="{ data: note }">
+			<span class="overflow-ellipsis overflow-hidden">{{ note.title }}</span>
+		</template>
+
+		<template #created_at="{ data: note }">
+			<span class="overflow-ellipsis overflow-hidden">{{ formatDate(note.created_at) }}</span>
+		</template>
+
+		<template #updated_at="{ data: note }">
+			<span class="overflow-ellipsis overflow-hidden">{{ formatDate(note.updated_at) }}</span>
+		</template>
+	</TablePageView>
 </template>

@@ -70,6 +70,19 @@ CREATE TABLE `timers` (
   KEY `timers_chapitre_id_foreign` (`chapitre_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `notes` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `content` json NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `user_id` INT NOT NULL,
+  `team_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `notes_user_id_foreign` (`user_id`),
+  KEY `notes_team_id_foreign` (`team_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- To Delete
 
 INSERT INTO `teams` (`name`, `created_at`) VALUES ('Team A', NULL);
