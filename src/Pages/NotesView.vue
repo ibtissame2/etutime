@@ -58,6 +58,7 @@ const formatDate = (date) => {
 		:no-data="noData"
 		:dropdown-min-width="150"
 		@fetch="fetchNotes()"
+		@rowClick="(note, showForm) => showForm(note)"
 	>
 		<template #title="{ data: note }">
 			<span class="overflow-ellipsis overflow-hidden">{{ note.title }}</span>

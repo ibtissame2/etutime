@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch, onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useOrganizationStore } from '@/utils/useOrganization';
 import { PlusIcon } from '@heroicons/vue/16/solid';
 import { FolderPlusIcon } from '@heroicons/vue/24/solid';
@@ -12,7 +12,7 @@ import TableHeading from '@/Components/Common/TableHeading.vue';
 import TableRow from '@/Components/TableRow.vue';
 import MoreOptionsDropdown from '@/Components/src/MoreOptionsDropdown.vue';
 
-const emit = defineEmits(['fetch']);
+const emit = defineEmits(['fetch', 'rowClick']);
 
 const props = defineProps({
 	title: String,
@@ -39,6 +39,10 @@ const gridColumnsSize = computed(() => {
 
 function showForm(element) {
 	modalRef.value?.setDataOf(element);
+}
+
+function onRowClick(element) {
+	emit('rowClick', element, showForm);
 }
 
 function getId(column) {
@@ -92,7 +96,7 @@ onMounted(async () => {
 					</div>
 
 					<template v-for="element in data" :key="element.id">
-						<TableRow>
+						<TableRow @click="onRowClick(element)">
 							<div
 								class="py-1.5 pl-4 pr-3 sm:pl-6 lg:pl-8 3xl:pl-12 whitespace-nowrap flex items-center text-text-primary min-w-0"
 							>
@@ -109,7 +113,7 @@ onMounted(async () => {
 							<div
 								class="py-1.5 pl-3 pr-4 sm:pr-6 lg:pr-8 3xl:pr-12 whitespace-nowrap flex items-center text-right relative"
 							>
-								<MoreOptionsDropdown>
+								<MoreOptionsDropdown @click.prevent="(e) => e.stopPropagation()">
 									<div :class="dropdownMinWidth ? `min-w-[${dropdownMinWidth}px]` : ''">
 										<button
 											v-for="(opt, index) in dropdown"
