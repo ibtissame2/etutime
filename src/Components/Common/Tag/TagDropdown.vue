@@ -12,6 +12,7 @@ const props = defineProps({
 		type: String,
 		default: 'bottom-start',
 	},
+	disabled: { type: Boolean, default: false },
 });
 
 const model = defineModel({ default: [] });
@@ -26,6 +27,7 @@ function isTagSelected(id) {
 }
 
 function addOrRemoveTagFromSelection(id) {
+	if (props.disabled) return;
 	if (model.value.includes(id)) {
 		model.value = model.value.filter((tagId) => tagId !== id);
 	} else {
@@ -91,6 +93,7 @@ function updateSearchValue(event) {
 const emit = defineEmits(['changed', 'submit']);
 
 function toggleTag(newValue) {
+	if (props.disabled) return;
 	if (model.value.includes(newValue)) {
 		model.value = [...model.value].filter((id) => id !== newValue);
 	} else {

@@ -24,6 +24,7 @@ const props = defineProps({
 	allowReset: { type: Boolean, default: false },
 	class: { type: String, required: false },
 	withModules: { type: Boolean, default: false },
+	disabled: { type: Boolean, default: false },
 });
 
 const { modules } = storeToRefs(useModulesStore());
@@ -55,7 +56,7 @@ const searchResults = computed(() => {
 });
 
 function selectElement(element, type, checkIfWithModules) {
-	if (checkIfWithModules && !props.withModules) return;
+	if (props.disabled || (checkIfWithModules && !props.withModules)) return;
 	currentElement.value = element?.id || null;
 	currentType.value = type || null;
 	open.value = false;
@@ -139,7 +140,7 @@ onMounted(() => {
 			</ItemBadge>
 		</template>
 		<template #content>
-			<UseFocusTrap v-if="open" :options="{ immediate: true, allowOutsideClick: true }">
+			<UseFocusTrap v-if="open && !disabled" :options="{ immediate: true, allowOutsideClick: true }">
 				<input
 					ref="searchInput"
 					:value="searchValue"

@@ -19,7 +19,7 @@ const module = computed(() => {
 });
 
 async function startTaskTimer() {
-	if (currentMinuteur.value?.id) await toggleStartStopMinuteur(false, currentMinuteur.value);
+	if (currentMinuteur.value.id) await toggleStartStopMinuteur(false, currentMinuteur.value);
 	await toggleStartStopMinuteur(true, { ...props.timeEntry, id: undefined });
 }
 </script>

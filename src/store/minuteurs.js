@@ -33,24 +33,16 @@ export const useMinuteursStore = createCRUDStore({
 		const clock = ref(null);
 		const nowInterval = ref(null);
 
-		function startClock() {
-			stopClock();
-			clock.value = dayjs().utc();
-			nowInterval.value = setInterval(() => (clock.value = dayjs().utc()), 1000);
-		}
-
-		function stopClock() {
-			if (nowInterval.value !== null) clearInterval(nowInterval.value);
-		}
-
 		async function toggleStartStopMinuteur(create, object, acceptStart) {
 			if (create) {
-				startClock();
+				if (nowInterval.value !== null) clearInterval(nowInterval.value);
+				clock.value = dayjs().utc();
+				nowInterval.value = setInterval(() => (clock.value = dayjs().utc()), 1000);
 				object.start = acceptStart ? object.start || dayjs().utc().format() : dayjs().utc().format();
 				object.end = null;
 				await createMinuteur(object, (id) => (currentMinuteur.value = { ...object, id }));
 			} else {
-				stopClock();
+				if (nowInterval.value !== null) clearInterval(nowInterval.value);
 				const onSuccess = () => Object.assign(currentMinuteur.value, { start: '', id: null });
 				await updateMinuteur(object.id, { end: dayjs().utc().format() }, onSuccess);
 			}
@@ -61,8 +53,6 @@ export const useMinuteursStore = createCRUDStore({
 		return {
 			currentMinuteur,
 			clock,
-			startClock,
-			stopClock,
 			toggleStartStopMinuteur,
 		};
 	},

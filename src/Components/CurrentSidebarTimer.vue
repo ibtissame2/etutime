@@ -10,7 +10,7 @@ const { currentMinuteur, clock } = storeToRefs(useMinuteursStore());
 const { toggleStartStopMinuteur } = useMinuteursStore();
 
 const currentTime = computed(() => {
-	if (clock.value && currentMinuteur.value?.start) {
+	if (clock.value && currentMinuteur.value.start) {
 		const diff = clock.value.diff(dayjs(currentMinuteur.value.start), 's');
 		return formatHumanReadableDuration(diff);
 	}
@@ -27,7 +27,7 @@ const currentTime = computed(() => {
 			</div>
 		</div>
 		<TimeTrackerStartStop
-			:active="!!currentMinuteur?.start"
+			:active="!!currentMinuteur.start"
 			size="base"
 			@changed="(s) => toggleStartStopMinuteur(s, currentMinuteur)"
 		></TimeTrackerStartStop>

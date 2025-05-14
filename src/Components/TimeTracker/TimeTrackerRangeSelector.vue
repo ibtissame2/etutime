@@ -12,8 +12,11 @@ const timer = defineModel({ required: true });
 
 const emit = defineEmits(['createTimer']);
 
+const props = defineProps({
+	disabled: { type: Boolean, default: false },
+});
+
 const { clock } = storeToRefs(useMinuteursStore());
-const { startClock, stopClock } = useMinuteursStore();
 const temporaryCustomTimerEntry = ref('');
 const timeRangeSelector = ref(null);
 const inputField = ref(null);
@@ -39,18 +42,9 @@ const currentTime = computed({
 		return null;
 	},
 	set(newValue) {
-		if (newValue) {
-			temporaryCustomTimerEntry.value = newValue;
-		} else {
-			temporaryCustomTimerEntry.value = '';
-		}
+		temporaryCustomTimerEntry.value = newValue || '';
 	},
 });
-
-function pauseLiveTimerUpdate(event) {
-	event.target.select();
-	stopClock();
-}
 
 function onTimeEntryEnterPress() {
 	updateTimerAndStartLiveTimerUpdate();
@@ -84,9 +78,7 @@ function updateTimerAndStartLiveTimerUpdate() {
 		timer.value.start = newStartDate.utc().format();
 		emit('createTimer');
 	}
-	clock.value = dayjs().utc();
 	temporaryCustomTimerEntry.value = '';
-	startClock();
 }
 
 function isNumeric(value) {
@@ -117,8 +109,6 @@ function focusNextElement(e) {
 		focusableElement?.focus();
 	}
 }
-
-onMounted(async () => (clock.value = dayjs().utc()));
 </script>
 
 <template>
@@ -132,7 +122,7 @@ onMounted(async () => (clock.value = dayjs().utc()));
 					data-testid="time_entry_time"
 					class="w-[110px] lg:w-[130px] h-full text-text-primary py-2.5 rounded-lg border-border-secondary border text-center px-4 text-base lg:text-lg font-semibold bg-card-background border-none placeholder-muted focus:ring-0 transition"
 					type="text"
-					@focus="pauseLiveTimerUpdate"
+					:disabled="disabled"
 					@focusin="openModalOnTab"
 					@keydown.exact.tab="focusNextElement"
 					@keydown.exact.shift.tab="open = false"

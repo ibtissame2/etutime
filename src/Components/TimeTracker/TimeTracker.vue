@@ -2,9 +2,8 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import duration from 'dayjs/plugin/duration';
-import { watch, computed, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { usePage } from '@/utils/inertia';
 import { useModulesStore } from '@/store/modules';
 import { useChapitresStore } from '@/store/chapitres';
 import { useTachesStore } from '@/store/taches';
@@ -20,23 +19,20 @@ import TimeTrackerRecentlyTrackedEntry from '@/Components/TimeTracker/TimeTracke
 
 const emit = defineEmits(['change']);
 
+dayjs.extend(duration);
+dayjs.extend(utc);
+
 const { modules } = storeToRefs(useModulesStore());
 const { chapitres } = storeToRefs(useChapitresStore());
 const { taches } = storeToRefs(useTachesStore());
 const { minuteurs, currentMinuteur } = storeToRefs(useMinuteursStore());
 const { toggleStartStopMinuteur } = useMinuteursStore();
-
-const page = usePage();
-dayjs.extend(duration);
-dayjs.extend(utc);
-
-const tempChapitreName = ref(currentMinuteur.value?.chapitre_name || '');
 const showDropdown = ref(false);
 const floating = ref(null);
 const currentChapitreNameInput = ref(null);
 
 const noDuplicatedChapitres = computed(() => {
-	const search = tempChapitreName.value?.toLowerCase()?.trim() || '';
+	const search = currentMinuteur.value.chapitre_name.toLowerCase()?.trim() || '';
 	const noDuplicates = [];
 	const areEnded = minuteurs.value.filter((item) => item.end);
 	for (let index = 0; index < areEnded.length; index++) {
@@ -76,17 +72,6 @@ const extractData = (timer) => {
 function setDataOf(element) {
 	currentMinuteur.value = extractData(element || null);
 }
-
-function updateChapitreName() {
-	showDropdown.value = false;
-	if (currentMinuteur.value.chapitre_name === tempChapitreName.value) return;
-	currentMinuteur.value.chapitre_name = tempChapitreName.value;
-}
-
-watch(
-	() => currentMinuteur.value?.chapitre_name,
-	() => (tempChapitreName.value = currentMinuteur.value?.chapitre_name || '')
-);
 </script>
 
 <template>
@@ -99,17 +84,19 @@ watch(
 				<div class="flex flex-1 items-center pr-6 relative">
 					<input
 						ref="currentChapitreNameInput"
-						v-model="tempChapitreName"
+						:value="currentMinuteur.chapitre_name"
 						placeholder="Sur quoi travaillez-vous ?"
 						data-testid="time_entry_description"
 						class="w-full rounded-l-lg py-4 sm:py-2.5 px-3.5 border-b border-b-card-background-separator @2xl:px-4 text-base @4xl:text-lg text-text-primary font-medium bg-transparent border-none placeholder-muted focus:ring-0 transition"
 						type="text"
+						:disabled="!!currentMinuteur.start"
+						@input="(e) => (currentMinuteur.chapitre_name = e.target.value)"
 						@keydown.esc="showDropdown = false"
 						@focus="showDropdown = true"
-						@blur="updateChapitreName"
+						@blur="showDropdown = false"
 					/>
 					<div
-						v-if="showDropdown && noDuplicatedChapitres.length > 0"
+						v-if="showDropdown && !currentMinuteur.start && noDuplicatedChapitres.length > 0"
 						ref="floating"
 						class="z-50 w-full max-w-2xl"
 						:style="floatingStyles"
@@ -136,16 +123,22 @@ watch(
 							allow-reset
 							:value="currentMinuteur.module_id"
 							:elements="modules"
+							:disabled="!!currentMinuteur.start"
 							@change="(v) => (currentMinuteur.module_id = v)"
 						></TimeTrackerDropdown>
 					</div>
 					<div class="flex items-center @2xl:space-x-2 px-2 @2xl:px-4">
-						<TimeTrackerTagDropdown v-model="currentMinuteur.taches" :tags="taches"></TimeTrackerTagDropdown>
+						<TimeTrackerTagDropdown
+							v-model="currentMinuteur.taches"
+							:tags="taches"
+							:disabled="!!currentMinuteur.start"
+						></TimeTrackerTagDropdown>
 					</div>
 					<div class="border-l border-card-border">
 						<TimeTrackerRangeSelector
 							v-model="currentMinuteur"
-							@create-timer="() => toggleStartStopMinuteur(true, currentMinuteur)"
+							:disabled="!!currentMinuteur.start"
+							@create-timer="() => toggleStartStopMinuteur(true, currentMinuteur, true)"
 						></TimeTrackerRangeSelector>
 					</div>
 				</div>
@@ -153,7 +146,7 @@ watch(
 
 			<div class="pl-4 @2xl:pl-6 pr-3 absolute sm:relative top-[6px] sm:top-0 right-0">
 				<TimeTrackerStartStop
-					:active="!!currentMinuteur?.start"
+					:active="!!currentMinuteur.start"
 					size="large"
 					@changed="(s) => toggleStartStopMinuteur(s, currentMinuteur)"
 				></TimeTrackerStartStop>
