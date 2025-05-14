@@ -55,13 +55,13 @@ const searchResults = computed(() => {
 	else return props.elements;
 });
 
-function selectElement(element, type, checkIfWithModules) {
-	if (props.disabled || (checkIfWithModules && !props.withModules)) return;
+function selectElement(element, type) {
+	if (props.disabled) return;
 	currentElement.value = element?.id || null;
 	currentType.value = type || null;
 	open.value = false;
 	searchValue.value = '';
-	emit('change', currentElement.value, type);
+	emit('change', currentElement.value, type, element || {});
 }
 
 function isElementSelected(element, type) {
@@ -133,7 +133,7 @@ onMounted(() => {
 				<button
 					v-if="currentElement && allowReset"
 					class="absolute right-0 top-0 h-full flex items-center pr-3 text-text-quaternary hover:text-text-secondary"
-					@click.stop="() => (selectElement(null, type), selectElement(null, 'module', true))"
+					@click.stop="() => selectElement(null, type)"
 				>
 					<XMarkIcon class="w-5"></XMarkIcon>
 				</button>

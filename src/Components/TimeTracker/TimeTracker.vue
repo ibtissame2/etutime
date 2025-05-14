@@ -38,7 +38,7 @@ const noDuplicatedChapitres = computed(() => {
 	for (let index = 0; index < areEnded.length; index++) {
 		if (!areEnded[index].chapitre_id) continue;
 		if (search && !areEnded[index].chapitre_name?.toLowerCase().includes(search)) continue;
-		if (noDuplicates.some((it) => it.id === areEnded[index].chapitre_id)) continue;
+		if (noDuplicates.some((it) => it.chapitre_id === areEnded[index].chapitre_id)) continue;
 		const chapitre = { ...areEnded[index], id: areEnded[index].chapitre_id, name: areEnded[index].chapitre_name };
 		noDuplicates.push(chapitre);
 		if (noDuplicates.length > 10) break;
@@ -47,6 +47,8 @@ const noDuplicatedChapitres = computed(() => {
 		if (noDuplicates.length > 10) break;
 		if (search && !chapitres.value[index].name?.toLowerCase().includes(search)) continue;
 		if (noDuplicates.some((it) => it.id === chapitres.value[index].id)) continue;
+		chapitres.value[index].chapitre_id = chapitres.value[index].id;
+		chapitres.value[index].chapitre_name = chapitres.value[index].name;
 		noDuplicates.push(chapitres.value[index]);
 	}
 	return noDuplicates;
@@ -70,6 +72,8 @@ const extractData = (timer) => {
 };
 
 function setDataOf(element) {
+	element = { ...element };
+	delete element.id, delete element.name;
 	currentMinuteur.value = extractData(element || null);
 }
 </script>
@@ -110,7 +114,7 @@ function setDataOf(element) {
 									:key="chapitreOrTimer.id"
 									:chapitre="chapitreOrTimer"
 									:highlighted="false"
-									@mousedown="setDataOf({ ...chapitreOrTimer, id: undefined })"
+									@mousedown="setDataOf(chapitreOrTimer)"
 								></TimeTrackerRecentlyTrackedEntry>
 							</div>
 						</div>

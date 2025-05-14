@@ -33,18 +33,21 @@ export const useMinuteursStore = createCRUDStore({
 		const clock = ref(null);
 		const nowInterval = ref(null);
 
-		async function toggleStartStopMinuteur(create, object, acceptStart) {
+		async function toggleStartStopMinuteur(create, object, acceptStart, acceptEnd) {
+			const onSuccessStop = (o) => Object.assign(currentMinuteur.value, { ...o, start: '', end: null, id: null });
 			if (create) {
 				if (nowInterval.value !== null) clearInterval(nowInterval.value);
 				clock.value = dayjs().utc();
 				nowInterval.value = setInterval(() => (clock.value = dayjs().utc()), 1000);
 				object.start = acceptStart ? object.start || dayjs().utc().format() : dayjs().utc().format();
-				object.end = null;
-				await createMinuteur(object, (id) => (currentMinuteur.value = { ...object, id }));
+				if (!acceptEnd) object.end = null;
+				await createMinuteur(object, (id) => {
+					if (object.end) onSuccessStop(object);
+					else currentMinuteur.value = { ...object, id };
+				});
 			} else {
 				if (nowInterval.value !== null) clearInterval(nowInterval.value);
-				const onSuccess = () => Object.assign(currentMinuteur.value, { start: '', id: null });
-				await updateMinuteur(object.id, { end: dayjs().utc().format() }, onSuccess);
+				await updateMinuteur(object.id, { end: dayjs().utc().format() }, () => onSuccessStop({}));
 			}
 			useTimeEntriesStore().fetchTimeEntries();
 			useChapitresStore().fetchChapitres();

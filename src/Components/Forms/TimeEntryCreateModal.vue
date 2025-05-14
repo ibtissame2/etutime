@@ -53,8 +53,20 @@ watch(localEnd, (value) => {
 	timeEntry.value.end = getLocalizedDayJs(value).utc().format();
 });
 
+function setChapitreOrModule(value, type, chapitreOrModule) {
+	if (type === 'chapitre') {
+		timeEntry.value.chapitre_id = value;
+		timeEntry.value.chapitre_name = chapitreOrModule.name;
+		timeEntry.value.module_id = chapitreOrModule.module_id;
+	} else {
+		timeEntry.value.module_id = value;
+		timeEntry.value.chapitre_id = null;
+		timeEntry.value.chapitre_name = '';
+	}
+}
+
 async function submit() {
-	await toggleStartStopMinuteur(true, timeEntry.value, true);
+	await toggleStartStopMinuteur(true, timeEntry.value, true, true);
 	show.value = false;
 }
 </script>
@@ -79,7 +91,7 @@ async function submit() {
 							allow-reset
 							with-modules
 							:elements="chapitres"
-							@change="(v, type) => (type === 'chapitre' ? (timeEntry.chapitre_id = v) : (timeEntry.module_id = v))"
+							@change="setChapitreOrModule"
 						></TimeTrackerDropdown>
 					</div>
 					<div class="flex items-center space-x-2">
