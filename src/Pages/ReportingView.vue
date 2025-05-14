@@ -20,10 +20,7 @@ import ReportingPieChart from '@/Components/Common/Reporting/ReportingPieChart.v
 import { getCurrentMembershipId, getCurrentOrganizationId, getCurrentRole } from '@/utils/useUser';
 import { useTachesStore } from '@/store/taches';
 import { useSessionStorage, useStorage } from '@vueuse/core';
-import ReportingTabNavbar from '@/Components/Common/Reporting/ReportingTabNavbar.vue';
 import { useNotificationsStore } from '@/utils/notification';
-import ReportingExportButton from '@/Components/Common/Reporting/ReportingExportButton.vue';
-import ReportSaveButton from '@/Components/Common/Report/ReportSaveButton.vue';
 import { getRandomColorWithSeed } from '@/Components/src/utils/color';
 
 const { handleApiRequestNotifications } = useNotificationsStore();
@@ -204,24 +201,19 @@ const tableData = computed(() => {
 		<ReportingExportModal v-model:show="showExportModal" :export-url="exportUrl"></ReportingExportModal>
 		<MainContainer class="py-3 sm:py-5 border-b border-default-background-separator flex justify-between items-center">
 			<div class="flex items-center space-x-3 sm:space-x-6">
-				<PageTitle :icon="ChartBarIcon" title="Reporting"></PageTitle>
-				<ReportingTabNavbar active="reporting"></ReportingTabNavbar>
-			</div>
-			<div class="flex space-x-2">
-				<ReportingExportButton :download="downloadExport"></ReportingExportButton>
-				<ReportSaveButton :report-properties="reportProperties"></ReportSaveButton>
+				<PageTitle :icon="ChartBarIcon" title="Rapport"></PageTitle>
 			</div>
 		</MainContainer>
 		<div class="py-2.5 w-full border-b border-default-background-separator">
 			<MainContainer class="sm:flex space-y-4 sm:space-y-0 justify-between">
 				<div class="flex flex-wrap items-center space-y-2 sm:space-y-0 space-x-4">
-					<div class="text-sm font-medium">Filters</div>
+					<div class="text-sm font-medium">Filtres</div>
 					<MemberMultiselectDropdown v-model="selectedMembers" @submit="updateReporting">
 						<template #trigger>
 							<ReportingFilterBadge
 								:count="selectedMembers.length"
 								:active="selectedMembers.length > 0"
-								title="Members"
+								title="Etudiant"
 								:icon="UserGroupIcon"
 							></ReportingFilterBadge>
 						</template>
@@ -231,7 +223,7 @@ const tableData = computed(() => {
 							<ReportingFilterBadge
 								:count="selectedProjects.length"
 								:active="selectedProjects.length > 0"
-								title="Projects"
+								title="Module"
 								:icon="FolderIcon"
 							></ReportingFilterBadge>
 						</template>
@@ -241,7 +233,7 @@ const tableData = computed(() => {
 							<ReportingFilterBadge
 								:count="selectedTasks.length"
 								:active="selectedTasks.length > 0"
-								title="Tasks"
+								title="Chapitre"
 								:icon="CheckCircleIcon"
 							></ReportingFilterBadge>
 						</template>
@@ -252,7 +244,7 @@ const tableData = computed(() => {
 							<ReportingFilterBadge
 								:count="selectedTags.length"
 								:active="selectedTags.length > 0"
-								title="Tags"
+								title="Taches"
 								:icon="TagIcon"
 							></ReportingFilterBadge>
 						</template>
@@ -317,7 +309,7 @@ const tableData = computed(() => {
 							</div>
 						</template>
 						<div v-else class="chart flex flex-col items-center justify-center py-12 col-span-3">
-							<p class="text-lg text-text-primary font-semibold">Aucune entrée de temps trouvée</p>
+							<p class="text-lg text-text-primary font-semibold">Aucune minuteur trouvée</p>
 							<p>Essayez de changer les filtres et la plage horaire</p>
 						</div>
 					</div>

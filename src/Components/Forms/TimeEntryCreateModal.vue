@@ -3,7 +3,7 @@ import { ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useChapitresStore } from '@/store/chapitres';
 import { useTachesStore } from '@/store/taches';
-import { useTimersStore } from '@/store/timers';
+import { useMinuteursStore } from '@/store/minuteurs';
 import { getDayJsInstance, getLocalizedDayJs } from '@/Components/src/utils/time';
 import { TagIcon, InformationCircleIcon } from '@heroicons/vue/20/solid';
 import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
@@ -26,7 +26,7 @@ const props = defineProps({
 
 const { chapitres } = storeToRefs(useChapitresStore());
 const { taches } = storeToRefs(useTachesStore());
-const { setActiveState } = useTimersStore();
+const { setActiveState } = useMinuteursStore();
 
 const timeEntryDefaultValues = {
 	chapitre_id: null,
@@ -63,7 +63,7 @@ async function submit() {
 	<DialogModal closeable :show="show" @close="show = false">
 		<template #title>
 			<div class="flex space-x-2">
-				<span>Saisie manuelle du temps</span>
+				<span>Saisie manuelle du minuteur</span>
 			</div>
 		</template>
 

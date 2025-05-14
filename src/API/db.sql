@@ -53,7 +53,7 @@ CREATE TABLE `chapitres` (
   `module_id` INT DEFAULT NULL,
   `team_id` INT NOT NULL,
   `user_id` INT NOT NULL,
-   `is_done` tinyint(1) NOT NULL DEFAULT 0,
+  `is_done` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `chapitres_module_id_foreign` (`module_id`),
   KEY `chapitres_team_id_foreign` (`team_id`)
@@ -68,6 +68,8 @@ CREATE TABLE `timers` (
   `start` timestamp NOT NULL,
   `end` timestamp NULL DEFAULT NULL,
   `taches` json DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `timers_module_id_foreign` (`module_id`),
   KEY `timers_chapitre_id_foreign` (`chapitre_id`)
@@ -77,10 +79,10 @@ CREATE TABLE `notes` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `title` varchar(255) NOT NULL,
   `content` json NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `user_id` INT NOT NULL,
   `team_id` INT NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `notes_user_id_foreign` (`user_id`),
   KEY `notes_team_id_foreign` (`team_id`)

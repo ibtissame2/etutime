@@ -10,7 +10,7 @@ import { ClockIcon } from '@heroicons/vue/20/solid';
 import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import { PlusIcon } from '@heroicons/vue/16/solid';
 import LoadingSpinner from '@/Components/src/LoadingSpinner.vue';
-import { useTimersStore } from '@/store/timers';
+import { useMinuteursStore } from '@/store/minuteurs';
 import { useModulesStore } from '@/store/modules';
 import { useChapitresStore } from '@/store/chapitres';
 import { useTachesStore } from '@/store/taches';
@@ -19,12 +19,12 @@ import TimeEntryCreateModal from '@/Components/Forms/TimeEntryCreateModal.vue';
 import TimeEntryMassActionRow from '@/Components/TimeEntry/TimeEntryMassActionRow.vue';
 
 const { fetchMoreTimeEntries, updateTimeEntry, fetchTimeEntries, createTimeEntry } = useTimeEntriesStore();
-const { setActiveState, fetchCurrentTimeEntry } = useTimersStore();
+const { setActiveState, fetchCurrentTimeEntry } = useMinuteursStore();
 const { timeEntries, allTimeEntriesLoaded } = storeToRefs(useTimeEntriesStore());
 const { modules } = storeToRefs(useModulesStore());
 const { chapitres } = storeToRefs(useChapitresStore());
 const { taches } = storeToRefs(useTachesStore());
-const { currentTimer } = storeToRefs(useTimersStore());
+const { currentTimer } = storeToRefs(useMinuteursStore());
 
 const loading = ref(false);
 const loadMoreContainer = ref(null);
@@ -40,7 +40,7 @@ async function updateTimeEntries(ids, changes) {
 async function createTimer(timer) {
 	if (currentTimer.value?.id) await setActiveState(false, currentTimer.value);
 	// // Ibtissame: set the new entry as the current one
-	// await createTemps(timeEntry);
+	// await createMinuteur(timeEntry);
 	// fetchTimeEntries();
 	// fetchCurrentTimeEntry();
 }
@@ -87,7 +87,7 @@ onMounted(async () => {
 						class="w-full text-center flex justify-center"
 						:icon="PlusIcon"
 						@click="showManualTimeEntryModal = true"
-						>Saisie manuelle du temps
+						>Saisie manuelle du minuteur
 					</SecondaryButton>
 				</div>
 			</div>
@@ -125,7 +125,7 @@ onMounted(async () => {
 		></TimeEntryGroupedTable>
 		<div v-if="timeEntries.length === 0" class="text-center pt-12">
 			<ClockIcon class="w-8 text-icon-default inline pb-2"></ClockIcon>
-			<h3 class="text-text-primary font-semibold">Aucune entrée de temps trouvée</h3>
+			<h3 class="text-text-primary font-semibold">Aucune minuteur trouvée</h3>
 			<p class="pb-5">Créez votre première entrée maintenant !</p>
 		</div>
 		<div ref="loadMoreContainer">

@@ -5,20 +5,20 @@ import { createCRUDStore } from '@/store/store-template';
 import { useChapitresStore } from '@/store/chapitres';
 import { useTimeEntriesStore } from '@/utils/useTimeEntries';
 
-export const useTimersStore = createCRUDStore({
+export const useMinuteursStore = createCRUDStore({
 	typo: {
 		name: 'timers',
-		methods: 'Temps',
-		method: 'Temps',
-		elements: 'temps',
-		Element: 'Temps',
-		element: 'temps',
+		methods: 'Minuteurs',
+		method: 'Minuteur',
+		elements: 'minuteurs',
+		Element: 'Minuteur',
+		element: 'minuteur',
 	},
 	adapter: (timer) => {
 		if (typeof timer.taches === 'string') timer.taches = JSON.parse(timer.taches);
 		return timer;
 	},
-	setup({ createTemps, updateTemps }) {
+	setup({ createMinuteur, updateMinuteur }) {
 		const currentTimer = ref(null);
 		const clock = ref(null);
 		const nowInterval = ref(null);
@@ -38,11 +38,11 @@ export const useTimersStore = createCRUDStore({
 				startClock();
 				object.start = acceptStart ? object.start || dayjs().utc().format() : dayjs().utc().format();
 				object.end = null;
-				await createTemps(object, (id) => (currentTimer.value = { ...object, id }));
+				await createMinuteur(object, (id) => (currentTimer.value = { ...object, id }));
 			} else {
 				stopClock();
 				console.log('Ibtissame: update', object.id, { end: dayjs().utc().format() });
-				// await updateTemps(object.id, { end: dayjs().utc().format() }, () => (currentTimer.value = null));
+				// await updateMinuteur(object.id, { end: dayjs().utc().format() }, () => (currentTimer.value = null));
 			}
 			useTimeEntriesStore().fetchTimeEntries();
 			useChapitresStore().fetchChapitres();

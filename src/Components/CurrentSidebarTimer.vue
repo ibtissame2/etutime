@@ -2,13 +2,13 @@
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import dayjs from 'dayjs';
-import { useTimersStore } from '@/store/timers';
+import { useMinuteursStore } from '@/store/minuteurs';
 import { formatHumanReadableDuration } from '@/Components/src/utils/time';
 import TimeTrackerStartStop from '@/Components/TimeTracker/TimeTrackerStartStop.vue';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 
-const { currentTimer, clock } = storeToRefs(useTimersStore());
-const { setActiveState } = useTimersStore();
+const { currentTimer, clock } = storeToRefs(useMinuteursStore());
+const { setActiveState } = useMinuteursStore();
 
 const currentTime = computed(() => {
 	if (clock.value && currentTimer.value?.start) {

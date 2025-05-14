@@ -4,7 +4,7 @@ import { computed, ref, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import dayjs from 'dayjs';
 import parse from 'parse-duration';
-import { useTimersStore } from '@/store/timers';
+import { useMinuteursStore } from '@/store/minuteurs';
 import { formatDuration, getDayJsInstance } from '@/Components/src/utils/time';
 import TimeRangeSelector from '@/Components/src/Input/TimeRangeSelector.vue';
 
@@ -12,8 +12,8 @@ const timer = defineModel({ required: true });
 
 const emit = defineEmits(['createTimer']);
 
-const { clock } = storeToRefs(useTimersStore());
-const { startClock, stopClock } = useTimersStore();
+const { clock } = storeToRefs(useMinuteursStore());
+const { startClock, stopClock } = useMinuteursStore();
 const temporaryCustomTimerEntry = ref('');
 const timeRangeSelector = ref(null);
 const inputField = ref(null);

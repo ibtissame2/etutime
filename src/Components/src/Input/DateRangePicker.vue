@@ -95,31 +95,31 @@ function setLastYear() {
 		</template>
 
 		<template #content>
-			<div class="overflow-hidden w-[330px] px-3 py-1.5">
+			<div class="overflow-hidden w-[430px] px-3 py-1.5">
 				<div class="flex divide-x divide-border-secondary justify-between">
 					<div
 						class="text-text-primary text-sm flex flex-col space-y-0.5 items-start py-2 [&_button:hover]:bg-tertiary [&_button]:rounded [&_button]:px-2 [&_button]:py-1"
 					>
-						<button @click="setToday">Today</button>
-						<button @click="setThisWeek">This Week</button>
-						<button @click="setLastWeek">Last Week</button>
-						<button @click="setLast14Days">Last 14 days</button>
-						<button @click="setThisMonth">This Month</button>
-						<button @click="setLastMonth">Last Month</button>
-						<button @click="setLast30Days">Last 30 days</button>
-						<button @click="setLast90Days">Last 90 days</button>
-						<button @click="setLast12Months">Last 12 months</button>
-						<button @click="setThisYear">This year</button>
-						<button @click="setLastYear">Last year</button>
+						<button @click="setToday">Aujourd’hui</button>
+						<button @click="setThisWeek">Cette semaine</button>
+						<button @click="setLastWeek">Semaine dernière</button>
+						<button @click="setLast14Days">Les 14 derniers jours</button>
+						<button @click="setThisMonth">Ce mois-ci</button>
+						<button @click="setLastMonth">Mois dernier</button>
+						<button @click="setLast30Days">Les 30 derniers jours</button>
+						<button @click="setLast90Days">Les 90 derniers jours</button>
+						<button @click="setLast12Months">Les 12 derniers mois</button>
+						<button @click="setThisYear">Cette année</button>
+						<button @click="setLastYear">Année dernière</button>
 					</div>
 
 					<div class="pl-5">
 						<div class="space-y-1 flex-col flex items-start">
-							<div class="text-xs font-semibold text-muted">Start Date</div>
+							<div class="text-xs font-semibold text-muted">Date de début</div>
 							<DatePicker v-model="start" />
 						</div>
 						<div class="mt-2 space-y-1 flex-col flex items-start">
-							<div class="text-sm font-medium text-muted">End Date</div>
+							<div class="text-sm font-medium text-muted">Date de fin</div>
 							<DatePicker v-model="end" />
 						</div>
 					</div>

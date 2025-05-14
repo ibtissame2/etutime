@@ -5,7 +5,7 @@ import ModuleBadge from '@/Components/Module/ModuleBadge.vue';
 import TimeTrackerStartStop from '@/Components/TimeTracker/TimeTrackerStartStop.vue';
 import { useModulesStore } from '@/store/modules';
 import { useChapitresStore } from '@/store/chapitres';
-import { useTimersStore } from '@/store/timers';
+import { useMinuteursStore } from '@/store/minuteurs';
 import { getDayJsInstance } from '@/Components/src/utils/time';
 import { ChevronRightIcon } from '@heroicons/vue/16/solid';
 
@@ -15,8 +15,8 @@ const props = defineProps({
 
 const { modules } = storeToRefs(useModulesStore());
 const { chapitres } = storeToRefs(useChapitresStore());
-const { currentTimer } = storeToRefs(useTimersStore());
-const { setActiveState } = useTimersStore();
+const { currentTimer } = storeToRefs(useMinuteursStore());
+const { setActiveState } = useMinuteursStore();
 
 const module = computed(() => {
 	return modules.value.find((module) => module.id === props.timeEntry.module_id);
