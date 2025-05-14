@@ -1,60 +1,29 @@
 <script setup>
-import { useQuery } from '@/utils/tanstack';
 import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import RecentlyTrackedTasksCardEntry from '@/Components/Dashboard/RecentlyTrackedTasksCardEntry.vue';
 import DashboardCard from '@/Components/Dashboard/DashboardCard.vue';
 import { CheckCircleIcon } from '@heroicons/vue/20/solid';
 import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import { PlusCircleIcon } from '@heroicons/vue/24/solid';
 import { router, route } from '@/utils/inertia';
+import { useTimersStore } from '@/store/timers';
 import { getCurrentMembershipId, getCurrentOrganizationId } from '@/utils/useUser';
 import LoadingSpinner from '@/Components/src/LoadingSpinner.vue';
 
+const { timers, isLoading } = storeToRefs(useTimersStore());
+
 const organizationId = computed(() => getCurrentOrganizationId());
 
-const {
-	data: timeEntriesResponse,
-	isLoading,
-	refetch,
-} = useQuery({
-	queryKey: ['timeEntries', organizationId],
-	queryFn: () => {
-		return api.getTimeEntries({
-			params: {
-				organization: organizationId.value,
-			},
-			queries: {
-				member_id: getCurrentMembershipId(),
-			},
-		});
-	},
-	enabled: computed(() => !!organizationId.value),
-});
-
-const latestTasks = computed(() => timeEntriesResponse.value || []);
-
-const filteredLatestTasks = computed(() => {
-	const finishedTimeEntries = latestTasks.value.filter((item) => item.end !== null);
-
-	return finishedTimeEntries
-		.filter((item, index, self) => {
-			return (
-				index ===
-				self.findIndex(
-					(t) =>
-						t.description === item.description &&
-						t.task_id === item.task_id &&
-						t.project_id === item.project_id &&
-						t.tags.length === item.tags.length &&
-						t.tags.every((tag) => item.tags.includes(tag))
-				)
-			);
-		})
-		.slice(0, 4);
-});
-
-window.addEventListener('dashboard:refresh', () => {
-	refetch();
+const latestTimers = computed(() => {
+	const noDuplicates = [];
+	for (let index = 0; index < timers.value.length; index++) {
+		if (!timers.value[index].chapitre_id && !timers.value[index].module_id) continue;
+		if (noDuplicates.some((it) => it.chapitre_id === timers.value[index].chapitre_id)) continue;
+		noDuplicates.push(timers.value[index]);
+		if (noDuplicates.length > 3) break;
+	}
+	return noDuplicates;
 });
 </script>
 
@@ -63,12 +32,12 @@ window.addEventListener('dashboard:refresh', () => {
 		<div v-if="isLoading" class="flex justify-center items-center h-40">
 			<LoadingSpinner />
 		</div>
-		<div v-else-if="filteredLatestTasks && filteredLatestTasks.length > 0">
+		<div v-else-if="latestTimers && latestTimers.length > 0">
 			<RecentlyTrackedTasksCardEntry
-				v-for="timer in filteredLatestTasks"
+				v-for="timer in latestTimers"
 				:key="timer.id"
 				:time-entry="timer"
-				:class="filteredLatestTasks.length === 4 ? 'last:border-0' : ''"
+				:class="latestTimers.length === 4 ? 'last:border-0' : ''"
 			></RecentlyTrackedTasksCardEntry>
 		</div>
 		<div v-else class="text-center flex flex-1 justify-center items-center">
@@ -79,10 +48,7 @@ window.addEventListener('dashboard:refresh', () => {
 				<SecondaryButton @click="router.visit(route('projects'))">Modules</SecondaryButton>
 			</div>
 		</div>
-		<div
-			v-if="latestTasks && latestTasks.length === 1"
-			class="text-center flex flex-1 justify-center items-center text-sm"
-		>
+		<div v-if="timers && timers.length === 1" class="text-center flex flex-1 justify-center items-center text-sm">
 			<div>
 				<PlusCircleIcon class="w-8 text-icon-default inline pb-2"></PlusCircleIcon>
 				<h3 class="text-text-primary font-semibold">Add more tasks</h3>

@@ -64,6 +64,7 @@ const { floatingStyles } = useFloating(currentChapitreNameInput, floating, {
 
 const extractData = (timer) => {
 	return {
+		...timer,
 		chapitre_name: timer?.name || timer?.chapitre_name || '',
 		chapitre_id: timer?.chapitre_id || timer?.id || null,
 		module_id: timer?.chapitre_module_id || timer?.module_id || null,
@@ -134,7 +135,7 @@ onMounted(async () => {
 									:key="chapitreOrTimer.id"
 									:chapitre="chapitreOrTimer"
 									:highlighted="false"
-									@mousedown="setDataOf(chapitreOrTimer)"
+									@mousedown="setDataOf({ ...chapitreOrTimer, id: undefined })"
 								></TimeTrackerRecentlyTrackedEntry>
 							</div>
 						</div>

@@ -33,12 +33,12 @@ export const useTimersStore = createCRUDStore({
 			if (nowInterval.value !== null) clearInterval(nowInterval.value);
 		}
 
-		async function setActiveState(create, object) {
+		async function setActiveState(create, object, acceptStart) {
 			if (create) {
 				startClock();
-				object.start = object.start || dayjs().utc().format();
+				object.start = acceptStart ? object.start || dayjs().utc().format() : dayjs().utc().format();
 				object.end = null;
-				await createTemps(object, () => (currentTimer.value = { ...object }));
+				await createTemps(object, (id) => (currentTimer.value = { ...object, id }));
 			} else {
 				stopClock();
 				console.log('Ibtissame: update', object.id, { end: dayjs().utc().format() });

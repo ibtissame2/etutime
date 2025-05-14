@@ -1,3 +1,4 @@
+// Ibtissame
 // import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query';
 import { ref } from 'vue';
 
@@ -24,7 +25,7 @@ export const useQuery = ({ queryFn, queryKey, enabled }) => {
 			{ date: '2025-04-16', duration: 93, history: [1, 2, 3] },
 			{ date: '2025-04-15', duration: 93, history: [1, 2, 3] },
 		];
-	else if (queryKey[0] === 'timeEntries' || queryKey[0] === 'latestTeamActivity')
+	else if (queryKey[0] === 'latestTeamActivity')
 		data = [
 			{
 				time_entry_id: '1',

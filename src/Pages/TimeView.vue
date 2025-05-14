@@ -38,7 +38,7 @@ async function updateTimeEntries(ids, changes) {
 }
 
 async function createTimer(timer) {
-	if (currentTimer.value) await setActiveState(false, currentTimer.value);
+	if (currentTimer.value?.id) await setActiveState(false, currentTimer.value);
 	// // Ibtissame: set the new entry as the current one
 	// await createTemps(timeEntry);
 	// fetchTimeEntries();

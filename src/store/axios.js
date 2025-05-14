@@ -6,7 +6,7 @@ const protectedObject = {
 	post: async (endpoint, variables, onSuccess = () => {}, successMessage, onError) => {
 		try {
 			const response = await axios.post(`http://localhost/etutime/front-end/src/API/${endpoint}.php`, variables);
-			const success = onSuccess(response);
+			const success = onSuccess(response.data);
 			const message = successMessage || success?.successMessage;
 			if (message) addNotification('success', message);
 			return response.data;

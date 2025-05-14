@@ -34,7 +34,7 @@ export const createCRUDStore = ({ typo, setup, adapter }) => {
 			const id = await useAxios.post(
 				typo.name + '/create',
 				{ team, user, ...object },
-				() => onSuccess?.(),
+				(data) => onSuccess?.(data),
 				typo.Element + ' créé avec succès',
 				'Échec de la création du ' + typo.element
 			);
@@ -49,7 +49,7 @@ export const createCRUDStore = ({ typo, setup, adapter }) => {
 			const response = await useAxios.post(
 				typo.name + '/update',
 				{ id, team, user, ...object },
-				() => (onSuccess?.(), refresh && fetchData()),
+				(data) => (onSuccess?.(data), refresh && fetchData()),
 				typo.Element + ' mis à jour avec succès',
 				'Échec de la mise à jour du ' + typo.element
 			);
@@ -63,7 +63,7 @@ export const createCRUDStore = ({ typo, setup, adapter }) => {
 			const response = await useAxios.post(
 				typo.name + '/delete',
 				{ id, team, user },
-				() => (onSuccess?.(), refresh && fetchData()),
+				(data) => (onSuccess?.(data), refresh && fetchData()),
 				typo.Element + ' supprimé avec succès',
 				'Échec de la suppression du ' + typo.element
 			);

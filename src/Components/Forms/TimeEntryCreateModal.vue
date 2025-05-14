@@ -26,7 +26,7 @@ const props = defineProps({
 
 const { chapitres } = storeToRefs(useChapitresStore());
 const { taches } = storeToRefs(useTachesStore());
-const { createTemps } = useTimersStore();
+const { setActiveState } = useTimersStore();
 
 const timeEntryDefaultValues = {
 	chapitre_id: null,
@@ -54,7 +54,7 @@ watch(localEnd, (value) => {
 });
 
 async function submit() {
-	await createTemps(timeEntry.value);
+	await setActiveState(true, timeEntry.value, true);
 	show.value = false;
 }
 </script>
