@@ -7,7 +7,7 @@ import TimeEntryRowTagDropdown from '@/Components/TimeEntry/TimeEntryRowTagDropd
 import TimeEntryRowDurationInput from '@/Components/TimeEntry/TimeEntryRowDurationInput.vue';
 import TimeEntryMoreOptionsDropdown from '@/Components/TimeEntry/TimeEntryMoreOptionsDropdown.vue';
 import { computed } from 'vue';
-import TimeTrackerProjectTaskDropdown from '@/Components/TimeTracker/TimeTrackerProjectTaskDropdown.vue';
+import TimeTrackerDropdown from '@/Components/TimeTracker/TimeTrackerDropdown.vue';
 import Checkbox from '@/Components/src/Input/Checkbox.vue';
 
 const props = defineProps({
@@ -95,15 +95,13 @@ function onSelectChange(event) {
 						:model-value="timeEntry.description"
 						@changed="updateTimeEntryDescription"
 					></TimeEntryDescriptionInput>
-					<TimeTrackerProjectTaskDropdown
-						:can-create-project
-						:projects="projects"
-						:tasks="tasks"
+					<TimeTrackerDropdown
+						type="module"
+						:elements="projects"
 						:show-badge-border="false"
 						:project="timeEntry.project_id"
-						:task="timeEntry.task_id"
-						@changed="updateProjectAndTask"
-					></TimeTrackerProjectTaskDropdown>
+						@change="updateProjectAndTask"
+					></TimeTrackerDropdown>
 				</div>
 				<div class="flex items-center font-medium space-x-1 lg:space-x-2">
 					<div v-if="showMember && members" class="text-sm px-2">

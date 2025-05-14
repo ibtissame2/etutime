@@ -1,45 +1,37 @@
 <script setup>
-import TextInput from '@/Components/src/Input/TextInput.vue';
+import { ref, watch } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useChapitresStore } from '@/store/chapitres';
+import { useTachesStore } from '@/store/taches';
+import { useTimersStore } from '@/store/timers';
+import { getDayJsInstance, getLocalizedDayJs } from '@/Components/src/utils/time';
+import { TagIcon, InformationCircleIcon } from '@heroicons/vue/20/solid';
 import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import DialogModal from '@/Components/src/DialogModal.vue';
-import { nextTick, ref, watch } from 'vue';
 import PrimaryButton from '@/Components/src/Buttons/PrimaryButton.vue';
-import TimeTrackerProjectTaskDropdown from '@/Components/TimeTracker/TimeTrackerProjectTaskDropdown.vue';
+import TimeTrackerDropdown from '@/Components/TimeTracker/TimeTrackerDropdown.vue';
 import InputLabel from '@/Components/src/Input/InputLabel.vue';
-import { TagIcon } from '@heroicons/vue/20/solid';
-import { getDayJsInstance, getLocalizedDayJs } from '@/Components/src/utils/time';
 import TagDropdown from '@/Components/Common/Tag/TagDropdown.vue';
 import Badge from '@/Components/src/Badge.vue';
 import DatePicker from '@/Components/src/Input/DatePicker.vue';
 import DurationHumanInput from '@/Components/src/Input/DurationHumanInput.vue';
-import { InformationCircleIcon } from '@heroicons/vue/20/solid';
 import TimePickerSimple from '@/Components/src/Input/TimePickerSimple.vue';
 
 const show = defineModel('show', { default: false });
-const saving = ref(false);
+const loading = ref(false);
 
 const props = defineProps({
 	createTimeEntry: Function,
-	tags: Array,
-	projects: Array,
-	tasks: Array,
 });
 
-const description = ref(null);
-
-watch(show, (value) => {
-	if (value) {
-		nextTick(() => {
-			description.value?.focus();
-		});
-	}
-});
+const { chapitres } = storeToRefs(useChapitresStore());
+const { taches } = storeToRefs(useTachesStore());
+const { createTemps } = useTimersStore();
 
 const timeEntryDefaultValues = {
-	description: '',
-	module_id: null,
 	chapitre_id: null,
-	tags: [],
+	module_id: null,
+	taches: [],
 	start: getDayJsInstance().utc().subtract(1, 'h').format(),
 	end: getDayJsInstance().utc().format(),
 };
@@ -62,12 +54,8 @@ watch(localEnd, (value) => {
 });
 
 async function submit() {
-	console.log('submit', timeEntry.value);
-	// await props.createTimeEntry({ ...timeEntry.value });
-	// timeEntry.value = { ...timeEntryDefaultValues };
-	// localStart.value = getLocalizedDayJs(timeEntryDefaultValues.start).format();
-	// localEnd.value = getLocalizedDayJs(timeEntryDefaultValues.end).format();
-	// show.value = false;
+	await createTemps(timeEntry.value);
+	show.value = false;
 }
 </script>
 
@@ -80,43 +68,31 @@ async function submit() {
 		</template>
 
 		<template #content>
-			<div class="sm:flex items-end space-y-2 sm:space-y-0 sm:space-x-4">
-				<div class="flex-1">
-					<TextInput
-						id="description"
-						ref="description"
-						v-model="timeEntry.description"
-						placeholder="Sur quoi as-tu travaillé ?"
-						type="text"
-						class="mt-1 block w-full"
-						@keydown.enter="submit"
-					/>
-				</div>
-			</div>
 			<div class="sm:flex justify-between items-end space-y-2 sm:space-y-0 pt-4 sm:space-x-4">
 				<div class="flex w-full items-center space-x-2 justify-between">
 					<div class="flex-1 min-w-0">
-						<TimeTrackerProjectTaskDropdown
-							v-model:project="timeEntry.module_id"
-							v-model:task="timeEntry.chapitre_id"
-							:can-create-project="true"
+						<TimeTrackerDropdown
+							type="chapitre"
+							:value="null"
 							size="xlarge"
 							class="bg-input-background"
-							:projects="projects"
-							:tasks="tasks"
-						></TimeTrackerProjectTaskDropdown>
+							allow-reset
+							with-modules
+							:elements="chapitres"
+							@change="(v, type) => (type === 'chapitre' ? (timeEntry.chapitre_id = v) : (timeEntry.module_id = v))"
+						></TimeTrackerDropdown>
 					</div>
 					<div class="flex items-center space-x-2">
 						<div class="flex-col">
-							<TagDropdown v-model="timeEntry.tags" :tags="tags">
+							<TagDropdown v-model="timeEntry.taches" :tags="taches">
 								<template #trigger>
 									<Badge class="bg-input-background" tag="button" size="xlarge">
-										<TagIcon v-if="timeEntry.tags.length === 0" class="w-4"></TagIcon>
+										<TagIcon v-if="timeEntry.taches.length === 0" class="w-4"></TagIcon>
 										<div
 											v-else
 											class="bg-accent-300/20 w-5 h-5 font-medium rounded flex items-center transition justify-center"
 										>
-											{{ timeEntry.tags.length }}
+											{{ timeEntry.taches.length }}
 										</div>
 										<span>Tâches</span>
 									</Badge>
@@ -167,7 +143,7 @@ async function submit() {
 		</template>
 		<template #footer>
 			<SecondaryButton tabindex="2" @click="show = false">Annuler</SecondaryButton>
-			<PrimaryButton tabindex="2" class="ms-3" :class="{ 'opacity-25': saving }" :disabled="saving" @click="submit">
+			<PrimaryButton tabindex="2" class="ms-3" :class="{ 'opacity-25': loading }" :disabled="loading" @click="submit">
 				Créer
 			</PrimaryButton>
 		</template>

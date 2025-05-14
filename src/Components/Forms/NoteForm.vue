@@ -16,7 +16,7 @@ const loading = ref(false);
 const note = ref({});
 
 const extractData = (note) => {
-	const content = note?.content ? JSON.parse(note?.content) : { blocks: [] };
+	const content = note?.content || { blocks: [] };
 	return {
 		id: note?.id,
 		title: note?.title || '',

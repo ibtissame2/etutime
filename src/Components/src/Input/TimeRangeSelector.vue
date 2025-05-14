@@ -15,6 +15,10 @@ const props = defineProps({
 		type: [String, null],
 		default: null,
 	},
+	endVisible: {
+		type: Boolean,
+		default: true,
+	},
 	focus: {
 		type: Boolean,
 		default: false,
@@ -55,7 +59,12 @@ watch(focused, (newValue, oldValue) => {
 </script>
 
 <template>
-	<div ref="dropdownContent" class="grid grid-cols-2 divide-x divide-card-background-separator text-center py-2">
+	<div
+		ref="dropdownContent"
+		:class="`grid ${
+			endVisible ? 'grid-cols-2' : 'grid-cols-1'
+		} divide-x divide-card-background-separator text-center py-2`"
+	>
 		<div class="px-2" @keydown.enter.prevent="nextTick(() => emit('close'))">
 			<div class="font-semibold text-text-primary text-sm pb-2">Start</div>
 			<div class="space-y-2">
@@ -75,7 +84,7 @@ watch(focused, (newValue, oldValue) => {
 				/>
 			</div>
 		</div>
-		<div class="px-2">
+		<div v-if="endVisible" class="px-2">
 			<div class="font-semibold text-text-primary text-sm pb-2">End</div>
 			<div v-if="tempEnd !== null" class="space-y-2">
 				<TimePickerSimple v-model="tempEnd" data-testid="time_entry_range_end" @changed="updateTimeEntry" />

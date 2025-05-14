@@ -9,4 +9,8 @@ export const useNotesStore = createCRUDStore({
 		Element: 'Note',
 		element: 'note',
 	},
+	adapter: (note) => {
+		if (typeof note.content === 'string') note.content = JSON.parse(note.content);
+		return note;
+	},
 });

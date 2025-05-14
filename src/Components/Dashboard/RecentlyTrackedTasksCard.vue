@@ -65,9 +65,9 @@ window.addEventListener('dashboard:refresh', () => {
 		</div>
 		<div v-else-if="filteredLatestTasks && filteredLatestTasks.length > 0">
 			<RecentlyTrackedTasksCardEntry
-				v-for="lastTask in filteredLatestTasks"
-				:key="lastTask.id"
-				:time-entry="lastTask"
+				v-for="timer in filteredLatestTasks"
+				:key="timer.id"
+				:time-entry="timer"
 				:class="filteredLatestTasks.length === 4 ? 'last:border-0' : ''"
 			></RecentlyTrackedTasksCardEntry>
 		</div>

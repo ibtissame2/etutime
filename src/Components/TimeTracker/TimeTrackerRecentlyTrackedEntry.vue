@@ -1,34 +1,26 @@
 <script setup>
-import { twMerge } from 'tailwind-merge';
-import { ChevronRightIcon } from '@heroicons/vue/16/solid';
 import { computed } from 'vue';
+import { twMerge } from 'tailwind-merge';
+import { useModulesStore } from '@/store/modules';
+import { storeToRefs } from 'pinia';
 import ModuleBadge from '@/Components/Module/ModuleBadge.vue';
 
+const { modules } = storeToRefs(useModulesStore());
+
 const props = defineProps({
-	timeEntry: Object,
+	chapitre: Object,
 	highlighted: Boolean,
-	projects: {
-		type: Array,
-		required: false,
-	},
-	tasks: {
-		type: Array,
-		required: false,
-	},
 });
 
-const project = computed(() => {
-	return props.projects?.find((iteratingProject) => iteratingProject.id === props.timeEntry.project_id);
-});
-const task = computed(() => {
-	return props.tasks?.find((iteratingTask) => iteratingTask.id === props.timeEntry.task_id);
+const module = computed(() => {
+	return modules.value?.find((iteratingProject) => iteratingProject.id === props.chapitre.module_id);
 });
 </script>
 
 <template>
 	<button
 		tabindex="-1"
-		:data-select-id="timeEntry.id"
+		:data-select-id="chapitre.id"
 		:class="
 			twMerge(
 				'px-2 py-1.5 flex justify-between items-center space-x-2 w-full rounded',
@@ -36,21 +28,16 @@ const task = computed(() => {
 			)
 		"
 	>
-		<span v-if="timeEntry.description !== ''" class="text-sm font-medium">
-			{{ timeEntry.description }}
+		<span :class="`text-sm font-medium ${chapitre.name ? '' : 'text-text-tertiary'}`">
+			{{ chapitre.name || 'Aucun chapitre' }}
 		</span>
-		<span v-else class="text-sm text-text-tertiary font-medium"> No Description </span>
-		<ModuleBadge ref="projectDropdownTrigger" :color="project?.color" :name="project?.name" class="">
-			<div v-if="project" class="flex items-center lg:space-x-1 min-w-0">
+		<ModuleBadge ref="projectDropdownTrigger" :color="module?.color" :name="module?.name" class="">
+			<div v-if="module" class="flex items-center lg:space-x-1 min-w-0">
 				<span class="whitespace-nowrap text-xs">
-					{{ project?.name }}
+					{{ module?.name }}
 				</span>
-				<ChevronRightIcon v-if="task" class="w-4 lg:w-5 text-muted shrink-0"></ChevronRightIcon>
-				<div v-if="task" class="min-w-0 shrink text-xs truncate">
-					{{ task.name }}
-				</div>
 			</div>
-			<div v-else>No Project</div>
+			<div v-else class="text-text-tertiary">Aucun module</div>
 		</ModuleBadge>
 	</button>
 </template>

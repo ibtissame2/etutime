@@ -1,71 +1,54 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
-import TimeTracker from '@/Components/TimeTracker.vue';
 import { onMounted, ref, watch } from 'vue';
+import { storeToRefs } from 'pinia';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import TimeTracker from '@/Components/TimeTracker/TimeTracker.vue';
 import MainContainer from '@/Components/src/MainContainer.vue';
 import { useTimeEntriesStore } from '@/utils/useTimeEntries';
-import { storeToRefs } from 'pinia';
 import { useElementVisibility } from '@vueuse/core';
 import { ClockIcon } from '@heroicons/vue/20/solid';
 import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import { PlusIcon } from '@heroicons/vue/16/solid';
 import LoadingSpinner from '@/Components/src/LoadingSpinner.vue';
-import { useCurrentTimeEntryStore } from '@/utils/useCurrentTimeEntry';
-import { useTasksStore } from '@/utils/useTasks';
+import { useCurrentTimerStore } from '@/store/current-timer';
 import { useModulesStore } from '@/store/modules';
-import TimeEntryGroupedTable from '@/Components/TimeEntry/TimeEntryGroupedTable.vue';
+import { useChapitresStore } from '@/store/chapitres';
 import { useTachesStore } from '@/store/taches';
-import TimeEntryCreateModal from '@/Components/TimeEntry/TimeEntryCreateModal.vue';
+import TimeEntryGroupedTable from '@/Components/TimeEntry/TimeEntryGroupedTable.vue';
+import TimeEntryCreateModal from '@/Components/Forms/TimeEntryCreateModal.vue';
 import TimeEntryMassActionRow from '@/Components/TimeEntry/TimeEntryMassActionRow.vue';
 
-const timeEntriesStore = useTimeEntriesStore();
-const { timeEntries, allTimeEntriesLoaded } = storeToRefs(timeEntriesStore);
-const { updateTimeEntry, fetchTimeEntries, createTimeEntry } = useTimeEntriesStore();
+const { fetchMoreTimeEntries, updateTimeEntry, fetchTimeEntries, createTimeEntry } = useTimeEntriesStore();
+const { setActiveState, fetchCurrentTimeEntry } = useCurrentTimerStore();
+const { timeEntries, allTimeEntriesLoaded } = storeToRefs(useTimeEntriesStore());
+const { modules } = storeToRefs(useModulesStore());
+const { chapitres } = storeToRefs(useChapitresStore());
+const { taches } = storeToRefs(useTachesStore());
+const { currentTimer } = storeToRefs(useCurrentTimerStore());
+
+const loading = ref(false);
+const loadMoreContainer = ref(null);
+const isLoadMoreVisible = useElementVisibility(loadMoreContainer);
+const showManualTimeEntryModal = ref(false);
+const selectedTimeEntries = ref([]);
 
 async function updateTimeEntries(ids, changes) {
 	await useTimeEntriesStore().updateTimeEntries(ids, changes);
 	fetchTimeEntries();
 }
 
-const loading = ref(false);
-const loadMoreContainer = ref(null);
-const isLoadMoreVisible = useElementVisibility(loadMoreContainer);
-const currentTimeEntryStore = useCurrentTimeEntryStore();
-const { currentTimeEntry } = storeToRefs(currentTimeEntryStore);
-const { setActiveState } = currentTimeEntryStore;
-const { taches } = storeToRefs(useTachesStore());
-
-async function startTimeEntry(timeEntry) {
-	if (currentTimeEntry.value.id) {
-		await setActiveState(false);
-	}
-	await createTimeEntry(timeEntry);
-	fetchTimeEntries();
-	useCurrentTimeEntryStore().fetchCurrentTimeEntry();
+async function createTimer(timer) {
+	if (currentTimer.value) await setActiveState(false, currentTimer.value);
+	// // Ibtissame: set the new entry as the current one
+	// await createTemps(timeEntry);
+	// fetchTimeEntries();
+	// fetchCurrentTimeEntry();
 }
 
 function deleteTimeEntries(timeEntries) {
 	useTimeEntriesStore().deleteTimeEntries(timeEntries);
 	fetchTimeEntries();
 }
-
-watch(isLoadMoreVisible, async (isVisible) => {
-	if (isVisible && timeEntries.value.length > 0 && !allTimeEntriesLoaded.value) {
-		loading.value = true;
-		await timeEntriesStore.fetchMoreTimeEntries();
-	}
-});
-
-onMounted(async () => {
-	await timeEntriesStore.fetchTimeEntries();
-});
-
-const showManualTimeEntryModal = ref(false);
-
-const { modules } = storeToRefs(useModulesStore());
-const { tasks } = storeToRefs(useTasksStore());
-
-const selectedTimeEntries = ref([]);
 
 async function clearSelectionAndState() {
 	selectedTimeEntries.value = [];
@@ -76,16 +59,21 @@ function deleteSelected() {
 	deleteTimeEntries(selectedTimeEntries.value);
 	selectedTimeEntries.value = [];
 }
+
+watch(isLoadMoreVisible, async (isVisible) => {
+	if (isVisible && timeEntries.value.length > 0 && !allTimeEntriesLoaded.value) {
+		loading.value = true;
+		await fetchMoreTimeEntries();
+	}
+});
+
+onMounted(async () => {
+	await fetchTimeEntries();
+});
 </script>
 
 <template>
-	<TimeEntryCreateModal
-		v-model:show="showManualTimeEntryModal"
-		:create-time-entry="createTimeEntry"
-		:projects="modules"
-		:tasks="tasks"
-		:tags="taches"
-	></TimeEntryCreateModal>
+	<TimeEntryCreateModal v-model:show="showManualTimeEntryModal"></TimeEntryCreateModal>
 	<AppLayout title="Suivi du temps" data-testid="time_view">
 		<MainContainer class="pt-5 lg:pt-8 pb-4 lg:pb-6">
 			<div
@@ -110,7 +98,7 @@ function deleteSelected() {
 			:all-selected="selectedTimeEntries.length === timeEntries.length"
 			:delete-selected="deleteSelected"
 			:projects="modules"
-			:tasks="tasks"
+			:tasks="chapitres"
 			:tags="taches"
 			:update-time-entries="
 				(args) =>
@@ -129,9 +117,9 @@ function deleteSelected() {
 			:update-time-entry="updateTimeEntry"
 			:update-time-entries="updateTimeEntries"
 			:delete-time-entries="deleteTimeEntries"
-			:create-time-entry="startTimeEntry"
+			:create-time-entry="createTimer"
 			:projects="modules"
-			:tasks="tasks"
+			:tasks="chapitres"
 			:time-entries="timeEntries"
 			:tags="taches"
 		></TimeEntryGroupedTable>

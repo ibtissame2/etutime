@@ -22,7 +22,7 @@ function openDatabase()
 	return new mysqli("localhost", "root", "", "etutime_test_1");
 }
 
-function exequteSQL($db, $sql, $params = [])
+function exequteSQL($db, $sql, $params = [], $encode = true)
 {
 	$response = true;
 	$statment = $db->prepare($sql);
@@ -56,7 +56,7 @@ function exequteSQL($db, $sql, $params = [])
 				while ($row = $result->fetch_assoc()) {
 					$entries[] = $row;
 				}
-				$response = json_encode($entries);
+				$response = $encode ? json_encode($entries) : $entries;
 			}
 		}
 	}

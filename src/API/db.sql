@@ -61,11 +61,15 @@ CREATE TABLE `chapitres` (
 
 CREATE TABLE `timers` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `chapitre_id` INT NOT NULL,
+  `module_id` INT NULL,
+  `chapitre_id` INT NULL,
+  `team_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
   `start` timestamp NOT NULL,
   `end` timestamp NULL DEFAULT NULL,
   `taches` json DEFAULT NULL,
   PRIMARY KEY (`id`),
+  KEY `timers_module_id_foreign` (`module_id`),
   KEY `timers_chapitre_id_foreign` (`chapitre_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -94,5 +98,12 @@ INSERT INTO `modules` (`name`, `color`, `is_public`, `team_id`, `progress`) VALU
 ('Administration de reseaux', '#ab47bc', '1', '1', 'Début'),
 ('Base de donnee avancee et programmation web', '#ffee58', '1', '1', 'Début'),
 ('Sites web dynamiques', '#7e57c2', '1', '1', 'Début');
+
+INSERT INTO `chapitres` (`name`, `module_id`, `team_id`, `user_id`, `is_done`) VALUES
+('HTML', null, '1', '1', '0'),
+('Vue.js', '1', '1', '1', '0'),
+('SQL', '2', '1', '1', '0'),
+('PHP', '3', '1', '1', '0'),
+('JavaScript', '3', '1', '1', '0');
 
 INSERT INTO `taches` (`name`, `team_id`) VALUES ('TP', '1'), ('Cours', '1'), ('TD', '1');

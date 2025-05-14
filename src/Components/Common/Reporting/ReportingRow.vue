@@ -31,7 +31,7 @@ const expanded = ref(false);
 				{{ entry.grouped_data.length }}
 			</GroupedItemsCountButton>
 			<span>
-				{{ entry.description }}
+				{{ entry.chapitre_name }}
 			</span>
 		</div>
 		<div class="justify-end flex items-center">
@@ -45,7 +45,7 @@ const expanded = ref(false);
 	>
 		<ReportingRow
 			v-for="subEntry in entry.grouped_data"
-			:key="subEntry.description || 'none'"
+			:key="subEntry.chapitre_name || 'none'"
 			indent
 			:entry="subEntry"
 		></ReportingRow>

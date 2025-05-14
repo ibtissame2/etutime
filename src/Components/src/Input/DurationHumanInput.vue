@@ -53,8 +53,7 @@ function updateDuration() {
 
 function updateTimeEntryInputValue() {
 	if (start.value && end.value) {
-		const startTime = dayjs(start.value);
-		const diff = getDayJsInstance()(end.value).diff(startTime, 'seconds');
+		const diff = getDayJsInstance()(end.value).diff(dayjs(start.value), 'seconds');
 		temporaryCustomTimerEntry.value = formatHumanReadableDuration(diff);
 	}
 }

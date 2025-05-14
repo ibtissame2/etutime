@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { useAxios } from '@/store/axios';
 import { getCurrentOrganizationId, getCurrentUserId } from '@/utils/useUser';
 
-export const createCRUDStore = ({ typo, methods }) => {
+export const createCRUDStore = ({ typo, setup, adapter }) => {
 	return defineStore(typo.name, () => {
 		const list = ref([]);
 
@@ -19,7 +19,7 @@ export const createCRUDStore = ({ typo, methods }) => {
 				'Échec de la récupération des ' + typo.elements
 			);
 			if (Array.isArray(response)) {
-				list.value = response;
+				list.value = response.map((element) => (adapter ? adapter(element) : element));
 			}
 			return list.value;
 		}
@@ -67,13 +67,16 @@ export const createCRUDStore = ({ typo, methods }) => {
 			return response;
 		}
 
-		return {
-			[typo.name]: computed(() => list.value || []),
+		const crudProps = {
+			[typo.name]: computed(() => list.value),
 			['fetch' + typo.methods]: fetchData,
 			['create' + typo.method]: createElement,
 			['update' + typo.method]: updateElement,
 			['delete' + typo.method]: deleteElement,
-			...methods,
+		};
+		return {
+			...crudProps,
+			...(setup?.(crudProps) || {}),
 		};
 	});
 };

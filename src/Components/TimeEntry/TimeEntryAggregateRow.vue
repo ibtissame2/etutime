@@ -1,12 +1,12 @@
 <script setup>
+import { ref } from 'vue';
+import { formatHumanReadableDuration, formatStartEnd } from '@/Components/src/utils/time';
 import MainContainer from '@/Components/src/MainContainer.vue';
 import TimeTrackerStartStop from '@/Components/TimeTracker/TimeTrackerStartStop.vue';
 import TimeEntryDescriptionInput from '@/Components/TimeEntry/TimeEntryDescriptionInput.vue';
 import TimeEntryRowTagDropdown from '@/Components/TimeEntry/TimeEntryRowTagDropdown.vue';
 import TimeEntryMoreOptionsDropdown from '@/Components/TimeEntry/TimeEntryMoreOptionsDropdown.vue';
-import TimeTrackerProjectTaskDropdown from '@/Components/TimeTracker/TimeTrackerProjectTaskDropdown.vue';
-import { ref } from 'vue';
-import { formatHumanReadableDuration, formatStartEnd } from '@/Components/src/utils/time';
+import TimeTrackerDropdown from '@/Components/TimeTracker/TimeTrackerDropdown.vue';
 import TimeEntryRow from '@/Components/TimeEntry/TimeEntryRow.vue';
 import GroupedItemsCountButton from '@/Components/src/GroupedItemsCountButton.vue';
 import Checkbox from '@/Components/src/Input/Checkbox.vue';
@@ -82,15 +82,13 @@ function onSelectChange(event) {
 							:model-value="timeEntry.description"
 							@changed="updateTimeEntryDescription"
 						></TimeEntryDescriptionInput>
-						<TimeTrackerProjectTaskDropdown
-							:can-create-project
-							:projects="projects"
-							:tasks="tasks"
+						<TimeTrackerDropdown
+							type="module"
+							:elements="projects"
 							:show-badge-border="false"
 							:project="timeEntry.project_id"
-							:task="timeEntry.task_id"
-							@changed="updateProjectAndTask"
-						></TimeTrackerProjectTaskDropdown>
+							@change="updateProjectAndTask"
+						></TimeTrackerDropdown>
 					</div>
 				</div>
 				<div class="flex items-center font-medium lg:space-x-2">

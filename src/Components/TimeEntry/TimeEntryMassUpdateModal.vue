@@ -4,7 +4,7 @@ import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import DialogModal from '@/Components/src/DialogModal.vue';
 import { nextTick, ref, watch } from 'vue';
 import PrimaryButton from '@/Components/src/Buttons/PrimaryButton.vue';
-import TimeTrackerProjectTaskDropdown from '@/Components/TimeTracker/TimeTrackerProjectTaskDropdown.vue';
+import TimeTrackerDropdown from '@/Components/TimeTracker/TimeTrackerDropdown.vue';
 import InputLabel from '@/Components/src/Input/InputLabel.vue';
 import Badge from '@/Components/src/Badge.vue';
 import Checkbox from '@/Components/src/Input/Checkbox.vue';
@@ -108,17 +108,16 @@ watch(removeAllTags, () => {
 				</div>
 				<div class="space-y-2">
 					<InputLabel for="project" value="Project" />
-					<TimeTrackerProjectTaskDropdown
-						v-model:project="projectId"
-						v-model:task="taskId"
-						:can-create-project
+					<TimeTrackerDropdown
+						type="module"
+						:value="projectId"
+						@change="(v) => (projectId = v)"
 						class="mt-1"
 						empty-placeholder="Select project..."
 						allow-reset
 						size="xlarge"
-						:projects="projects"
-						:tasks="tasks"
-					></TimeTrackerProjectTaskDropdown>
+						:elements="projects"
+					></TimeTrackerDropdown>
 				</div>
 				<div class="space-y-2">
 					<InputLabel for="project" value="Tag" />
