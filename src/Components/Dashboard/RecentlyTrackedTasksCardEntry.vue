@@ -4,27 +4,23 @@ import { storeToRefs } from 'pinia';
 import ModuleBadge from '@/Components/Module/ModuleBadge.vue';
 import TimeTrackerStartStop from '@/Components/TimeTracker/TimeTrackerStartStop.vue';
 import { useModulesStore } from '@/store/modules';
-import { useChapitresStore } from '@/store/chapitres';
 import { useMinuteursStore } from '@/store/minuteurs';
-import { getDayJsInstance } from '@/Components/src/utils/time';
-import { ChevronRightIcon } from '@heroicons/vue/16/solid';
 
 const props = defineProps({
 	timeEntry: Object,
 });
 
 const { modules } = storeToRefs(useModulesStore());
-const { chapitres } = storeToRefs(useChapitresStore());
-const { currentTimer } = storeToRefs(useMinuteursStore());
-const { setActiveState } = useMinuteursStore();
+const { currentMinuteur } = storeToRefs(useMinuteursStore());
+const { toggleStartStopMinuteur } = useMinuteursStore();
 
 const module = computed(() => {
 	return modules.value.find((module) => module.id === props.timeEntry.module_id);
 });
 
 async function startTaskTimer() {
-	if (currentTimer.value?.id) await setActiveState(false, currentTimer.value);
-	await setActiveState(true, { ...props.timeEntry, id: undefined });
+	if (currentMinuteur.value?.id) await toggleStartStopMinuteur(false, currentMinuteur.value);
+	await toggleStartStopMinuteur(true, { ...props.timeEntry, id: undefined });
 }
 </script>
 

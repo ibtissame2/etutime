@@ -14,7 +14,6 @@ export function refreshStores() {
 	useChapitresStore().fetchChapitres();
 	useTachesStore().fetchTaches();
 	useMinuteursStore().fetchMinuteurs();
-	useMinuteursStore().fetchCurrentTimeEntry();
 	useTimeEntriesStore().patchTimeEntries();
 	useMembersStore().fetchMembers();
 }

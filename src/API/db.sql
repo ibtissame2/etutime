@@ -59,7 +59,7 @@ CREATE TABLE `chapitres` (
   KEY `chapitres_team_id_foreign` (`team_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `timers` (
+CREATE TABLE `minuteurs` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `module_id` INT NULL,
   `chapitre_id` INT NULL,
@@ -71,8 +71,8 @@ CREATE TABLE `timers` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `timers_module_id_foreign` (`module_id`),
-  KEY `timers_chapitre_id_foreign` (`chapitre_id`)
+  KEY `minuteurs_module_id_foreign` (`module_id`),
+  KEY `minuteurs_chapitre_id_foreign` (`chapitre_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE `notes` (

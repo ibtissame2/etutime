@@ -5,14 +5,13 @@ import dayjs from 'dayjs';
 import { useMinuteursStore } from '@/store/minuteurs';
 import { formatHumanReadableDuration } from '@/Components/src/utils/time';
 import TimeTrackerStartStop from '@/Components/TimeTracker/TimeTrackerStartStop.vue';
-import { getCurrentOrganizationId } from '@/utils/useUser';
 
-const { currentTimer, clock } = storeToRefs(useMinuteursStore());
-const { setActiveState } = useMinuteursStore();
+const { currentMinuteur, clock } = storeToRefs(useMinuteursStore());
+const { toggleStartStopMinuteur } = useMinuteursStore();
 
 const currentTime = computed(() => {
-	if (clock.value && currentTimer.value?.start) {
-		const diff = clock.value.diff(dayjs(currentTimer.value.start), 's');
+	if (clock.value && currentMinuteur.value?.start) {
+		const diff = clock.value.diff(dayjs(currentMinuteur.value.start), 's');
 		return formatHumanReadableDuration(diff);
 	}
 	return formatHumanReadableDuration(0);
@@ -28,9 +27,9 @@ const currentTime = computed(() => {
 			</div>
 		</div>
 		<TimeTrackerStartStop
-			:active="!!(currentTimer?.start && !currentTimer?.end)"
+			:active="!!currentMinuteur?.start"
 			size="base"
-			@changed="(s) => setActiveState(s, currentTimer)"
+			@changed="(s) => toggleStartStopMinuteur(s, currentMinuteur)"
 		></TimeTrackerStartStop>
 	</div>
 </template>

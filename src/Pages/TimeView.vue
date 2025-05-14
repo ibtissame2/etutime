@@ -19,12 +19,12 @@ import TimeEntryCreateModal from '@/Components/Forms/TimeEntryCreateModal.vue';
 import TimeEntryMassActionRow from '@/Components/TimeEntry/TimeEntryMassActionRow.vue';
 
 const { fetchMoreTimeEntries, updateTimeEntry, fetchTimeEntries, createTimeEntry } = useTimeEntriesStore();
-const { setActiveState, fetchCurrentTimeEntry } = useMinuteursStore();
+const { toggleStartStopMinuteur } = useMinuteursStore();
 const { timeEntries, allTimeEntriesLoaded } = storeToRefs(useTimeEntriesStore());
 const { modules } = storeToRefs(useModulesStore());
 const { chapitres } = storeToRefs(useChapitresStore());
 const { taches } = storeToRefs(useTachesStore());
-const { currentTimer } = storeToRefs(useMinuteursStore());
+const { currentMinuteur } = storeToRefs(useMinuteursStore());
 
 const loading = ref(false);
 const loadMoreContainer = ref(null);
@@ -38,11 +38,10 @@ async function updateTimeEntries(ids, changes) {
 }
 
 async function createTimer(timer) {
-	if (currentTimer.value?.id) await setActiveState(false, currentTimer.value);
+	if (currentMinuteur.value?.id) await toggleStartStopMinuteur(false, currentMinuteur.value);
 	// // Ibtissame: set the new entry as the current one
 	// await createMinuteur(timeEntry);
 	// fetchTimeEntries();
-	// fetchCurrentTimeEntry();
 }
 
 function deleteTimeEntries(timeEntries) {

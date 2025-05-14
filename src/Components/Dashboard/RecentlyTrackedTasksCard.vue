@@ -7,13 +7,12 @@ import { CheckCircleIcon } from '@heroicons/vue/20/solid';
 import { useMinuteursStore } from '@/store/minuteurs';
 import LoadingSpinner from '@/Components/src/LoadingSpinner.vue';
 
-const { timers, isLoading } = storeToRefs(useMinuteursStore());
+const { minuteurs, isLoading } = storeToRefs(useMinuteursStore());
 
-const latestTimers = computed(() => {
+const latestMinuteurs = computed(() => {
 	const noDuplicates = [];
-	const list = [...timers.value];
+	const list = [...minuteurs.value];
 	for (let index = 0; index < list.length; index++) {
-		if (!list[index].chapitre_id && !list[index].module_id) continue;
 		if (noDuplicates.some((it) => it.chapitre_id === list[index].chapitre_id)) continue;
 		noDuplicates.push(list[index]);
 		if (noDuplicates.length > 3) break;
@@ -23,16 +22,16 @@ const latestTimers = computed(() => {
 </script>
 
 <template>
-	<DashboardCard title="Recent Time Entries" :icon="CheckCircleIcon">
+	<DashboardCard title="Minuteurs récentes" :icon="CheckCircleIcon">
 		<div v-if="isLoading" class="flex justify-center items-center h-40">
 			<LoadingSpinner />
 		</div>
-		<div v-else-if="latestTimers && latestTimers.length > 0">
+		<div v-else-if="latestMinuteurs && latestMinuteurs.length > 0">
 			<RecentlyTrackedTasksCardEntry
-				v-for="timer in latestTimers"
+				v-for="timer in latestMinuteurs"
 				:key="timer.id"
 				:time-entry="timer"
-				:class="latestTimers.length === 4 ? 'last:border-0' : ''"
+				:class="latestMinuteurs.length === 4 ? 'last:border-0' : ''"
 			></RecentlyTrackedTasksCardEntry>
 		</div>
 		<div v-else class="text-center flex flex-1 justify-center items-center">

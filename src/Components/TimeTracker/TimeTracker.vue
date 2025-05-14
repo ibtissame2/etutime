@@ -2,7 +2,7 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import duration from 'dayjs/plugin/duration';
-import { onMounted, watch, computed, ref, onBeforeMount } from 'vue';
+import { watch, computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { usePage } from '@/utils/inertia';
 import { useModulesStore } from '@/store/modules';
@@ -23,14 +23,14 @@ const emit = defineEmits(['change']);
 const { modules } = storeToRefs(useModulesStore());
 const { chapitres } = storeToRefs(useChapitresStore());
 const { taches } = storeToRefs(useTachesStore());
-const { timers, currentTimer } = storeToRefs(useMinuteursStore());
-const { startClock, stopClock, setActiveState, fetchCurrentTimeEntry } = useMinuteursStore();
+const { minuteurs, currentMinuteur } = storeToRefs(useMinuteursStore());
+const { toggleStartStopMinuteur } = useMinuteursStore();
 
 const page = usePage();
 dayjs.extend(duration);
 dayjs.extend(utc);
 
-const tempChapitreName = ref(currentTimer.value?.chapitre_name || '');
+const tempChapitreName = ref(currentMinuteur.value?.chapitre_name || '');
 const showDropdown = ref(false);
 const floating = ref(null);
 const currentChapitreNameInput = ref(null);
@@ -38,7 +38,7 @@ const currentChapitreNameInput = ref(null);
 const noDuplicatedChapitres = computed(() => {
 	const search = tempChapitreName.value?.toLowerCase()?.trim() || '';
 	const noDuplicates = [];
-	const areEnded = timers.value.filter((item) => item.end);
+	const areEnded = minuteurs.value.filter((item) => item.end);
 	for (let index = 0; index < areEnded.length; index++) {
 		if (!areEnded[index].chapitre_id) continue;
 		if (search && !areEnded[index].chapitre_name?.toLowerCase().includes(search)) continue;
@@ -73,32 +73,20 @@ const extractData = (timer) => {
 	};
 };
 
-const clearData = () => {
-	currentTimer.value = extractData(null);
-};
-
 function setDataOf(element) {
-	currentTimer.value = extractData(element || null);
+	currentMinuteur.value = extractData(element || null);
 }
 
 function updateChapitreName() {
 	showDropdown.value = false;
-	if (currentTimer.value.chapitre_name === tempChapitreName.value) return;
-	currentTimer.value.chapitre_name = tempChapitreName.value;
+	if (currentMinuteur.value.chapitre_name === tempChapitreName.value) return;
+	currentMinuteur.value.chapitre_name = tempChapitreName.value;
 }
 
 watch(
-	() => currentTimer.value?.chapitre_name,
-	() => (tempChapitreName.value = currentTimer.value.chapitre_name)
+	() => currentMinuteur.value?.chapitre_name,
+	() => (tempChapitreName.value = currentMinuteur.value?.chapitre_name || '')
 );
-
-onBeforeMount(() => clearData());
-
-onMounted(async () => {
-	if (page.props.auth.user.current_team.id) {
-		await fetchCurrentTimeEntry();
-	}
-});
 </script>
 
 <template>
@@ -146,18 +134,18 @@ onMounted(async () => {
 						<TimeTrackerDropdown
 							type="module"
 							allow-reset
-							:value="currentTimer.module_id"
+							:value="currentMinuteur.module_id"
 							:elements="modules"
-							@change="(v) => (currentTimer.module_id = v)"
+							@change="(v) => (currentMinuteur.module_id = v)"
 						></TimeTrackerDropdown>
 					</div>
 					<div class="flex items-center @2xl:space-x-2 px-2 @2xl:px-4">
-						<TimeTrackerTagDropdown v-model="currentTimer.taches" :tags="taches"></TimeTrackerTagDropdown>
+						<TimeTrackerTagDropdown v-model="currentMinuteur.taches" :tags="taches"></TimeTrackerTagDropdown>
 					</div>
 					<div class="border-l border-card-border">
 						<TimeTrackerRangeSelector
-							v-model="currentTimer"
-							@create-timer="() => setActiveState(true, currentTimer)"
+							v-model="currentMinuteur"
+							@create-timer="() => toggleStartStopMinuteur(true, currentMinuteur)"
 						></TimeTrackerRangeSelector>
 					</div>
 				</div>
@@ -165,9 +153,9 @@ onMounted(async () => {
 
 			<div class="pl-4 @2xl:pl-6 pr-3 absolute sm:relative top-[6px] sm:top-0 right-0">
 				<TimeTrackerStartStop
-					:active="!!(currentTimer?.start && !currentTimer?.end)"
+					:active="!!currentMinuteur?.start"
 					size="large"
-					@changed="(s) => setActiveState(s, currentTimer)"
+					@changed="(s) => toggleStartStopMinuteur(s, currentMinuteur)"
 				></TimeTrackerStartStop>
 			</div>
 		</div>

@@ -26,7 +26,7 @@ const props = defineProps({
 
 const { chapitres } = storeToRefs(useChapitresStore());
 const { taches } = storeToRefs(useTachesStore());
-const { setActiveState } = useMinuteursStore();
+const { toggleStartStopMinuteur } = useMinuteursStore();
 
 const timeEntryDefaultValues = {
 	chapitre_id: null,
@@ -54,7 +54,7 @@ watch(localEnd, (value) => {
 });
 
 async function submit() {
-	await setActiveState(true, timeEntry.value, true);
+	await toggleStartStopMinuteur(true, timeEntry.value, true);
 	show.value = false;
 }
 </script>

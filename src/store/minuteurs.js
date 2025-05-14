@@ -5,21 +5,31 @@ import { createCRUDStore } from '@/store/store-template';
 import { useChapitresStore } from '@/store/chapitres';
 import { useTimeEntriesStore } from '@/utils/useTimeEntries';
 
+const emptyMinuteur = {
+	id: null,
+	module_id: null,
+	chapitre_id: null,
+	chapitre_name: '',
+	taches: [],
+	start: '',
+	end: null,
+};
+
 export const useMinuteursStore = createCRUDStore({
 	typo: {
-		name: 'timers',
+		name: 'minuteurs',
 		methods: 'Minuteurs',
 		method: 'Minuteur',
 		elements: 'minuteurs',
 		Element: 'Minuteur',
 		element: 'minuteur',
 	},
-	adapter: (timer) => {
-		if (typeof timer.taches === 'string') timer.taches = JSON.parse(timer.taches);
-		return timer;
+	adapter: (minuteur) => {
+		if (typeof minuteur.taches === 'string') minuteur.taches = JSON.parse(minuteur.taches);
+		return minuteur;
 	},
 	setup({ createMinuteur, updateMinuteur }) {
-		const currentTimer = ref(null);
+		const currentMinuteur = ref({ ...emptyMinuteur });
 		const clock = ref(null);
 		const nowInterval = ref(null);
 
@@ -33,77 +43,27 @@ export const useMinuteursStore = createCRUDStore({
 			if (nowInterval.value !== null) clearInterval(nowInterval.value);
 		}
 
-		async function setActiveState(create, object, acceptStart) {
+		async function toggleStartStopMinuteur(create, object, acceptStart) {
 			if (create) {
 				startClock();
 				object.start = acceptStart ? object.start || dayjs().utc().format() : dayjs().utc().format();
 				object.end = null;
-				await createMinuteur(object, (id) => (currentTimer.value = { ...object, id }));
+				await createMinuteur(object, (id) => (currentMinuteur.value = { ...object, id }));
 			} else {
 				stopClock();
-				console.log('Ibtissame: update', object.id, { end: dayjs().utc().format() });
-				// await updateMinuteur(object.id, { end: dayjs().utc().format() }, () => (currentTimer.value = null));
+				const onSuccess = () => Object.assign(currentMinuteur.value, { start: '', id: null });
+				await updateMinuteur(object.id, { end: dayjs().utc().format() }, onSuccess);
 			}
 			useTimeEntriesStore().fetchTimeEntries();
 			useChapitresStore().fetchChapitres();
 		}
 
-		async function fetchCurrentTimeEntry() {
-			// const organizationId = getCurrentOrganizationId();
-			// 	try {
-			// 		// Ibtissame
-			// 		const timeEntriesResponse = await api.getMyActiveTimeEntry({});
-			// 		if (timeEntriesResponse?.data) {
-			// 			if (timeEntriesResponse.data) {
-			// 				currentTimer.value = timeEntriesResponse.data;
-			// 				if (currentTimer.value.start !== '' && currentTimer.value.end === null) {
-			// 					startClock();
-			// 				}
-			// 			} else {
-			// 				currentTimer.value = null;
-			// 			}
-			// 		}
-			// 	} catch {
-			// 		currentTimer.value = null;
-			// 	}
-		}
-
-		async function updateTimer() {
-			// const user = getCurrentUserId();
-			// const organization = getCurrentOrganizationId();
-			// 	const response = await handleApiRequestNotifications(
-			// 		() =>
-			// 			api.updateTimeEntry(
-			// 				{
-			// 					description: currentTimer.value.description,
-			// 					user_id: user,
-			// 					module_id: currentTimer.value.module_id,
-			// 					chapitre_id: currentTimer.value.chapitre_id,
-			// 					start: currentTimer.value.start,
-			// 					end: null,
-			// 					taches: currentTimer.value.taches,
-			// 				},
-			// 				{
-			// 					params: {
-			// 						organization: organization,
-			// 						timeEntry: currentTimer.value.id,
-			// 					},
-			// 				}
-			// 			),
-			// 		'Time entry updated!'
-			// 	);
-			// 	if (response?.data) {
-			// 		currentTimer.value = response.data;
-			// 	}
-		}
-
 		return {
-			currentTimer,
+			currentMinuteur,
 			clock,
-			fetchCurrentTimeEntry,
 			startClock,
 			stopClock,
-			setActiveState,
+			toggleStartStopMinuteur,
 		};
 	},
 });
