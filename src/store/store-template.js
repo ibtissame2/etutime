@@ -6,8 +6,10 @@ import { getCurrentOrganizationId, getCurrentUserId } from '@/utils/useUser';
 export const createCRUDStore = ({ typo, setup, adapter }) => {
 	return defineStore(typo.name, () => {
 		const list = ref([]);
+		const isLoading = ref(false);
 
 		async function fetchData() {
+			isLoading.value = true;
 			const team = getCurrentOrganizationId();
 			const user = getCurrentUserId();
 			if (!team || !user) return;
@@ -21,6 +23,7 @@ export const createCRUDStore = ({ typo, setup, adapter }) => {
 			if (Array.isArray(response)) {
 				list.value = response.map((element) => (adapter ? adapter(element) : element));
 			}
+			isLoading.value = false;
 			return list.value;
 		}
 
@@ -68,6 +71,7 @@ export const createCRUDStore = ({ typo, setup, adapter }) => {
 		}
 
 		const crudProps = {
+			isLoading,
 			[typo.name]: computed(() => list.value),
 			['fetch' + typo.methods]: fetchData,
 			['create' + typo.method]: createElement,

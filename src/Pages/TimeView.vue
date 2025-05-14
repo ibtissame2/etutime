@@ -10,7 +10,7 @@ import { ClockIcon } from '@heroicons/vue/20/solid';
 import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import { PlusIcon } from '@heroicons/vue/16/solid';
 import LoadingSpinner from '@/Components/src/LoadingSpinner.vue';
-import { useCurrentTimerStore } from '@/store/current-timer';
+import { useTimersStore } from '@/store/timers';
 import { useModulesStore } from '@/store/modules';
 import { useChapitresStore } from '@/store/chapitres';
 import { useTachesStore } from '@/store/taches';
@@ -19,12 +19,12 @@ import TimeEntryCreateModal from '@/Components/Forms/TimeEntryCreateModal.vue';
 import TimeEntryMassActionRow from '@/Components/TimeEntry/TimeEntryMassActionRow.vue';
 
 const { fetchMoreTimeEntries, updateTimeEntry, fetchTimeEntries, createTimeEntry } = useTimeEntriesStore();
-const { setActiveState, fetchCurrentTimeEntry } = useCurrentTimerStore();
+const { setActiveState, fetchCurrentTimeEntry } = useTimersStore();
 const { timeEntries, allTimeEntriesLoaded } = storeToRefs(useTimeEntriesStore());
 const { modules } = storeToRefs(useModulesStore());
 const { chapitres } = storeToRefs(useChapitresStore());
 const { taches } = storeToRefs(useTachesStore());
-const { currentTimer } = storeToRefs(useCurrentTimerStore());
+const { currentTimer } = storeToRefs(useTimersStore());
 
 const loading = ref(false);
 const loadMoreContainer = ref(null);

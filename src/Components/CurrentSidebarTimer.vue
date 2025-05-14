@@ -1,14 +1,14 @@
 <script setup>
-import { useCurrentTimerStore } from '@/store/current-timer';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import dayjs from 'dayjs';
+import { useTimersStore } from '@/store/timers';
 import { formatHumanReadableDuration } from '@/Components/src/utils/time';
 import TimeTrackerStartStop from '@/Components/TimeTracker/TimeTrackerStartStop.vue';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 
-const { currentTimer, clock } = storeToRefs(useCurrentTimerStore());
-const { setActiveState } = useCurrentTimerStore();
+const { currentTimer, clock } = storeToRefs(useTimersStore());
+const { setActiveState } = useTimersStore();
 
 const currentTime = computed(() => {
 	if (clock.value && currentTimer.value?.start) {
