@@ -1,149 +1,93 @@
 <script setup>
+import dayjs from 'dayjs';
 import { computed } from 'vue';
-import { getDayJsInstance, getLocalizedDateFromTimestamp } from '@/Components/src/utils/time';
-import TimeEntryAggregateRow from '@/Components/TimeEntry/TimeEntryAggregateRow.vue';
+import { storeToRefs } from 'pinia';
+import { useModulesStore } from '@/store/modules';
+import { useChapitresStore } from '@/store/chapitres';
+import { useTachesStore } from '@/store/taches';
+import { useMinuteursStore } from '@/store/minuteurs';
 import TimeEntryRowHeading from '@/Components/TimeEntry/TimeEntryRowHeading.vue';
 import TimeEntryRow from '@/Components/TimeEntry/TimeEntryRow.vue';
 
-const selectedTimeEntries = defineModel('selected', { default: [] });
+const selectedMinuteurs = defineModel({ default: [] });
 
-const props = defineProps({
-	timeEntries: Array,
-	projects: Array,
-	tasks: Array,
-	tags: Array,
-	updateTimeEntry: Function,
-	updateTimeEntries: Function,
-	deleteTimeEntries: Function,
-	createTimeEntry: Function,
-	canCreateProject: Boolean,
-});
+const { modules } = storeToRefs(useModulesStore());
+const { chapitres } = storeToRefs(useChapitresStore());
+const { taches } = storeToRefs(useTachesStore());
+const { minuteurs, currentMinuteur } = storeToRefs(useMinuteursStore());
+const { toggleStartStopMinuteur, createMinuteur, deleteMinuteurs } = useMinuteursStore();
 
-const groupedTimeEntries = computed(() => {
-	const groupedEntriesByDay = {};
-	for (const entry of props.timeEntries) {
-		if (entry.end === null) {
-			continue;
-		}
-		const oldEntries = groupedEntriesByDay[getLocalizedDateFromTimestamp(entry.start)];
-		groupedEntriesByDay[getLocalizedDateFromTimestamp(entry.start)] = [...(oldEntries ?? []), entry];
-	}
-	const groupedEntriesByDayAndType = {};
-	for (const dailyEntriesKey in groupedEntriesByDay) {
-		const dailyEntries = groupedEntriesByDay[dailyEntriesKey];
-		const newDailyEntries = [];
-
-		for (const entry of dailyEntries) {
-			const oldEntriesIndex = newDailyEntries.findIndex(
-				(e) => e.project_id === entry.project_id && e.task_id === entry.task_id && e.description === entry.description
-			);
-			if (oldEntriesIndex !== -1 && newDailyEntries[oldEntriesIndex]) {
-				newDailyEntries[oldEntriesIndex].timeEntries.push(entry);
-
-				newDailyEntries[oldEntriesIndex].duration =
-					(newDailyEntries[oldEntriesIndex].duration ?? 0) + (entry?.duration ?? 0);
-
-				if (getDayJsInstance()(entry.start).isBefore(getDayJsInstance()(newDailyEntries[oldEntriesIndex].start))) {
-					newDailyEntries[oldEntriesIndex].start = entry.start;
-				}
-				if (getDayJsInstance()(entry.end).isAfter(getDayJsInstance()(newDailyEntries[oldEntriesIndex].end))) {
-					newDailyEntries[oldEntriesIndex].end = entry.end;
-				}
-			} else {
-				newDailyEntries.push({ ...entry, timeEntries: [entry] });
-			}
-		}
-
-		groupedEntriesByDayAndType[dailyEntriesKey] = newDailyEntries;
-	}
-	return groupedEntriesByDayAndType;
-});
-
-function startTimeEntryFromExisting(entry) {
-	props.createTimeEntry({
-		project_id: entry.project_id,
-		task_id: entry.task_id,
-		start: getDayJsInstance().utc().format(),
-		end: null,
-		description: entry.description,
-		tags: [...entry.tags],
-	});
-}
-function sumDuration(timeEntries) {
-	return timeEntries.reduce((acc, entry) => acc + (entry?.duration ?? 0), 0);
-}
-function selectAllTimeEntries(value) {
-	for (const timeEntry of value) {
-		if ('timeEntries' in timeEntry) {
-			for (const subTimeEntry of timeEntry.timeEntries) {
-				selectedTimeEntries.value.push(subTimeEntry);
-			}
-		} else {
-			selectedTimeEntries.value.push(timeEntry);
-		}
-	}
-}
-
-function unselectAllTimeEntries(value) {
-	selectedTimeEntries.value = selectedTimeEntries.value.filter((timeEntry) => {
-		return !value.find(
-			(filterTimeEntry) =>
-				filterTimeEntry.id === timeEntry.id ||
-				filterTimeEntry.timeEntries?.find((subTimeEntry) => subTimeEntry.id === timeEntry.id)
+const minuteursDayGroups = computed(() => {
+	const groups = [];
+	for (const minuteur of minuteurs.value) {
+		const formatedDate = dayjs(minuteur.start).format('YYYY-MM-DD');
+		let dayIndex = groups.findIndex((g) => g.date === formatedDate);
+		if (dayIndex === -1) dayIndex = groups.push({ date: formatedDate, duration: 0, minuteurs: [] }) - 1;
+		let index = groups[dayIndex].minuteurs.findIndex(
+			(m) => m.module_id === minuteur.module_id && m.chapitre_id === minuteur.chapitre_id
 		);
-	});
+		if (index === -1) index = groups[dayIndex].minuteurs.push({ ...minuteur, duration: 0, sublist: [] }) - 1;
+		groups[dayIndex].minuteurs[index].sublist.push(minuteur);
+		if (dayjs(minuteur.start).isBefore(dayjs(groups[dayIndex].minuteurs[index].start)))
+			groups[dayIndex].minuteurs[index].start = minuteur.start;
+		if (dayjs(minuteur.end).isAfter(dayjs(groups[dayIndex].minuteurs[index].end)))
+			groups[dayIndex].minuteurs[index].end = minuteur.end;
+		groups[dayIndex].minuteurs[index].duration += minuteur.duration;
+		groups[dayIndex].duration += minuteur.duration;
+	}
+	return groups;
+});
+
+async function startTimeEntryFromExisting(entry) {
+	// if (currentMinuteur.value.id) await toggleStartStopMinuteur(false, currentMinuteur.value);
+	// createMinuteur({
+	// project_id: entry.project_id,
+	// task_id: entry.task_id,
+	// start: dayjs.format(),
+	// end: null,
+	// description: entry.description,
+	// taches: [...entry.taches],
+	// });
+	// // Ibtissame: set the new entry as the current one
+	// await createMinuteur(timeEntry);
 }
 </script>
 
 <template>
-	<div v-for="(value, key) in groupedTimeEntries" :key="key">
+	<div v-for="(dayGroupe, key) in minuteursDayGroups" :key="key">
 		<TimeEntryRowHeading
-			:date="key"
-			:duration="sumDuration(value)"
-			:checked="value.every((timeEntry) => selectedTimeEntries.includes(timeEntry))"
-			@select-all="selectAllTimeEntries(value)"
-			@unselect-all="unselectAllTimeEntries(value)"
+			:date="dayGroupe.date"
+			:duration="dayGroupe.duration"
+			:selected="dayGroupe.minuteurs.every((a) => a.sublist.every((m) => selectedMinuteurs.includes(m)))"
+			@select="dayGroupe.minuteurs.forEach((a) => selectedMinuteurs.push(...a.sublist))"
+			@unselect="
+				selectedMinuteurs = selectedMinuteurs.filter((m) => !dayGroupe.minuteurs.some((a) => a.sublist.includes(m)))
+			"
 		></TimeEntryRowHeading>
-		<template v-for="entry in value" :key="entry.id">
-			<TimeEntryAggregateRow
-				v-if="'timeEntries' in entry && entry.timeEntries.length > 1"
-				:can-create-project
-				:selected-time-entries="selectedTimeEntries"
-				:projects="projects"
-				:tasks="tasks"
-				:tags="tags"
-				:on-start-stop-click="startTimeEntryFromExisting"
-				:update-time-entries
-				:update-time-entry
-				:delete-time-entries
-				:time-entry="entry"
-				@selected="
-					(timeEntries) => {
-						selectedTimeEntries = [...selectedTimeEntries, ...timeEntries];
-					}
-				"
-				@unselected="
-					(timeEntriesToUnselect) => {
-						selectedTimeEntries = selectedTimeEntries.filter(
-							(item) => !timeEntriesToUnselect.find((filterEntry) => filterEntry.id === item.id)
-						);
-					}
-				"
-			></TimeEntryAggregateRow>
+		<template v-for="aggregate in dayGroupe.minuteurs" :key="aggregate.id">
 			<TimeEntryRow
-				v-else
-				:can-create-project
-				:projects="projects"
-				:selected="!!selectedTimeEntries.find((filterEntry) => filterEntry.id === entry.id)"
-				:tasks="tasks"
-				:tags="tags"
-				:update-time-entry
-				:on-start-stop-click="() => startTimeEntryFromExisting(entry)"
-				:delete-time-entry="() => deleteTimeEntries([entry])"
-				:time-entry="entry.timeEntries[0]"
-				@selected="selectedTimeEntries.push(entry)"
-				@unselected="selectedTimeEntries = selectedTimeEntries.filter((item) => item.id !== entry.id)"
-			></TimeEntryRow>
+				:expandable="aggregate.sublist.length > 1"
+				:minuteur="aggregate.sublist[0]"
+				:aggregate="aggregate"
+				:selected="aggregate.sublist.every((m) => selectedMinuteurs.includes(m))"
+				@selecte="selectedMinuteurs.push(...aggregate.sublist)"
+				@unselecte="selectedMinuteurs = selectedMinuteurs.filter((m) => !aggregate.sublist.includes(m))"
+				@start-stop-click="startTimeEntryFromExisting(aggregate.sublist[0])"
+				@delete="deleteMinuteurs(aggregate.sublist)"
+			>
+				<TimeEntryRow
+					v-for="subMinuteur in aggregate.sublist"
+					:key="subMinuteur.id"
+					:minuteur="subMinuteur"
+					:aggregate="aggregate"
+					:indent="true"
+					:selected="selectedMinuteurs.includes(subMinuteur)"
+					@selecte="selectedMinuteurs.push(subMinuteur)"
+					@unselecte="selectedMinuteurs = selectedMinuteurs.filter((m) => m !== subMinuteur)"
+					@start-stop-click="startTimeEntryFromExisting(subMinuteur)"
+					@delete="deleteMinuteur(subMinuteur)"
+				></TimeEntryRow>
+			</TimeEntryRow>
 		</template>
 	</div>
 </template>

@@ -17,13 +17,13 @@ const iconColorClasses = computed(() => {
 });
 
 defineProps({
-	tags: Array,
+	taches: Array,
 	disabled: { type: Boolean, default: false },
 });
 </script>
 
 <template>
-	<TagDropdown v-model="model" :tags="tags" :disabled="disabled" @changed="emit('changed')">
+	<TagDropdown v-model="model" :taches="taches" :disabled="disabled" @changed="emit('changed')">
 		<template #trigger>
 			<button
 				data-testid="tag_dropdown"

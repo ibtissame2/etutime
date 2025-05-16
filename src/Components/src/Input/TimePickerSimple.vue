@@ -1,9 +1,9 @@
 <script setup>
 import { ref, watch } from 'vue';
-import { getLocalizedDayJs } from '@/Components/src/utils/time';
 import { useFocus } from '@vueuse/core';
 import TextInput from '@/Components/src/Input/TextInput.vue';
 import { twMerge } from 'tailwind-merge';
+import dayjs from 'dayjs';
 
 const model = defineModel({ default: null });
 
@@ -20,7 +20,7 @@ const props = defineProps({
 
 const emit = defineEmits(['changed']);
 const timeInput = ref(null);
-const inputValue = ref(model.value ? getLocalizedDayJs(model.value).format('HH:mm') : null);
+const inputValue = ref(model.value ? dayjs(model.value).format('HH:mm') : null);
 
 useFocus(timeInput, { initialValue: props.focus });
 
@@ -30,7 +30,7 @@ function updateTime(event) {
 	if (newValue.split(':').length === 2) {
 		const [hours, minutes] = newValue.split(':');
 		if (!isNaN(parseInt(hours)) && !isNaN(parseInt(minutes))) {
-			model.value = getLocalizedDayJs(model.value)
+			model.value = dayjs(model.value)
 				.set('hours', Math.min(parseInt(hours), 23))
 				.set('minutes', Math.min(parseInt(minutes), 59))
 				.format();
@@ -39,26 +39,26 @@ function updateTime(event) {
 	} else if (/^\d+$/.test(newValue)) {
 		if (newValue.length === 4) {
 			const [hours, minutes] = [newValue.slice(0, 2), newValue.slice(2, 4)];
-			model.value = getLocalizedDayJs(model.value)
+			model.value = dayjs(model.value)
 				.set('hours', Math.min(parseInt(hours), 23))
 				.set('minutes', Math.min(parseInt(minutes), 59))
 				.format();
 			emit('changed', model.value);
 		} else if (newValue.length === 3) {
 			const [hours, minutes] = [newValue.slice(0, 1), newValue.slice(1, 3)];
-			model.value = getLocalizedDayJs(model.value)
+			model.value = dayjs(model.value)
 				.set('hours', Math.min(parseInt(hours), 23))
 				.set('minutes', Math.min(parseInt(minutes), 59))
 				.format();
 			emit('changed', model.value);
 		} else if (newValue.length === 2) {
-			model.value = getLocalizedDayJs(model.value)
+			model.value = dayjs(model.value)
 				.set('hours', Math.min(parseInt(newValue), 23))
 				.set('minutes', 0)
 				.format();
 			emit('changed', model.value);
 		} else if (newValue.length === 1) {
-			model.value = getLocalizedDayJs(model.value)
+			model.value = dayjs(model.value)
 				.set('hours', Math.min(parseInt(newValue), 23))
 				.set('minutes', 0)
 				.format();
@@ -66,11 +66,11 @@ function updateTime(event) {
 		}
 	}
 
-	inputValue.value = getLocalizedDayJs(model.value).format('HH:mm');
+	inputValue.value = dayjs(model.value).format('HH:mm');
 }
 
 watch(model, (value) => {
-	inputValue.value = value ? getLocalizedDayJs(value).format('HH:mm') : null;
+	inputValue.value = value ? dayjs(value).format('HH:mm') : null;
 });
 </script>
 

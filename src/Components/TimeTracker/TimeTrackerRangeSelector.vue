@@ -1,14 +1,14 @@
 <script setup>
-import Dropdown from '@/Components/src/Input/Dropdown.vue';
 import { computed, ref, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import dayjs from 'dayjs';
 import parse from 'parse-duration';
 import { useMinuteursStore } from '@/store/minuteurs';
-import { formatDuration, getDayJsInstance } from '@/Components/src/utils/time';
+import { formatDuration } from '@/Components/src/utils/time';
 import TimeRangeSelector from '@/Components/src/Input/TimeRangeSelector.vue';
+import Dropdown from '@/Components/src/Input/Dropdown.vue';
 
-const timer = defineModel({ required: true });
+const minuteur = defineModel({ required: true });
 
 const emit = defineEmits(['createTimer']);
 
@@ -23,23 +23,13 @@ const inputField = ref(null);
 const open = ref(false);
 const HHMMtimeRegex = /^([0-9]{1,2}):([0-5]?[0-9])$/;
 
-const startTime = computed(() => {
-	if (timer.value.start && timer.value.start !== '') {
-		return timer.value.start;
-	}
-	return dayjs().utc().format();
-});
+const startTime = computed(() => minuteur.value.start || dayjs().format('YYYY-MM-DD HH:mm:ss'));
 
 const currentTime = computed({
 	get() {
-		if (temporaryCustomTimerEntry.value !== '') {
-			return temporaryCustomTimerEntry.value;
-		}
-		if (clock.value && timer.value.start) {
-			const diff = clock.value.diff(dayjs(timer.value.start), 'seconds');
-			return formatDuration(diff);
-		}
-		return null;
+		if (temporaryCustomTimerEntry.value !== '') return temporaryCustomTimerEntry.value;
+		if (!clock.value || !minuteur.value.start) return null;
+		return formatDuration(clock.value.diff(dayjs(minuteur.value.start), 'seconds'));
 	},
 	set(newValue) {
 		temporaryCustomTimerEntry.value = newValue || '';
@@ -53,8 +43,8 @@ function onTimeEntryEnterPress() {
 }
 
 async function updateTimeRange(newStart) {
-	if (getDayJsInstance()(newStart).isBefore(getDayJsInstance()())) {
-		timer.value.start = newStart;
+	if (dayjs(newStart).isBefore(dayjs())) {
+		minuteur.value.start = newStart;
 		emit('createTimer');
 	}
 }
@@ -62,20 +52,17 @@ async function updateTimeRange(newStart) {
 function updateTimerAndStartLiveTimerUpdate() {
 	const time = parse(temporaryCustomTimerEntry.value, 's');
 
+	let newStartDate;
 	if (isNumeric(temporaryCustomTimerEntry.value)) {
-		const newStartDate = dayjs().subtract(parseInt(temporaryCustomTimerEntry.value), 'm');
-		timer.value.start = newStartDate.utc().format();
-		emit('createTimer');
+		newStartDate = dayjs().subtract(parseInt(temporaryCustomTimerEntry.value), 'm');
 	} else if (isHHMM(temporaryCustomTimerEntry.value)) {
-		const results = parseHHMM(temporaryCustomTimerEntry.value);
-		if (results) {
-			const newStartDate = dayjs().subtract(parseInt(results[1]), 'h').subtract(parseInt(results[2]), 'm');
-			timer.value.start = newStartDate.utc().format();
-			emit('createTimer');
-		}
+		const time = parseHHMM(temporaryCustomTimerEntry.value);
+		if (time) newStartDate = dayjs().subtract(parseInt(time[1]), 'h').subtract(parseInt(time[2]), 'm');
 	} else if (time && time > 1) {
-		const newStartDate = dayjs().subtract(time, 's');
-		timer.value.start = newStartDate.utc().format();
+		newStartDate = dayjs().subtract(time, 's');
+	}
+	if (newStartDate) {
+		minuteur.value.start = newStartDate.format('YYYY-MM-DD HH:mm:ss');
 		emit('createTimer');
 	}
 	temporaryCustomTimerEntry.value = '';

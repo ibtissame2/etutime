@@ -1,10 +1,10 @@
 <script setup>
 import { ref, watch } from 'vue';
+import dayjs from 'dayjs';
 import { storeToRefs } from 'pinia';
 import { useChapitresStore } from '@/store/chapitres';
 import { useTachesStore } from '@/store/taches';
 import { useMinuteursStore } from '@/store/minuteurs';
-import { getDayJsInstance, getLocalizedDayJs } from '@/Components/src/utils/time';
 import { TagIcon, InformationCircleIcon } from '@heroicons/vue/20/solid';
 import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import DialogModal from '@/Components/src/DialogModal.vue';
@@ -20,10 +20,6 @@ import TimePickerSimple from '@/Components/src/Input/TimePickerSimple.vue';
 const show = defineModel('show', { default: false });
 const loading = ref(false);
 
-const props = defineProps({
-	createTimeEntry: Function,
-});
-
 const { chapitres } = storeToRefs(useChapitresStore());
 const { taches } = storeToRefs(useTachesStore());
 const { toggleStartStopMinuteur } = useMinuteursStore();
@@ -32,41 +28,39 @@ const timeEntryDefaultValues = {
 	chapitre_id: null,
 	module_id: null,
 	taches: [],
-	start: getDayJsInstance().utc().subtract(1, 'h').format(),
-	end: getDayJsInstance().utc().format(),
+	start: dayjs().subtract(1, 'h').format('YYYY-MM-DD HH:mm:ss'),
+	end: dayjs().format('YYYY-MM-DD HH:mm:ss'),
 };
 
-const timeEntry = ref({ ...timeEntryDefaultValues });
+const minuteur = ref({ ...timeEntryDefaultValues });
 
-const localStart = ref(getLocalizedDayJs(timeEntryDefaultValues.start).format());
+const localStart = ref(timeEntryDefaultValues.start);
 
-const localEnd = ref(getLocalizedDayJs(timeEntryDefaultValues.end).format());
+const localEnd = ref(timeEntryDefaultValues.end);
 
 watch(localStart, (value) => {
-	timeEntry.value.start = getLocalizedDayJs(value).utc().format();
-	if (getLocalizedDayJs(localEnd.value).isBefore(getLocalizedDayJs(value))) {
-		localEnd.value = value;
-	}
+	minuteur.value.start = dayjs(value).format('YYYY-MM-DD HH:mm:ss');
+	if (dayjs(localEnd.value).isBefore(dayjs(value))) localEnd.value = minuteur.value.start;
 });
 
 watch(localEnd, (value) => {
-	timeEntry.value.end = getLocalizedDayJs(value).utc().format();
+	minuteur.value.end = dayjs(value).format('YYYY-MM-DD HH:mm:ss');
 });
 
 function setChapitreOrModule(value, type, chapitreOrModule) {
 	if (type === 'chapitre') {
-		timeEntry.value.chapitre_id = value;
-		timeEntry.value.chapitre_name = chapitreOrModule.name;
-		timeEntry.value.module_id = chapitreOrModule.module_id;
+		minuteur.value.chapitre_id = value;
+		minuteur.value.chapitre_name = chapitreOrModule.name;
+		minuteur.value.module_id = chapitreOrModule.module_id;
 	} else {
-		timeEntry.value.module_id = value;
-		timeEntry.value.chapitre_id = null;
-		timeEntry.value.chapitre_name = '';
+		minuteur.value.module_id = value;
+		minuteur.value.chapitre_id = null;
+		minuteur.value.chapitre_name = '';
 	}
 }
 
 async function submit() {
-	await toggleStartStopMinuteur(true, timeEntry.value, true, true);
+	await toggleStartStopMinuteur(true, minuteur.value, true, true);
 	show.value = false;
 }
 </script>
@@ -96,15 +90,15 @@ async function submit() {
 					</div>
 					<div class="flex items-center space-x-2">
 						<div class="flex-col">
-							<TagDropdown v-model="timeEntry.taches" :tags="taches">
+							<TagDropdown v-model="minuteur.taches" :taches="taches">
 								<template #trigger>
 									<Badge class="bg-input-background" tag="button" size="xlarge">
-										<TagIcon v-if="timeEntry.taches.length === 0" class="w-4"></TagIcon>
+										<TagIcon v-if="minuteur.taches.length === 0" class="w-4"></TagIcon>
 										<div
 											v-else
 											class="bg-accent-300/20 w-5 h-5 font-medium rounded flex items-center transition justify-center"
 										>
-											{{ timeEntry.taches.length }}
+											{{ minuteur.taches.length }}
 										</div>
 										<span>Tâches</span>
 									</Badge>

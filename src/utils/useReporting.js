@@ -81,22 +81,22 @@ export const useReportingStore = defineStore('reporting', () => {
 
 	const groupByOptions = [
 		{
-			label: 'Members',
+			label: 'Etudiant',
 			value: 'user',
 			icon: UserGroupIcon,
 		},
 		{
-			label: 'Projects',
+			label: 'Modules',
 			value: 'project',
 			icon: FolderIcon,
 		},
 		{
-			label: 'Tasks',
+			label: 'Tache',
 			value: 'task',
 			icon: CheckCircleIcon,
 		},
 		{
-			label: 'Description',
+			label: 'Chapitre',
 			value: 'description',
 			icon: DocumentTextIcon,
 		},

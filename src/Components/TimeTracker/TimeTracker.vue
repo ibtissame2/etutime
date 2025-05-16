@@ -1,7 +1,5 @@
 <script setup>
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import duration from 'dayjs/plugin/duration';
 import { computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useModulesStore } from '@/store/modules';
@@ -18,9 +16,6 @@ import TimeTrackerDropdown from '@/Components/TimeTracker/TimeTrackerDropdown.vu
 import TimeTrackerRecentlyTrackedEntry from '@/Components/TimeTracker/TimeTrackerRecentlyTrackedEntry.vue';
 
 const emit = defineEmits(['change']);
-
-dayjs.extend(duration);
-dayjs.extend(utc);
 
 const { modules } = storeToRefs(useModulesStore());
 const { chapitres } = storeToRefs(useChapitresStore());
@@ -134,7 +129,7 @@ function setDataOf(element) {
 					<div class="flex items-center @2xl:space-x-2 px-2 @2xl:px-4">
 						<TimeTrackerTagDropdown
 							v-model="currentMinuteur.taches"
-							:tags="taches"
+							:taches="taches"
 							:disabled="!!currentMinuteur.start"
 						></TimeTrackerTagDropdown>
 					</div>

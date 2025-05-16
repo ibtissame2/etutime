@@ -1,61 +1,40 @@
 <script setup>
+import dayjs from 'dayjs';
 import { nextTick, ref, watch } from 'vue';
 import { useFocusWithin } from '@vueuse/core';
 import DatePicker from '@/Components/src/Input/DatePicker.vue';
-import { getDayJsInstance, getLocalizedDayJs } from '@/Components/src/utils/time';
-import dayjs from 'dayjs';
 import TimePickerSimple from '@/Components/src/Input/TimePickerSimple.vue';
 
 const props = defineProps({
-	start: {
-		type: String,
-		required: true,
-	},
-	end: {
-		type: [String, null],
-		default: null,
-	},
-	endVisible: {
-		type: Boolean,
-		default: true,
-	},
-	focus: {
-		type: Boolean,
-		default: false,
-	},
+	start: String,
+	end: { type: [String, null], default: null },
+	endVisible: Boolean,
+	focus: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(['changed', 'close']);
 
-const tempStart = ref(props.start ? getLocalizedDayJs(props.start).format() : dayjs().format());
-const tempEnd = ref(props.end ? getLocalizedDayJs(props.end).format() : null);
+const tempStart = ref(props.start || dayjs().format('YYYY-MM-DD HH:mm:ss'));
+
+const tempEnd = ref(props.end || null);
 
 watch(props, () => {
-	tempStart.value = getLocalizedDayJs(props.start).format();
-	tempEnd.value = props.end ? getLocalizedDayJs(props.end).format() : null;
+	tempStart.value = props.start;
+	tempEnd.value = props.end || null;
 });
 
-function updateTimeEntry() {
-	const tempStartUtc = getDayJsInstance()(tempStart.value).utc().format();
-	const tempEndUtc = tempEnd.value ? getDayJsInstance()(tempEnd.value).utc().format() : null;
+watch(focused, (newValue, oldValue) => {
+	if (oldValue === true && newValue === false) updateRange();
+});
 
-	if (tempStartUtc !== props.start || tempEndUtc !== props.end) {
-		emit(
-			'changed',
-			getDayJsInstance()(tempStart.value).utc().format(),
-			getDayJsInstance()(tempEnd.value).utc().format()
-		);
-	}
+function updateRange() {
+	const start = dayjs(tempStart.value).format('YYYY-MM-DD HH:mm:ss');
+	const end = tempEnd.value ? dayjs(tempEnd.value).format('YYYY-MM-DD HH:mm:ss') : null;
+	if (start !== props.start || end !== props.end) emit('changed', start, end);
 }
 
 const dropdownContent = ref();
 const { focused } = useFocusWithin(dropdownContent);
-
-watch(focused, (newValue, oldValue) => {
-	if (oldValue === true && newValue === false) {
-		updateTimeEntry();
-	}
-});
 </script>
 
 <template>
@@ -74,12 +53,12 @@ watch(focused, (newValue, oldValue) => {
 					tabindex="0"
 					:focus
 					@keydown.exact.tab.shift.stop.prevent="emit('close')"
-					@changed="updateTimeEntry"
+					@changed="updateRange"
 				/>
 				<DatePicker
 					v-model="tempStart"
 					class="text-xs text-text-tertiary max-w-24 px-1.5 py-1.5"
-					@changed="updateTimeEntry"
+					@changed="updateRange"
 					@blur.stop.prevent="emit('close')"
 				/>
 			</div>

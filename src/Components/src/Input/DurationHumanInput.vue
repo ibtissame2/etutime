@@ -1,7 +1,7 @@
 <script setup>
 import parse from 'parse-duration';
 import { onMounted, ref, watch } from 'vue';
-import { formatHumanReadableDuration, getDayJsInstance } from '@/Components/src/utils/time';
+import { formatHumanReadableDuration } from '@/Components/src/utils/time';
 import dayjs from 'dayjs';
 import { twMerge } from 'tailwind-merge';
 import TextInput from '@/Components/src/Input/TextInput.vue';
@@ -34,26 +34,24 @@ function updateDuration() {
 	const time = parse(temporaryCustomTimerEntry.value, 's');
 
 	if (isNumeric(temporaryCustomTimerEntry.value)) {
-		const newStartDate = getDayJsInstance()(end.value).subtract(parseInt(temporaryCustomTimerEntry.value), 'm');
-		start.value = newStartDate.utc().format();
+		const newStartDate = dayjs(end.value).subtract(parseInt(temporaryCustomTimerEntry.value), 'm');
+		start.value = newStartDate.format();
 	} else if (isHHMM(temporaryCustomTimerEntry.value)) {
 		const results = parseHHMM(temporaryCustomTimerEntry.value);
 		if (results) {
-			const newStartDate = getDayJsInstance()(end.value)
-				.subtract(parseInt(results[1]), 'h')
-				.subtract(parseInt(results[2]), 'm');
-			start.value = newStartDate.utc().format();
+			const newStartDate = dayjs(end.value).subtract(parseInt(results[1]), 'h').subtract(parseInt(results[2]), 'm');
+			start.value = newStartDate.format();
 		}
 	} else if (time && time > 1) {
-		const newStartDate = getDayJsInstance()(end.value).subtract(time, 's');
-		start.value = newStartDate.utc().format();
+		const newStartDate = dayjs(end.value).subtract(time, 's');
+		start.value = newStartDate.format();
 	}
 	updateTimeEntryInputValue();
 }
 
 function updateTimeEntryInputValue() {
 	if (start.value && end.value) {
-		const diff = getDayJsInstance()(end.value).diff(dayjs(start.value), 'seconds');
+		const diff = dayjs(end.value).diff(dayjs(start.value), 'seconds');
 		temporaryCustomTimerEntry.value = formatHumanReadableDuration(diff);
 	}
 }

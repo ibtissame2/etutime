@@ -1,4 +1,6 @@
 <script setup>
+import dayjs from 'dayjs';
+import { storeToRefs } from 'pinia';
 import MainContainer from '@/Components/src/MainContainer.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { FolderIcon, ChartBarIcon, UserGroupIcon, CheckCircleIcon, TagIcon } from '@heroicons/vue/20/solid';
@@ -6,9 +8,8 @@ import PageTitle from '@/Components/Common/PageTitle.vue';
 import DateRangePicker from '@/Components/src/Input/DateRangePicker.vue';
 import ReportingChart from '@/Components/Common/Reporting/ReportingChart.vue';
 import { computed, onMounted, ref } from 'vue';
-import { formatHumanReadableDuration, getDayJsInstance, getLocalizedDayJs } from '@/Components/src/utils/time';
+import { formatHumanReadableDuration } from '@/Components/src/utils/time';
 import { useReportingStore } from '@/utils/useReporting';
-import { storeToRefs } from 'pinia';
 import TagDropdown from '@/Components/Common/Tag/TagDropdown.vue';
 import ReportingFilterBadge from '@/Components/Common/Reporting/ReportingFilterBadge.vue';
 import ModuleMultiselectDropdown from '@/Components/Module/ModuleMultiselectDropdown.vue';
@@ -25,11 +26,8 @@ import { getRandomColorWithSeed } from '@/Components/src/utils/color';
 
 const { handleApiRequestNotifications } = useNotificationsStore();
 
-const startDate = useSessionStorage(
-	'reporting-start-date',
-	getLocalizedDayJs(getDayJsInstance()().format()).subtract(14, 'd').format()
-);
-const endDate = useSessionStorage('reporting-end-date', getLocalizedDayJs(getDayJsInstance()().format()).format());
+const startDate = useSessionStorage('reporting-start-date', dayjs().subtract(14, 'd').format('YYYY-MM-DD HH:mm:ss'));
+const endDate = useSessionStorage('reporting-end-date', dayjs().format('YYYY-MM-DD HH:mm:ss'));
 
 const selectedTags = ref([]);
 const selectedProjects = ref([]);
@@ -44,20 +42,14 @@ const { aggregatedGraphTimeEntries, aggregatedTableTimeEntries } = storeToRefs(r
 const { groupByOptions } = reportingStore;
 
 function getFilterAttributes() {
-	let params = {
-		start: getLocalizedDayJs(startDate.value).startOf('day').utc().format(),
-		end: getLocalizedDayJs(endDate.value).endOf('day').utc().format(),
-	};
-
-	params = {
-		...params,
+	return {
+		start: dayjs(startDate.value).startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+		end: dayjs(endDate.value).endOf('day').format('YYYY-MM-DD HH:mm:ss'),
 		member_ids: selectedMembers.value.length > 0 ? selectedMembers.value : undefined,
 		project_ids: selectedProjects.value.length > 0 ? selectedProjects.value : undefined,
 		task_ids: selectedTasks.value.length > 0 ? selectedTasks.value : undefined,
 		tag_ids: selectedTags.value.length > 0 ? selectedTags.value : undefined,
 	};
-
-	return params;
 }
 
 function updateGraphReporting() {
@@ -92,7 +84,7 @@ function updateReporting() {
 }
 
 function getOptimalGroupingOption(startDate, endDate) {
-	const diffInDays = getDayJsInstance()(endDate).diff(getDayJsInstance()(startDate), 'd');
+	const diffInDays = dayjs(endDate).diff(dayjs(startDate), 'd');
 
 	if (diffInDays <= 31) {
 		return 'day';
@@ -208,16 +200,7 @@ const tableData = computed(() => {
 			<MainContainer class="sm:flex space-y-4 sm:space-y-0 justify-between">
 				<div class="flex flex-wrap items-center space-y-2 sm:space-y-0 space-x-4">
 					<div class="text-sm font-medium">Filtres</div>
-					<MemberMultiselectDropdown v-model="selectedMembers" @submit="updateReporting">
-						<template #trigger>
-							<ReportingFilterBadge
-								:count="selectedMembers.length"
-								:active="selectedMembers.length > 0"
-								title="Etudiant"
-								:icon="UserGroupIcon"
-							></ReportingFilterBadge>
-						</template>
-					</MemberMultiselectDropdown>
+
 					<ModuleMultiselectDropdown v-model="selectedProjects" @submit="updateReporting">
 						<template #trigger>
 							<ReportingFilterBadge
@@ -239,7 +222,7 @@ const tableData = computed(() => {
 						</template>
 					</ChapitreMultiselectDropdown>
 
-					<TagDropdown v-model="selectedTags" :tags="taches" @submit="updateReporting">
+					<TagDropdown v-model="selectedTags" :taches="taches" @submit="updateReporting">
 						<template #trigger>
 							<ReportingFilterBadge
 								:count="selectedTags.length"
@@ -251,7 +234,7 @@ const tableData = computed(() => {
 					</TagDropdown>
 				</div>
 				<div>
-					<DateRangePicker v-model:start="startDate" v-model:end="endDate" @submit="updateReporting"></DateRangePicker>
+					<DateRangePicker v-model:start="startDate" v-model:end="endDate" @submit="updateReporting" />
 				</div>
 			</MainContainer>
 		</div>
@@ -269,13 +252,13 @@ const tableData = computed(() => {
 					<div
 						class="text-sm flex text-text-primary items-center space-x-3 font-medium px-6 border-b border-card-background-separator pb-3"
 					>
-						<span>Group by</span>
+						<span>Grouper par</span>
 						<ReportingGroupBySelect
 							v-model="group"
 							:group-by-options="groupByOptions"
 							@changed="updateTableReporting"
 						></ReportingGroupBySelect>
-						<span>and</span>
+						<span>et</span>
 						<ReportingGroupBySelect
 							v-model="subGroup"
 							:group-by-options="groupByOptions.filter((el) => el.value !== group)"
@@ -286,9 +269,9 @@ const tableData = computed(() => {
 						<div
 							class="contents [&>*]:border-card-background-separator [&>*]:border-b [&>*]:bg-tertiary [&>*]:pb-1.5 [&>*]:pt-1 text-muted text-sm"
 						>
-							<div class="pl-6">Name</div>
-							<div class="text-right">Duration</div>
-							<div class="text-right pr-6">Cost</div>
+							<div class="pl-6">Nom</div>
+							<div class="text-right">Durée</div>
+							<div class="text-right pr-6">Coût</div>
 						</div>
 						<template
 							v-if="aggregatedTableTimeEntries?.grouped_data && aggregatedTableTimeEntries.grouped_data?.length > 0"

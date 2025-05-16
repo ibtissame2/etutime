@@ -17,7 +17,7 @@ const props = defineProps({
 	timeEntries: Array,
 	projects: Array,
 	tasks: Array,
-	tags: Array,
+	taches: Array,
 	updateTimeEntries: Function,
 	canCreateProject: Boolean,
 });
@@ -122,17 +122,17 @@ watch(removeAllTags, () => {
 				<div class="space-y-2">
 					<InputLabel for="project" value="Tag" />
 					<div class="flex space-x-5">
-						<TagDropdown v-model="selectedTags" :tags="tags">
+						<TagDropdown v-model="selectedTags" :taches="taches">
 							<template #trigger>
 								<Badge :disabled="removeAllTags" tag="button" size="xlarge">
-									<span v-if="selectedTags.length > 0"> Set {{ selectedTags.length }} tags </span>
-									<span v-else> Select Tags... </span>
+									<span v-if="selectedTags.length > 0">Set {{ selectedTags.length }} taches</span>
+									<span v-else>Select Tags...</span>
 								</Badge>
 							</template>
 						</TagDropdown>
 						<div class="flex items-center space-x-2">
-							<Checkbox id="no_tags" v-model:checked="removeAllTags"></Checkbox>
-							<InputLabel for="no_tags" value="Remove all tags" />
+							<Checkbox id="no_taches" v-model:checked="removeAllTags"></Checkbox>
+							<InputLabel for="no_taches" value="Supprimer tous les taches" />
 						</div>
 					</div>
 				</div>

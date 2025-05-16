@@ -7,11 +7,8 @@ import MultiselectDropdownItem from '@/Components/src/Input/MultiselectDropdownI
 import { UseFocusTrap } from '@vueuse/integrations/useFocusTrap/component';
 
 const props = defineProps({
-	tags: Array,
-	align: {
-		type: String,
-		default: 'bottom-start',
-	},
+	taches: Array,
+	align: { type: String, default: 'bottom-start' },
 	disabled: { type: Boolean, default: false },
 });
 
@@ -20,7 +17,7 @@ const searchInput = ref(null);
 const open = ref(false);
 const dropdownViewport = ref(null);
 const searchValue = ref('');
-const sortedTags = ref(props.tags);
+const sortedTags = ref(props.taches);
 
 function isTagSelected(id) {
 	return model.value.includes(id);
@@ -42,7 +39,7 @@ watch(open, (isOpen) => {
 			searchInput.value?.focus();
 		});
 
-		sortedTags.value = [...props.tags].sort((a, b) => {
+		sortedTags.value = [...props.taches].sort((a, b) => {
 			const aIsSelected = model.value.includes(a.id);
 			const bIsSelected = model.value.includes(b.id);
 			if (aIsSelected === bIsSelected) {
@@ -82,7 +79,7 @@ function updateSearchValue(event) {
 		searchValue.value = '';
 		const highlightedTagId = highlightedItemId.value;
 		if (highlightedTagId) {
-			const highlightedTag = props.tags.find((tag) => tag.id === highlightedTagId);
+			const highlightedTag = props.taches.find((tag) => tag.id === highlightedTagId);
 			if (highlightedTag) addOrRemoveTagFromSelection(highlightedTag.id);
 		}
 	} else {
@@ -127,7 +124,7 @@ function moveHighlightDown() {
 const showCreateTagModal = ref(false);
 const highlightedItemId = ref(null);
 const highlightedItem = computed(() => {
-	return props.tags.find((tag) => tag.id === highlightedItemId.value);
+	return props.taches.find((tag) => tag.id === highlightedItemId.value);
 });
 </script>
 
@@ -144,6 +141,8 @@ const highlightedItem = computed(() => {
 					:value="searchValue"
 					data-testid="tag_dropdown_search"
 					class="bg-card-background border-0 placeholder-muted text-sm text-text-primary py-2.5 focus:ring-0 border-b border-card-background-separator focus:border-card-background-separator w-full"
+					:class="{ 'w-0 h-0 overflow-hidden opacity-0 p-0 absolute': disabled }"
+					:style="disabled ? 'height: 0px' : ''"
 					placeholder="Rechercher une tâche..."
 					@input="updateSearchValue"
 					@keydown.enter="addTagIfNoneExists"
@@ -167,7 +166,7 @@ const highlightedItem = computed(() => {
 						></MultiselectDropdownItem>
 					</div>
 				</div>
-				<div class="hover:bg-card-background-active rounded-b-lg">
+				<div v-if="!disabled" class="hover:bg-card-background-active rounded-b-lg">
 					<button
 						class="text-text-primary w-full flex space-x-3 items-center px-4 py-3 text-xs font-semibold border-t border-card-background-separator"
 						@click="

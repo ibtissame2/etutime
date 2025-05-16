@@ -1,9 +1,10 @@
 <script setup>
+import dayjs from 'dayjs';
+import { ref } from 'vue';
 import { CalendarIcon } from '@heroicons/vue/20/solid';
 import Dropdown from '@/Components/src/Input/Dropdown.vue';
 import DatePicker from '@/Components/src/Input/DatePicker.vue';
-import { formatDateLocalized, getDayJsInstance, getLocalizedDayJs } from '@/Components/src/utils/time';
-import { ref } from 'vue';
+import { formatDateLocalized } from '@/Components/src/utils/time';
 
 const start = defineModel('start', { default: '' });
 const end = defineModel('end', { default: '' });
@@ -11,76 +12,76 @@ const open = ref(false);
 const emit = defineEmits(['submit']);
 
 function setToday() {
-	start.value = getLocalizedDayJs().startOf('day').format();
-	end.value = getLocalizedDayJs().endOf('day').format();
+	start.value = dayjs().startOf('day').format('YYYY-MM-DD HH:mm:ss');
+	end.value = dayjs().endOf('day').format('YYYY-MM-DD HH:mm:ss');
 	emit('submit');
 	open.value = false;
 }
 
 function setThisWeek() {
-	start.value = getLocalizedDayJs().startOf('week').format();
-	end.value = getLocalizedDayJs().endOf('week').format();
+	start.value = dayjs().startOf('week').format('YYYY-MM-DD HH:mm:ss');
+	end.value = dayjs().endOf('week').format('YYYY-MM-DD HH:mm:ss');
 	emit('submit');
 	open.value = false;
 }
 function setLastWeek() {
-	start.value = getLocalizedDayJs().subtract(1, 'week').startOf('week').format();
-	end.value = getLocalizedDayJs().subtract(1, 'week').endOf('week').format();
+	start.value = dayjs().subtract(1, 'week').startOf('week').format('YYYY-MM-DD HH:mm:ss');
+	end.value = dayjs().subtract(1, 'week').endOf('week').format('YYYY-MM-DD HH:mm:ss');
 	emit('submit');
 	open.value = false;
 }
 function setLast14Days() {
-	start.value = getLocalizedDayJs().subtract(14, 'days').format();
-	end.value = getLocalizedDayJs().format();
+	start.value = dayjs().subtract(14, 'days').format('YYYY-MM-DD HH:mm:ss');
+	end.value = dayjs().format('YYYY-MM-DD HH:mm:ss');
 	emit('submit');
 	open.value = false;
 }
 function setThisMonth() {
-	start.value = getLocalizedDayJs().startOf('month').format();
-	end.value = getLocalizedDayJs().endOf('month').format();
+	start.value = dayjs().startOf('month').format('YYYY-MM-DD HH:mm:ss');
+	end.value = dayjs().endOf('month').format('YYYY-MM-DD HH:mm:ss');
 	emit('submit');
 	open.value = false;
 }
 function setLastMonth() {
-	start.value = getLocalizedDayJs().subtract(1, 'month').startOf('month').format();
-	end.value = getLocalizedDayJs().subtract(1, 'month').endOf('month').format();
+	start.value = dayjs().subtract(1, 'month').startOf('month').format('YYYY-MM-DD HH:mm:ss');
+	end.value = dayjs().subtract(1, 'month').endOf('month').format('YYYY-MM-DD HH:mm:ss');
 	emit('submit');
 	open.value = false;
 }
 function setLast30Days() {
-	start.value = getLocalizedDayJs().subtract(30, 'days').format();
-	end.value = getLocalizedDayJs().format();
+	start.value = dayjs().subtract(30, 'days').format('YYYY-MM-DD HH:mm:ss');
+	end.value = dayjs().format('YYYY-MM-DD HH:mm:ss');
 	emit('submit');
 	open.value = false;
 }
 function setLast90Days() {
-	start.value = getDayJsInstance()().subtract(90, 'days').format();
-	end.value = getDayJsInstance()().format();
+	start.value = dayjs().subtract(90, 'days').format('YYYY-MM-DD HH:mm:ss');
+	end.value = dayjs().format('YYYY-MM-DD HH:mm:ss');
 	emit('submit');
 	open.value = false;
 }
 function setLast12Months() {
-	start.value = getLocalizedDayJs().subtract(12, 'months').format();
-	end.value = getLocalizedDayJs().format();
+	start.value = dayjs().subtract(12, 'months').format('YYYY-MM-DD HH:mm:ss');
+	end.value = dayjs().format('YYYY-MM-DD HH:mm:ss');
 	emit('submit');
 	open.value = false;
 }
 function setThisYear() {
-	start.value = getLocalizedDayJs().startOf('year').format();
-	end.value = getLocalizedDayJs().endOf('year').format();
+	start.value = dayjs().startOf('year').format('YYYY-MM-DD HH:mm:ss');
+	end.value = dayjs().endOf('year').format('YYYY-MM-DD HH:mm:ss');
 	emit('submit');
 	open.value = false;
 }
 function setLastYear() {
-	start.value = getLocalizedDayJs().subtract(1, 'year').startOf('year').format();
-	end.value = getLocalizedDayJs().subtract(1, 'year').endOf('year').format();
+	start.value = dayjs().subtract(1, 'year').startOf('year').format('YYYY-MM-DD HH:mm:ss');
+	end.value = dayjs().subtract(1, 'year').endOf('year').format('YYYY-MM-DD HH:mm:ss');
 	emit('submit');
 	open.value = false;
 }
 </script>
 
 <template>
-	<Dropdown v-model="open" :close-on-content-click="false" align="bottom-end" @submit="emit('submit')">
+	<Dropdown v-model="open" :close-on-content-click="false" :align="'bottom-end'" @submit="emit('submit')">
 		<template #trigger>
 			<button
 				class="px-2 py-1 bg-input-background border border-input-border font-medium rounded-lg flex items-center space-x-2"

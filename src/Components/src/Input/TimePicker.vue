@@ -1,6 +1,6 @@
 <script setup>
+import dayjs from 'dayjs';
 import { computed, ref, watch } from 'vue';
-import { getDayJsInstance, getLocalizedDayJs } from '@/Components/src/utils/time';
 import { useFocus } from '@vueuse/core';
 import SelectDropdown from '@/Components/src/Input/SelectDropdown.vue';
 import TextInput from '@/Components/src/Input/TextInput.vue';
@@ -21,7 +21,7 @@ const props = defineProps({
 
 const emit = defineEmits(['changed']);
 const timeInput = ref(null);
-const inputValue = ref(model.value ? getLocalizedDayJs(model.value).format('HH:mm') : null);
+const inputValue = ref(model.value ? dayjs(model.value).format('HH:mm') : null);
 const open = ref(false);
 
 useFocus(timeInput, { initialValue: props.focus });
@@ -32,7 +32,7 @@ function updateTime(event) {
 	if (newValue.split(':').length === 2) {
 		const [hours, minutes] = newValue.split(':');
 		if (!isNaN(parseInt(hours)) && !isNaN(parseInt(minutes))) {
-			model.value = getLocalizedDayJs(model.value)
+			model.value = dayjs(model.value)
 				.set('hours', Math.min(parseInt(hours), 23))
 				.set('minutes', Math.min(parseInt(minutes), 59))
 				.format();
@@ -41,26 +41,26 @@ function updateTime(event) {
 	} else if (/^\d+$/.test(newValue)) {
 		if (newValue.length === 4) {
 			const [hours, minutes] = [newValue.slice(0, 2), newValue.slice(2, 4)];
-			model.value = getLocalizedDayJs(model.value)
+			model.value = dayjs(model.value)
 				.set('hours', Math.min(parseInt(hours), 23))
 				.set('minutes', Math.min(parseInt(minutes), 59))
 				.format();
 			emit('changed', model.value);
 		} else if (newValue.length === 3) {
 			const [hours, minutes] = [newValue.slice(0, 1), newValue.slice(1, 3)];
-			model.value = getLocalizedDayJs(model.value)
+			model.value = dayjs(model.value)
 				.set('hours', Math.min(parseInt(hours), 23))
 				.set('minutes', Math.min(parseInt(minutes), 59))
 				.format();
 			emit('changed', model.value);
 		} else if (newValue.length === 2) {
-			model.value = getLocalizedDayJs(model.value)
+			model.value = dayjs(model.value)
 				.set('hours', Math.min(parseInt(newValue), 23))
 				.set('minutes', 0)
 				.format();
 			emit('changed', model.value);
 		} else if (newValue.length === 1) {
-			model.value = getLocalizedDayJs(model.value)
+			model.value = dayjs(model.value)
 				.set('hours', Math.min(parseInt(newValue), 23))
 				.set('minutes', 0)
 				.format();
@@ -68,19 +68,19 @@ function updateTime(event) {
 		}
 	}
 
-	inputValue.value = getLocalizedDayJs(model.value).format('HH:mm');
+	inputValue.value = dayjs(model.value).format('HH:mm');
 }
 
 watch(model, (value) => {
-	inputValue.value = value ? getLocalizedDayJs(value).format('HH:mm') : null;
+	inputValue.value = value ? dayjs(value).format('HH:mm') : null;
 });
 
 const getStartOptions = computed(() => {
 	const options = [];
 	for (let hour = 0; hour < 24; hour++) {
 		for (let minute = 0; minute < 60; minute += 15) {
-			const timestamp = getLocalizedDayJs(model.value).set('hour', hour).set('minute', minute).format();
-			const name = getLocalizedDayJs(model.value).set('hour', hour).set('minute', minute).format('HH:mm');
+			const timestamp = dayjs(model.value).set('hour', hour).set('minute', minute).format();
+			const name = dayjs(model.value).set('hour', hour).set('minute', minute).format('HH:mm');
 			options.push({ timestamp, name });
 		}
 	}
@@ -89,14 +89,14 @@ const getStartOptions = computed(() => {
 
 const closestValue = computed({
 	get() {
-		const target = getDayJsInstance()(model.value);
+		const target = dayjs(model.value);
 		let closestDiff = null;
 		let closest = target;
 		for (const option of getStartOptions.value) {
-			const diff = Math.abs(getDayJsInstance()(option.timestamp).diff(target));
+			const diff = Math.abs(dayjs(option.timestamp).diff(target));
 			if (closestDiff === null || diff < closestDiff) {
 				closestDiff = diff;
-				closest = getDayJsInstance()(option.timestamp);
+				closest = dayjs(option.timestamp);
 			}
 		}
 		return closest.format();

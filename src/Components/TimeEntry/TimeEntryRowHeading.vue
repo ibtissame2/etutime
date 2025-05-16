@@ -1,19 +1,18 @@
 <script setup>
+import { computed } from 'vue';
 import MainContainer from '@/Components/src/MainContainer.vue';
-import { formatDate, formatHumanReadableDuration, formatWeekday } from '@/Components/src/utils/time';
 import Checkbox from '@/Components/src/Input/Checkbox.vue';
+import { formatHumanReadableDate, formatHumanReadableDuration } from '@/Components/src/utils/time';
 
-defineProps({
+const emit = defineEmits(['select', 'unselect']);
+
+const props = defineProps({
 	date: String,
 	duration: Number,
-	checked: Boolean,
+	selected: Boolean,
 });
 
-const emit = defineEmits(['selectAll', 'unselectAll']);
-
-function selectUnselectAll(value) {
-	value ? emit('selectAll') : emit('unselectAll');
-}
+const weekday = computed(() => formatHumanReadableDate(props.date));
 </script>
 
 <template>
@@ -38,16 +37,16 @@ function selectUnselectAll(value) {
 							</g>
 						</svg>
 						<Checkbox
-							:checked="checked"
 							class="group-hover:block hidden"
-							@update:checked="selectUnselectAll"
-						></Checkbox>
+							:checked="selected"
+							@update:checked="(checked) => emit(checked ? 'select' : 'unselect')"
+						/>
 					</div>
 					<span class="font-semibold text-text-primary">
-						{{ formatWeekday(date) }}
+						{{ weekday }}
 					</span>
 					<span class="font-semibold text-muted">
-						{{ formatDate(date) }}
+						{{ date }}
 					</span>
 				</div>
 				<div class="text-muted pr-[90px] lg:pr-[92px]">

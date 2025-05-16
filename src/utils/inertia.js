@@ -7,7 +7,6 @@ export const usePage = () => {
 				{ key: 'admin', name: 'admin' },
 				{ key: 'member', name: 'member' },
 			],
-			timezones: ['Casablanca (GMT+1)'],
 			weekdays: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
 			terms_url: 'https://example.com/photo.jpg', // string | null
 			privacy_policy_url: 'https://example.com/photo.jpg', // string | null
@@ -39,7 +38,6 @@ export const usePage = () => {
 					all_teams: [{ id: 1, name: 'Team A', membership: { id: '1', role: 'Admin' } }],
 					current_team: { id: 1, name: 'Team A' },
 					two_factor_enabled: true,
-					timezone: 'Africa/Casablanca',
 					week_start: 'Lundi',
 					email_verified_at: null,
 				},

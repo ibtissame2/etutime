@@ -8,7 +8,7 @@ import { HeatmapChart } from 'echarts/charts';
 import { CalendarComponent, TitleComponent, TooltipComponent, VisualMapComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import dayjs from 'dayjs';
-import { firstDayIndex, formatDate, formatHumanReadableDuration, getDayJsInstance } from '@/Components/src/utils/time';
+import { formatDate, formatHumanReadableDuration } from '@/Components/src/utils/time';
 import { useCssVar } from '@vueuse/core';
 import { useQuery } from '@/utils/tanstack';
 import { getCurrentOrganizationId } from '@/utils/useUser';
@@ -64,16 +64,9 @@ const option = computed(() => {
 			left: 40,
 			right: 10,
 			cellSize: [40, 40],
-			dayLabel: {
-				firstDay: firstDayIndex.value,
-			},
-			splitLine: {
-				show: false,
-			},
-			range: [
-				dayjs().format('YYYY-MM-DD'),
-				getDayJsInstance()().subtract(50, 'day').startOf('week').format('YYYY-MM-DD'),
-			],
+			dayLabel: { firstDay: 'monday' },
+			splitLine: { show: false },
+			range: [dayjs().format('YYYY-MM-DD'), dayjs().subtract(50, 'day').startOf('week').format('YYYY-MM-DD')],
 			itemStyle: {
 				color: 'transparent',
 				borderWidth: 8,

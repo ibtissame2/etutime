@@ -44,7 +44,6 @@ export const useProjectMembersStore = defineStore('project-members', () => {
 	}
 
 	async function updateProjectMember(projectMemberId, projectMemberBody) {
-		// Ibtissame: Test console.log(projectMemberBody);
 		const organization = getCurrentOrganizationId();
 		if (organization) {
 			const response = await handleApiRequestNotifications(

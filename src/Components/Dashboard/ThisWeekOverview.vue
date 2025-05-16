@@ -11,7 +11,6 @@ import CardTitle from '@/Components/src/CardTitle.vue';
 import LinearGradient from 'zrender/lib/graphic/LinearGradient';
 import ProjectsChartCard from '@/Components/Dashboard/ProjectsChartCard.vue';
 import { formatHumanReadableDuration } from '@/Components/src/utils/time';
-import { getWeekStart } from '@/Components/src/utils/settings';
 import { useCssVar } from '@vueuse/core';
 import { useQuery } from '@/utils/tanstack';
 import { getCurrentOrganizationId } from '@/utils/useUser';
@@ -21,28 +20,7 @@ use([CanvasRenderer, BarChart, TitleComponent, GridComponent, TooltipComponent, 
 provide(THEME_KEY, 'dark');
 
 const weekdays = computed(() => {
-	const daysOrder = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-	const dayMapping = {
-		monday: 'Mon',
-		tuesday: 'Tue',
-		wednesday: 'Wed',
-		thursday: 'Thu',
-		friday: 'Fri',
-		saturday: 'Sat',
-		sunday: 'Sun',
-	};
-	if (dayMapping[getWeekStart()]) {
-		const customOrder = [];
-		const startIndex = daysOrder.indexOf(dayMapping[getWeekStart()]);
-
-		for (let i = startIndex; i < 7 + startIndex; i++) {
-			customOrder.push(daysOrder[i % daysOrder.length]);
-		}
-
-		return customOrder;
-	} else {
-		return daysOrder;
-	}
+	return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 });
 
 const accentColor = useCssVar('--theme-color-chart', null, { observe: true });
