@@ -15,8 +15,9 @@ const props = defineProps({
 const emit = defineEmits(['changed', 'close']);
 
 const tempStart = ref(props.start || dayjs().format('YYYY-MM-DD HH:mm:ss'));
-
 const tempEnd = ref(props.end || null);
+const dropdownContent = ref();
+const { focused } = useFocusWithin(dropdownContent);
 
 watch(props, () => {
 	tempStart.value = props.start;
@@ -32,9 +33,6 @@ function updateRange() {
 	const end = tempEnd.value ? dayjs(tempEnd.value).format('YYYY-MM-DD HH:mm:ss') : null;
 	if (start !== props.start || end !== props.end) emit('changed', start, end);
 }
-
-const dropdownContent = ref();
-const { focused } = useFocusWithin(dropdownContent);
 </script>
 
 <template>

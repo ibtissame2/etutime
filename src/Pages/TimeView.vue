@@ -28,8 +28,7 @@ const showUpdateModal = ref(false);
 const selectedMinuteurs = ref([]);
 
 function deleteSelected() {
-	deleteMinuteurs(selectedMinuteurs.value);
-	selectedMinuteurs.value = [];
+	deleteMinuteurs(selectedMinuteurs.value, () => (selectedMinuteurs.value = []));
 }
 </script>
 

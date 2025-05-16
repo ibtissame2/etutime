@@ -28,7 +28,7 @@ export const useMinuteursStore = createCRUDStore({
 		if (minuteur.duration < 0) (minuteur.duration = 0), (minuteur.end = null);
 		return minuteur;
 	},
-	setup({ fetchMinuteurs, createMinuteur, updateMinuteur }) {
+	setup({ fetchMinuteurs, createMinuteur, updateMinuteur, deleteMinuteur }) {
 		const currentMinuteur = ref({ ...emptyMinuteur });
 		const clock = ref(null);
 		const nowInterval = ref(null);
@@ -65,18 +65,27 @@ export const useMinuteursStore = createCRUDStore({
 			// }
 		}
 
-		async function deleteMinuteurs(timeEntries) {
-			// const organizationId = getCurrentOrganizationId();
-			// const timeEntryIds = timeEntries.map((entry) => entry.id);
-			// if (organizationId) {
-			// 	await handleApiRequestNotifications(
-			// 		() => api.deleteTimeEntries(undefined, { queries: { ids: timeEntryIds } }),
-			// 		'Time entries deleted successfully',
-			// 		'Failed to delete time entries'
-			// 	);
-			// 	await fetchMinuteurs();
-			// }
-		}
+		const deleteMinuteurs = async (items, onSuccess, refresh = true) => {
+			if (!items.length) return;
+			const onSuccessWrapper = (data) => {
+				if (currentMinuteur.value.id && items.some((it) => it.id === currentMinuteur.value.id))
+					currentMinuteur.value = { ...emptyMinuteur };
+				onSuccess?.(data);
+			};
+			if (items.length > 1) {
+				const { user, team } = this.getSessionInfo();
+				if (!team || !user) return;
+				return await this.useAxios.post(
+					this.typo.name + '/delete-many',
+					{ team, user, ids: items.map((it) => it.id) },
+					(data) => (onSuccessWrapper(data), refresh && fetchMinuteurs()),
+					'Minuteurs supprimé avec succès',
+					'Échec de la suppression des minuteurs'
+				);
+			} else {
+				return deleteMinuteur(items[0].id, onSuccessWrapper, refresh);
+			}
+		};
 
 		return {
 			currentMinuteur,

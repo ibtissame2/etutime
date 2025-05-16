@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import dayjs from 'dayjs';
 import parse from 'parse-duration';
@@ -68,6 +68,11 @@ function updateStartEndTime(start, end) {
 	console.log('Ibtissame', props.minuteur, start, end);
 	// updateMinuteur
 }
+
+watch(
+	() => props.expandable,
+	(value) => !value && (expanded.value = false)
+);
 </script>
 
 <template>

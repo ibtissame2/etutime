@@ -54,7 +54,7 @@ async function startTimeEntryFromExisting(entry) {
 </script>
 
 <template>
-	<div v-for="(dayGroupe, key) in minuteursDayGroups" :key="key">
+	<div v-for="dayGroupe in minuteursDayGroups" :key="dayGroupe.date">
 		<TimeEntryRowHeading
 			:date="dayGroupe.date"
 			:duration="dayGroupe.duration"
@@ -64,7 +64,7 @@ async function startTimeEntryFromExisting(entry) {
 				selectedMinuteurs = selectedMinuteurs.filter((m) => !dayGroupe.minuteurs.some((a) => a.sublist.includes(m)))
 			"
 		></TimeEntryRowHeading>
-		<template v-for="aggregate in dayGroupe.minuteurs" :key="aggregate.id">
+		<template v-for="aggregate in dayGroupe.minuteurs" :key="aggregate.module_id + '/' + aggregate.chapitre_id">
 			<TimeEntryRow
 				:expandable="aggregate.sublist.length > 1"
 				:minuteur="aggregate.sublist[0]"
@@ -85,11 +85,9 @@ async function startTimeEntryFromExisting(entry) {
 					@selecte="selectedMinuteurs.push(subMinuteur)"
 					@unselecte="selectedMinuteurs = selectedMinuteurs.filter((m) => m !== subMinuteur)"
 					@start-stop-click="startTimeEntryFromExisting(subMinuteur)"
-					@delete="deleteMinuteur(subMinuteur)"
+					@delete="deleteMinuteurs([subMinuteur])"
 				></TimeEntryRow>
 			</TimeEntryRow>
 		</template>
 	</div>
 </template>
-
-<style scoped></style>

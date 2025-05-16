@@ -8,10 +8,13 @@ export const createCRUDStore = ({ typo, setup, adapter }) => {
 		const list = ref([]);
 		const isLoading = ref(false);
 
+		function getSessionInfo() {
+			return { user: getCurrentUserId(), team: getCurrentOrganizationId() };
+		}
+
 		async function fetchData() {
 			isLoading.value = true;
-			const team = getCurrentOrganizationId();
-			const user = getCurrentUserId();
+			const { user, team } = getSessionInfo();
 			if (!team || !user) return;
 			const response = await useAxios.post(
 				typo.name + '/all',
@@ -28,8 +31,7 @@ export const createCRUDStore = ({ typo, setup, adapter }) => {
 		}
 
 		async function createElement(object, onSuccess, refresh = true) {
-			const team = getCurrentOrganizationId();
-			const user = getCurrentUserId();
+			const { user, team } = getSessionInfo();
 			if (!team || !user) return;
 			const id = await useAxios.post(
 				typo.name + '/create',
@@ -43,8 +45,7 @@ export const createCRUDStore = ({ typo, setup, adapter }) => {
 		}
 
 		async function updateElement(id, object, onSuccess, refresh = true) {
-			const team = getCurrentOrganizationId();
-			const user = getCurrentUserId();
+			const { user, team } = getSessionInfo();
 			if (!team || !user) return;
 			const response = await useAxios.post(
 				typo.name + '/update',
@@ -57,8 +58,7 @@ export const createCRUDStore = ({ typo, setup, adapter }) => {
 		}
 
 		async function deleteElement(id, onSuccess, refresh = true) {
-			const team = getCurrentOrganizationId();
-			const user = getCurrentUserId();
+			const { user, team } = getSessionInfo();
 			if (!team || !user) return;
 			const response = await useAxios.post(
 				typo.name + '/delete',
@@ -78,9 +78,16 @@ export const createCRUDStore = ({ typo, setup, adapter }) => {
 			['update' + typo.method]: updateElement,
 			['delete' + typo.method]: deleteElement,
 		};
+
+		const thisArgument = {
+			typo,
+			useAxios,
+			getSessionInfo,
+		};
+
 		return {
 			...crudProps,
-			...(setup?.(crudProps) || {}),
+			...(setup?.call(thisArgument, crudProps) || {}),
 		};
 	});
 };
