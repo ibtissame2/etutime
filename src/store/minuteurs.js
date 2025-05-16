@@ -22,11 +22,27 @@ export const useMinuteursStore = createCRUDStore({
 		Element: 'Minuteur',
 		element: 'minuteur',
 	},
-	adapter: (minuteur) => {
+	adapter(minuteur, argument) {
+		minuteur.chapitre_name = minuteur.chapitre_name || '';
 		if (typeof minuteur.taches === 'string') minuteur.taches = JSON.parse(minuteur.taches);
 		minuteur.duration = !minuteur.end ? 0 : dayjs(minuteur.end).diff(dayjs(minuteur.start), 'seconds');
 		if (minuteur.duration < 0) (minuteur.duration = 0), (minuteur.end = null);
+		if (minuteur.end === null) {
+			if (!argument.alreadyExist) {
+				argument.alreadyExist = true;
+				this.clock.value = dayjs();
+				this.nowInterval.value = setInterval(() => (this.clock.value = dayjs()), 1000);
+				this.currentMinuteur.value = { ...minuteur };
+			} else {
+				minuteur.end = dayjs().format('YYYY-MM-DD HH:mm:ss');
+				argument.shouldStop ||= [];
+				argument.shouldStop.push(minuteur.id);
+			}
+		}
 		return minuteur;
+	},
+	onFinishFetch(argument) {
+		(argument.shouldStop || []).map((id) => this.updateMinuteur(id, { end: dayjs().format() }));
 	},
 	setup({ fetchMinuteurs, createMinuteur, updateMinuteur, deleteMinuteur }) {
 		const currentMinuteur = ref({ ...emptyMinuteur });
@@ -90,6 +106,7 @@ export const useMinuteursStore = createCRUDStore({
 		return {
 			currentMinuteur,
 			clock,
+			nowInterval,
 			toggleStartStopMinuteur,
 			updateMinuteurs,
 			deleteMinuteurs,

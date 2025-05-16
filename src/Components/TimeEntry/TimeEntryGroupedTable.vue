@@ -38,18 +38,10 @@ const minuteursDayGroups = computed(() => {
 	return groups;
 });
 
-async function startTimeEntryFromExisting(entry) {
-	// if (currentMinuteur.value.id) await toggleStartStopMinuteur(false, currentMinuteur.value);
-	// createMinuteur({
-	// project_id: entry.project_id,
-	// task_id: entry.task_id,
-	// start: dayjs.format(),
-	// end: null,
-	// description: entry.description,
-	// taches: [...entry.taches],
-	// });
-	// // Ibtissame: set the new entry as the current one
-	// await createMinuteur(timeEntry);
+async function startTimeEntryFromExisting(minuteur) {
+	const alreadyRunning = currentMinuteur.value.id === minuteur.id;
+	if (currentMinuteur.value.id) await toggleStartStopMinuteur(false, currentMinuteur.value);
+	if (!alreadyRunning) await toggleStartStopMinuteur(true, { ...minuteur, id: undefined });
 }
 </script>
 

@@ -64,10 +64,7 @@ function updateDuration() {
 	updateStartEndTime(newStartDate, newEndDate);
 }
 
-function updateStartEndTime(start, end) {
-	console.log('Ibtissame', props.minuteur, start, end);
-	// updateMinuteur
-}
+function updateStartEndTime(start, end) {}
 
 watch(
 	() => props.expandable,
@@ -113,7 +110,7 @@ watch(
 					<div class="flex-1">
 						<button
 							v-if="expandable"
-							class="hidden lg:block text-muted w-[110px] px-1 py-1.5 bg-transparent text-center hover:bg-card-background rounded-lg border border-transparent hover:border-card-border text-sm font-medium focus-visible:outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:bg-tertiary"
+							class="text-muted w-[110px] px-1 py-1.5 bg-transparent text-center hover:bg-card-background rounded-lg border border-transparent hover:border-card-border text-sm font-medium focus-visible:outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:bg-tertiary"
 							@click="expanded = !expanded"
 						>
 							{{ formatStartEnd(minuteur.start, minuteur.end) }}
@@ -130,6 +127,7 @@ watch(
 										data-testid="time_entry_range_selector"
 										class="text-muted w-[110px] px-2 bg-transparent text-center hover:bg-card-background rounded-lg border border-transparent hover:border-card-border focus-visible:outline-none focus:outline-none focus-visible:ring-2 focus-visible:text-text-primary focus-visible:ring-ring focus-visible:bg-tertiary text-sm py-1.5 font-medium"
 										:class="{ 'border-card-border bg-card-background': startEndRangeOpen }"
+										:disabled="!!minuteur.start && !minuteur.end"
 									>
 										{{ formatStartEnd(minuteur.start, minuteur.end) }}
 									</button>
@@ -156,6 +154,7 @@ watch(
 					<input
 						v-else
 						v-model="durationInputValue"
+						:disabled="!!minuteur.start && !minuteur.end"
 						data-testid="time_entry_duration_input"
 						class="text-text-primary w-[90px] px-2 py-1.5 bg-transparent text-center hover:bg-card-background rounded-lg border border-transparent hover:border-card-border text-sm font-semibold focus-visible:bg-tertiary focus-visible:border-transparent focus-visible:ring-2 focus-visible:ring-ring"
 						@focus="durationInputOpen = true"
@@ -164,7 +163,7 @@ watch(
 						@keydown.enter="updateDuration"
 					/>
 					<TimeTrackerStartStop
-						:active="!!(minuteur.start && !minuteur.end)"
+						:active="!!minuteur.start && !minuteur.end"
 						class="opacity-20 hidden sm:flex group-hover:opacity-100 focus-visible:opacity-100"
 						@changed="emit('start-stop-click')"
 					></TimeTrackerStartStop>
