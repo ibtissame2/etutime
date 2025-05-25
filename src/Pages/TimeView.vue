@@ -1,30 +1,24 @@
 <script setup>
 import { ref } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useElementVisibility } from '@vueuse/core';
-import { useModulesStore } from '@/store/modules';
-import { useChapitresStore } from '@/store/chapitres';
-import { useTachesStore } from '@/store/taches';
 import { useMinuteursStore } from '@/store/minuteurs';
 import { PlusIcon } from '@heroicons/vue/16/solid';
-import { PencilSquareIcon, TrashIcon, ClockIcon } from '@heroicons/vue/20/solid';
+import { TrashIcon, ClockIcon } from '@heroicons/vue/20/solid';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import MainContainer from '@/Components/src/MainContainer.vue';
 import LoadingSpinner from '@/Components/src/LoadingSpinner.vue';
 import Checkbox from '@/Components/src/Input/Checkbox.vue';
 import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import InputLabel from '@/Components/src/Input/InputLabel.vue';
-import TimeEntryMassUpdateModal from '@/Components/TimeEntry/TimeEntryMassUpdateModal.vue';
 import TimeTracker from '@/Components/TimeTracker/TimeTracker.vue';
 import TimeEntryGroupedTable from '@/Components/TimeEntry/TimeEntryGroupedTable.vue';
 import TimeEntryCreateModal from '@/Components/Forms/TimeEntryCreateModal.vue';
 
 const { minuteurs } = storeToRefs(useMinuteursStore());
-const { fetchMinuteurs, updateMinuteurs, deleteMinuteurs } = useMinuteursStore();
+const { deleteMinuteurs } = useMinuteursStore();
 
 const loading = ref(false);
 const showCreateModal = ref(false);
-const showUpdateModal = ref(false);
 const selectedMinuteurs = ref([]);
 
 function deleteSelected() {
@@ -34,7 +28,6 @@ function deleteSelected() {
 
 <template>
 	<TimeEntryCreateModal v-model:show="showCreateModal"></TimeEntryCreateModal>
-	<!-- <TimeEntryMassUpdateModal v-model:show="showUpdateModal" :minuteurs="selectedMinuteurs" /> -->
 	<AppLayout title="Suivi du temps" data-testid="time_view">
 		<MainContainer class="pt-5 lg:pt-8 pb-4 lg:pb-6">
 			<div
@@ -65,14 +58,7 @@ function deleteSelected() {
 				{{ selectedMinuteurs.length }} sélectionnés
 			</InputLabel>
 			<InputLabel v-else for="selectAll" class="text-text-secondary select-none">Sélectionner tous</InputLabel>
-			<button
-				v-if="selectedMinuteurs.length"
-				class="text-text-tertiary flex space-x-1 items-center hover:text-text-secondary transition focus-visible:ring-2 outline-0 focus-visible:text-text-primary focus-visible:ring-ring rounded h-full px-2"
-				@click="showUpdateModal = true"
-			>
-				<PencilSquareIcon class="w-4"></PencilSquareIcon>
-				<span>Modifier</span>
-			</button>
+
 			<button
 				v-if="selectedMinuteurs.length"
 				class="text-red-400 h-full px-2 space-x-1 items-center flex hover:text-red-500 transition focus-visible:ring-2 outline-0 focus-visible:text-red-500 focus-visible:ring-ring rounded"

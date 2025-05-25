@@ -69,18 +69,6 @@ export const useMinuteursStore = createCRUDStore({
 			useChapitresStore().fetchChapitres();
 		}
 
-		async function updateMinuteurs(ids, changes) {
-			// const organizationId = getCurrentOrganizationId();
-			// if (organizationId) {
-			// 	await handleApiRequestNotifications(
-			// 		() => api.updateMultipleTimeEntries({ ids: ids, changes: changes }),
-			// 		'Time entries updated successfully',
-			// 		'Failed to update time entries'
-			// 	);
-			// 	await fetchMinuteurs();
-			// }
-		}
-
 		const deleteMinuteurs = async (items, onSuccess, refresh = true) => {
 			if (!items.length) return;
 			const onSuccessWrapper = (data) => {
@@ -108,7 +96,6 @@ export const useMinuteursStore = createCRUDStore({
 			clock,
 			nowInterval,
 			toggleStartStopMinuteur,
-			updateMinuteurs,
 			deleteMinuteurs,
 		};
 	},

@@ -88,24 +88,15 @@ CREATE TABLE `notes` (
   KEY `notes_team_id_foreign` (`team_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- To Delete
-
-INSERT INTO `teams` (`name`, `created_at`) VALUES ('Team A', NULL);
-
-INSERT INTO `users` (`name`, `email`, `email_verified_at`, `password`, `remember_token`, `current_team_id`, `profile_photo_path`, `two_factor_secret`, `two_factor_recovery_codes`, `two_factor_confirmed_at`) VALUES
-('Ibtissame', 'ibtissame@gmail.com', NULL, 'Ibtissame', NULL, 1, NULL, NULL, NULL, NULL),
-('Oussama', 'oussama@gmail.com', NULL, 'Oussama', NULL, 1, NULL, NULL, NULL, NULL);
-
-INSERT INTO `modules` (`name`, `color`, `is_public`, `team_id`, `progress`) VALUES
-('Administration de reseaux', '#ab47bc', '1', '1', 'Début'),
-('Base de donnee avancee et programmation web', '#ffee58', '1', '1', 'Début'),
-('Sites web dynamiques', '#7e57c2', '1', '1', 'Début');
-
-INSERT INTO `chapitres` (`name`, `module_id`, `team_id`, `user_id`, `is_done`) VALUES
-('HTML', null, '1', '1', '0'),
-('Vue.js', '1', '1', '1', '0'),
-('SQL', '2', '1', '1', '0'),
-('PHP', '3', '1', '1', '0'),
-('JavaScript', '3', '1', '1', '0');
-
-INSERT INTO `taches` (`name`, `team_id`) VALUES ('TP', '1'), ('Cours', '1'), ('TD', '1');
+CREATE TABLE `emplois_du_temps` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `emploi` JSON NOT NULL,
+  `horaire_fixe` JSON DEFAULT NULL,
+  `niveau_concentration` ENUM('faible', 'moyen', 'élevé') NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `emplois_du_temps_user_id_foreign` (`user_id`),
+  CONSTRAINT `emplois_du_temps_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

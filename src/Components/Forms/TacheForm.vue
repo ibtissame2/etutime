@@ -29,7 +29,7 @@ function setDataOf(element) {
 
 async function submit() {
 	loading.value = true;
-	await createModule(module.value, () => clearData());
+	await createTache(tache.value, () => clearData());
 	loading.value = false;
 }
 
