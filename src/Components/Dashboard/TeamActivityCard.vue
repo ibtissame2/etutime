@@ -48,7 +48,7 @@ const { data: latestTeamActivity, isLoading } = useQuery({
 				<UserGroupIcon class="w-8 text-icon-default inline pb-2"></UserGroupIcon>
 				<h3 class="text-text-primary font-semibold text-sm">Invite your co-workers</h3>
 				<p class="pb-5 text-sm">You can invite your entire team.</p>
-				<SecondaryButton @click="router.visit(route('members'))">Go to Members </SecondaryButton>
+				<SecondaryButton>Go to Members (Ibtissame)</SecondaryButton>
 			</div>
 		</div>
 	</DashboardCard>

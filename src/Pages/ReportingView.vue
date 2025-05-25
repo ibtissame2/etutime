@@ -1,28 +1,27 @@
 <script setup>
 import dayjs from 'dayjs';
+import { computed, onMounted, ref } from 'vue';
 import { storeToRefs } from 'pinia';
+import { formatHumanReadableDuration } from '@/Components/src/utils/time';
+import { useSessionStorage, useStorage } from '@vueuse/core';
+import { useTachesStore } from '@/store/taches';
+import { useReportingStore } from '@/utils/useReporting';
+import { getCurrentOrganizationId } from '@/utils/useUser';
+import { useNotificationsStore } from '@/utils/notification';
+import { getRandomColorWithSeed } from '@/Components/src/utils/color';
+import { FolderIcon, ChartBarIcon, CheckCircleIcon, TagIcon } from '@heroicons/vue/20/solid';
 import MainContainer from '@/Components/src/MainContainer.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { FolderIcon, ChartBarIcon, UserGroupIcon, CheckCircleIcon, TagIcon } from '@heroicons/vue/20/solid';
 import PageTitle from '@/Components/Common/PageTitle.vue';
 import DateRangePicker from '@/Components/src/Input/DateRangePicker.vue';
 import ReportingChart from '@/Components/Common/Reporting/ReportingChart.vue';
-import { computed, onMounted, ref } from 'vue';
-import { formatHumanReadableDuration } from '@/Components/src/utils/time';
-import { useReportingStore } from '@/utils/useReporting';
 import TagDropdown from '@/Components/Common/Tag/TagDropdown.vue';
 import ReportingFilterBadge from '@/Components/Common/Reporting/ReportingFilterBadge.vue';
 import ModuleMultiselectDropdown from '@/Components/Module/ModuleMultiselectDropdown.vue';
-import MemberMultiselectDropdown from '@/Components/Common/Member/MemberMultiselectDropdown.vue';
 import ChapitreMultiselectDropdown from '@/Components/Chapitre/ChapitreMultiselectDropdown.vue';
 import ReportingGroupBySelect from '@/Components/Common/Reporting/ReportingGroupBySelect.vue';
 import ReportingRow from '@/Components/Common/Reporting/ReportingRow.vue';
 import ReportingPieChart from '@/Components/Common/Reporting/ReportingPieChart.vue';
-import { getCurrentMembershipId, getCurrentOrganizationId, getCurrentRole } from '@/utils/useUser';
-import { useTachesStore } from '@/store/taches';
-import { useSessionStorage, useStorage } from '@vueuse/core';
-import { useNotificationsStore } from '@/utils/notification';
-import { getRandomColorWithSeed } from '@/Components/src/utils/color';
 
 const { handleApiRequestNotifications } = useNotificationsStore();
 
@@ -31,7 +30,6 @@ const endDate = useSessionStorage('reporting-end-date', dayjs().format('YYYY-MM-
 
 const selectedTags = ref([]);
 const selectedProjects = ref([]);
-const selectedMembers = ref([]);
 const selectedTasks = ref([]);
 
 const group = useStorage('reporting-group', 'project');
@@ -45,7 +43,6 @@ function getFilterAttributes() {
 	return {
 		start: dayjs(startDate.value).startOf('day').format('YYYY-MM-DD HH:mm:ss'),
 		end: dayjs(endDate.value).endOf('day').format('YYYY-MM-DD HH:mm:ss'),
-		member_ids: selectedMembers.value.length > 0 ? selectedMembers.value : undefined,
 		project_ids: selectedProjects.value.length > 0 ? selectedProjects.value : undefined,
 		task_ids: selectedTasks.value.length > 0 ? selectedTasks.value : undefined,
 		tag_ids: selectedTags.value.length > 0 ? selectedTags.value : undefined,
@@ -54,9 +51,6 @@ function getFilterAttributes() {
 
 function updateGraphReporting() {
 	const params = getFilterAttributes();
-	if (getCurrentRole() === 'employee') {
-		params.member_id = getCurrentMembershipId();
-	}
 	params.fill_gaps_in_time_groups = 'true';
 	params.group = getOptimalGroupingOption(startDate.value, endDate.value);
 	useReportingStore().fetchGraphReporting(params);
@@ -69,9 +63,6 @@ function updateTableReporting() {
 		if (fallbackOption?.value) {
 			subGroup.value = fallbackOption.value;
 		}
-	}
-	if (getCurrentRole() === 'employee') {
-		params.member_id = getCurrentMembershipId();
 	}
 	params.group = group.value;
 	params.sub_group = subGroup.value;

@@ -1,28 +1,21 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import dayjs from 'dayjs';
-import parse from 'parse-duration';
 import { formatHumanReadableDuration, formatStartEnd } from '@/Components/src/utils/time';
 import { useModulesStore } from '@/store/modules';
-import { useChapitresStore } from '@/store/chapitres';
 import { useTachesStore } from '@/store/taches';
-import { useMinuteursStore } from '@/store/minuteurs';
 import { TrashIcon } from '@heroicons/vue/20/solid';
 import Dropdown from '@/Components/src/Input/Dropdown.vue';
 import TimeRangeSelector from '@/Components/src/Input/TimeRangeSelector.vue';
 import MainContainer from '@/Components/src/MainContainer.vue';
 import TimeTrackerStartStop from '@/Components/TimeTracker/TimeTrackerStartStop.vue';
-import TimeTrackerDropdown from '@/Components/TimeTracker/TimeTrackerDropdown.vue';
 import TimeTrackerTagDropdown from '@/Components/TimeTracker/TimeTrackerTagDropdown.vue';
 import Checkbox from '@/Components/src/Input/Checkbox.vue';
 import GroupedItemsCountButton from '@/Components/src/GroupedItemsCountButton.vue';
 import MoreOptionsDropdown from '@/Components/src/MoreOptionsDropdown.vue';
 
 const { modules } = storeToRefs(useModulesStore());
-const { chapitres } = storeToRefs(useChapitresStore());
 const { taches } = storeToRefs(useTachesStore());
-const { updateMinuteur } = useMinuteursStore();
 
 const props = defineProps({
 	minuteur: Object,
@@ -51,20 +44,6 @@ const durationInputValue = computed({
 		temporaryDuration.value = newValue || '';
 	},
 });
-
-function updateDuration() {
-	if (!durationInputOpen.value) return;
-	durationInputOpen.value = false;
-	const time = parse(temporaryDuration.value, 's');
-	if (!time || time <= 0) return (temporaryDuration.value = '');
-	let newEndDate = props.minuteur.end;
-	let newStartDate = props.minuteur.start;
-	if (!props.minuteur.end) newStartDate = dayjs().subtract(time, 's').format('YYYY-MM-DD HH:mm:ss');
-	else newEndDate = dayjs(props.minuteur.start).add(time, 's').format('YYYY-MM-DD HH:mm:ss');
-	updateStartEndTime(newStartDate, newEndDate);
-}
-
-function updateStartEndTime(start, end) {}
 
 watch(
 	() => props.expandable,
@@ -137,7 +116,6 @@ watch(
 										focus
 										:start="minuteur.start"
 										:end="minuteur.end"
-										@changed="(newStart, newEnd) => updateStartEndTime(newStart, newEnd)"
 										@close="startEndRangeOpen = false"
 									/>
 								</template>
@@ -159,8 +137,6 @@ watch(
 						class="text-text-primary w-[90px] px-2 py-1.5 bg-transparent text-center hover:bg-card-background rounded-lg border border-transparent hover:border-card-border text-sm font-semibold focus-visible:bg-tertiary focus-visible:border-transparent focus-visible:ring-2 focus-visible:ring-ring"
 						@focus="durationInputOpen = true"
 						@keydown.tab="durationInputOpen = false"
-						@blur="updateDuration"
-						@keydown.enter="updateDuration"
 					/>
 					<TimeTrackerStartStop
 						:active="!!minuteur.start && !minuteur.end"

@@ -8,7 +8,7 @@ import NotificationContainer from '@/Components/NotificationContainer.vue';
 import NavigationSidebarItem from '@/Components/NavigationSidebarItem.vue';
 import UserSettingsIcon from '@/Components/UserSettingsIcon.vue';
 import MainContainer from '@/Components/src/MainContainer.vue';
-import { Head, route } from '@/utils/inertia';
+import { route } from '@/utils/inertia';
 import { fetchToken, isTokenValid } from '@/utils/session';
 import HomeIcon from '@/Components/Icons/HomeIcon.vue';
 import ArrowsRightLeftIcon from '@/Components/Icons/ArrowsRightLeftIcon.vue';
@@ -176,8 +176,6 @@ onMounted(async () => {
 			</div>
 		</div>
 		<div class="flex-1 lg:ml-[230px] 2xl:ml-[250px] min-w-0">
-			<!-- <Head :title="title" /> -->
-
 			<div class="min-h-screen bg-default-background border-l border-default-background-separator">
 				<header v-if="$slots.header" class="bg-default-background border-b border-default-background-separator shadow">
 					<div class="pt-8 pb-3">

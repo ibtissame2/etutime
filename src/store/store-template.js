@@ -1,7 +1,6 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
 import { useAxios } from '@/store/axios';
-import { getCurrentOrganizationId, getCurrentUserId } from '@/utils/useUser';
 
 export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 	return defineStore(typo.name, () => {
@@ -9,7 +8,7 @@ export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 		const isLoading = ref(false);
 
 		function getSessionInfo() {
-			return { user: getCurrentUserId(), team: getCurrentOrganizationId() };
+			return { user: 1, team: 1 };
 		}
 
 		async function fetchData() {

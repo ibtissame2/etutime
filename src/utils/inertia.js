@@ -74,8 +74,6 @@ export const router = {
 	},
 };
 
-export const Head = () => {};
-
 const route = function (...parts) {
 	return parts.join('/');
 };

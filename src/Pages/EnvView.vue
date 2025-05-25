@@ -1,18 +1,16 @@
 <script setup>
 import MainContainer from '@/Components/src/MainContainer.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { PlusIcon } from '@heroicons/vue/16/solid';
-import { UserGroupIcon } from '@heroicons/vue/20/solid';
-import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
+import { UserGroupIcon, BookOpenIcon } from '@heroicons/vue/20/solid';
 import TabBar from '@/Components/Common/TabBar/TabBar.vue';
 import TabBarItem from '@/Components/Common/TabBar/TabBarItem.vue';
-import { ref } from 'vue';
-import MemberTable from '@/Components/Common/Member/MemberTable.vue';
-import MemberInviteModal from '@/Components/Common/Member/MemberInviteModal.vue';
+import { ref, onBeforeUnmount, computed, onMounted } from 'vue';
 import PageTitle from '@/Components/Common/PageTitle.vue';
-import InvitationTable from '@/Components/Common/Invitation/InvitationTable.vue';
+import { storeToRefs } from 'pinia';
+import { useMinuteursStore } from '@/store/minuteurs';
+import dayjs from 'dayjs';
+import { useRouter } from 'vue-router';
 
-const inviteMember = ref(false);
 
 defineProps({
 	availableRoles: Array,
@@ -25,21 +23,15 @@ function isActiveTab(tab) {
 </script>
 
 <template>
-	<AppLayout title="Members" data-testid="members_view">
+	<AppLayout title="Environnement">
 		<MainContainer class="py-5 border-b border-default-background-separator flex justify-between items-center">
 			<div class="flex items-center space-x-4 sm:space-x-6">
-				<PageTitle :icon="UserGroupIcon" title="Members"> </PageTitle>
+				<PageTitle :icon="UserGroupIcon" title="Environnement"> </PageTitle>
 				<TabBar>
 					<TabBarItem :active="isActiveTab('all')" @click="activeTab = 'all'">All</TabBarItem>
 					<TabBarItem :active="isActiveTab('invitations')" @click="activeTab = 'invitations'">Invitations</TabBarItem>
 				</TabBar>
 			</div>
-			<SecondaryButton :icon="PlusIcon" @click="inviteMember = true">Inviter un etudiant</SecondaryButton>
-			<MemberInviteModal
-				v-model:show="inviteMember"
-				:available-roles="availableRoles"
-				@close="activeTab = 'invitations'"
-			></MemberInviteModal>
 		</MainContainer>
 		<MemberTable v-if="activeTab === 'all'"></MemberTable>
 		<InvitationTable v-if="activeTab === 'invitations'"></InvitationTable>

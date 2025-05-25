@@ -1,9 +1,7 @@
 import { ref, computed } from 'vue';
 import { defineStore, storeToRefs } from 'pinia';
-import { getCurrentOrganizationId } from '@/utils/useUser';
 import { useNotificationsStore } from '@/utils/notification';
 import { useModulesStore } from '@/store/modules';
-import { useMembersStore } from '@/utils/useMembers';
 import { useChapitresStore } from '@/store/chapitres';
 import { CheckCircleIcon, UserGroupIcon } from '@heroicons/vue/20/solid';
 import { DocumentTextIcon, FolderIcon } from '@heroicons/vue/16/solid';
@@ -16,7 +14,7 @@ export const useReportingStore = defineStore('reporting', () => {
 	const { handleApiRequestNotifications } = useNotificationsStore();
 
 	async function fetchGraphReporting(params) {
-		const organization = getCurrentOrganizationId();
+		const organization = 1;
 		if (organization) {
 			reportingGraphResponse.value = await handleApiRequestNotifications(
 				() =>
@@ -33,7 +31,7 @@ export const useReportingStore = defineStore('reporting', () => {
 	}
 
 	async function fetchTableReporting(params) {
-		const organization = getCurrentOrganizationId();
+		const organization = 1;
 		if (organization) {
 			reportingTableResponse.value = await handleApiRequestNotifications(
 				() =>
@@ -74,8 +72,7 @@ export const useReportingStore = defineStore('reporting', () => {
 			const { chapitres } = storeToRefs(useChapitresStore());
 			return chapitres.value.find((chapitre) => chapitre.id === key)?.name;
 		} else if (type === 'user') {
-			const { members } = storeToRefs(useMembersStore());
-			return members.value.find((member) => member.user_id === key)?.name;
+			return 'Ibtissame';
 		} else return key;
 	}
 
