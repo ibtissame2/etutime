@@ -1,38 +1,22 @@
 <script setup>
-import { useQuery } from '@/utils/tanstack';
-import { computed } from 'vue';
+import { CalendarIcon } from '@heroicons/vue/20/solid';
 import DashboardCard from '@/Components/Dashboard/DashboardCard.vue';
 import DayOverviewCardEntry from '@/Components/Dashboard/DayOverviewCardEntry.vue';
-import { CalendarIcon } from '@heroicons/vue/20/solid';
-import { getCurrentOrganizationId } from '@/utils/useUser';
-import LoadingSpinner from '@/Components/src/LoadingSpinner.vue';
 
-const organizationId = computed(() => getCurrentOrganizationId());
-
-const { data: last7Days, isLoading } = useQuery({
-	queryKey: ['lastSevenDays', organizationId],
-	queryFn: () => {
-		return api.lastSevenDays({
-			params: {
-				organization: organizationId.value,
-			},
-		});
-	},
-	enabled: computed(() => !!organizationId.value),
-	placeholderData: Array.from({ length: 7 }, (_, i) => ({
-		date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-		duration: 0,
-		history: Array(8).fill(0),
-	})),
-});
+const last7Days = [
+	{ date: '2025-04-21', duration: 50, history: [1] },
+	{ date: '2025-04-20', duration: 50, history: [1] },
+	{ date: '2025-04-19', duration: 50, history: [1] },
+	{ date: '2025-04-18', duration: 3650, history: [1] },
+	{ date: '2025-04-17', duration: 93, history: [1, 2, 3] },
+	{ date: '2025-04-16', duration: 93, history: [1, 2, 3] },
+	{ date: '2025-04-15', duration: 93, history: [1, 2, 3] },
+];
 </script>
 
 <template>
 	<DashboardCard title="Last 7 Days" :icon="CalendarIcon">
-		<div v-if="isLoading" class="flex justify-center items-center h-40">
-			<LoadingSpinner />
-		</div>
-		<div v-else-if="last7Days">
+		<div v-if="last7Days">
 			<DayOverviewCardEntry
 				v-for="day in last7Days"
 				:key="day.date"

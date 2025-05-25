@@ -1,6 +1,6 @@
 <script setup>
 import VChart, { THEME_KEY } from 'vue-echarts';
-import { provide, computed } from 'vue';
+import { ref, provide, computed } from 'vue';
 import { use } from 'echarts/core';
 import DashboardCard from '@/Components/Dashboard/DashboardCard.vue';
 import { BoltIcon } from '@heroicons/vue/20/solid';
@@ -10,34 +10,23 @@ import { CanvasRenderer } from 'echarts/renderers';
 import dayjs from 'dayjs';
 import { formatDate, formatHumanReadableDuration } from '@/Components/src/utils/time';
 import { useCssVar } from '@vueuse/core';
-import { useQuery } from '@/utils/tanstack';
-import { getCurrentOrganizationId } from '@/utils/useUser';
-import LoadingSpinner from '@/Components/src/LoadingSpinner.vue';
 
 use([TitleComponent, TooltipComponent, VisualMapComponent, CalendarComponent, HeatmapChart, CanvasRenderer]);
 
-const organizationId = computed(() => getCurrentOrganizationId());
-
-const { data: dailyHoursTracked, isLoading } = useQuery({
-	queryKey: ['dailyTrackedHours', organizationId],
-	queryFn: () => {
-		return api.dailyTrackedHours({
-			params: {
-				organization: organizationId.value,
-			},
-		});
-	},
-	enabled: computed(() => !!organizationId.value),
-});
+const dailyHoursTracked = ref([
+	{ date: '2025-04-21', duration: 50, history: [1] },
+	{ date: '2025-04-20', duration: 50, history: [1] },
+	{ date: '2025-04-19', duration: 50, history: [1] },
+	{ date: '2025-04-18', duration: 3650, history: [1] },
+	{ date: '2025-04-17', duration: 93, history: [1, 2, 3] },
+	{ date: '2025-04-16', duration: 93, history: [1, 2, 3] },
+	{ date: '2025-04-15', duration: 93, history: [1, 2, 3] },
+]);
 
 provide(THEME_KEY, 'dark');
 
 const max = computed(() => {
-	if (!isLoading.value && dailyHoursTracked.value) {
-		return Math.max(Math.max(...dailyHoursTracked.value.map((el) => el.duration)), 1);
-	} else {
-		return 1;
-	}
+	return Math.max(Math.max(...dailyHoursTracked.value.map((el) => el.duration)), 1);
 });
 
 const backgroundColor = useCssVar('--color-card-background', null, { observe: true });
@@ -77,7 +66,7 @@ const option = computed(() => {
 		series: {
 			type: 'heatmap',
 			coordinateSystem: 'calendar',
-			data: dailyHoursTracked?.value?.map((el) => [el.date, el.duration]) ?? [],
+			data: dailyHoursTracked.value.map((el) => [el.date, el.duration]) ?? [],
 			itemStyle: {
 				borderRadius: 5,
 				borderColor: 'rgba(255,255,255,0.05)',
@@ -85,8 +74,8 @@ const option = computed(() => {
 			},
 			tooltip: {
 				valueFormatter: (value, dataIndex) => {
-					if (dailyHoursTracked?.value) {
-						return formatDate(dailyHoursTracked?.value[dataIndex].date) + ': ' + formatHumanReadableDuration(value);
+					if (dailyHoursTracked.value.length) {
+						return formatDate(dailyHoursTracked.value[dataIndex].date) + ': ' + formatHumanReadableDuration(value);
 					} else {
 						return '';
 					}
@@ -101,10 +90,7 @@ const option = computed(() => {
 <template>
 	<DashboardCard title="Activity Graph" :icon="BoltIcon">
 		<div class="px-2">
-			<div v-if="isLoading" class="flex justify-center items-center h-40">
-				<LoadingSpinner />
-			</div>
-			<div v-else-if="dailyHoursTracked">
+			<div v-if="dailyHoursTracked">
 				<v-chart
 					class="chart"
 					:autoresize="true"

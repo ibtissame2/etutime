@@ -43,12 +43,12 @@ const expanded = ref(false);
 		class="col-span-3 grid bg-quaternary"
 		style="grid-template-columns: 1fr 150px 150px"
 	>
-		<ReportingRow
+		<RapportRow
 			v-for="subEntry in entry.grouped_data"
 			:key="subEntry.chapitre_name || 'none'"
 			indent
 			:entry="subEntry"
-		></ReportingRow>
+		></RapportRow>
 	</div>
 </template>
 

@@ -1,35 +1,34 @@
 <script setup>
-import { useQuery } from '@/utils/tanstack';
-import { computed } from 'vue';
+import { UserGroupIcon } from '@heroicons/vue/20/solid';
 import DashboardCard from '@/Components/Dashboard/DashboardCard.vue';
 import TeamActivityCardEntry from '@/Components/Dashboard/TeamActivityCardEntry.vue';
-import { UserGroupIcon } from '@heroicons/vue/20/solid';
 import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
-import { getCurrentOrganizationId } from '@/utils/useUser';
-import LoadingSpinner from '@/Components/src/LoadingSpinner.vue';
-import { router, route } from '@/utils/inertia';
 
-const organizationId = computed(() => getCurrentOrganizationId());
-
-const { data: latestTeamActivity, isLoading } = useQuery({
-	queryKey: ['latestTeamActivity', organizationId],
-	queryFn: () => {
-		return api.latestTeamActivity({
-			params: {
-				organization: organizationId.value,
-			},
-		});
+const latestTeamActivity = [
+	{
+		time_entry_id: '1',
+		name: 'time 1',
+		description: 'Hello',
+		status: true,
+		task_id: '1',
+		project_id: '1',
+		tags: [],
 	},
-	enabled: computed(() => !!organizationId.value),
-});
+	{
+		time_entry_id: '2',
+		name: 'time 2',
+		description: 'Hello 2',
+		status: false,
+		task_id: '2',
+		project_id: '2',
+		tags: [],
+	},
+];
 </script>
 
 <template>
 	<DashboardCard title="Team Activity" :icon="UserGroupIcon">
-		<div v-if="isLoading" class="flex justify-center items-center h-40">
-			<LoadingSpinner />
-		</div>
-		<div v-else-if="latestTeamActivity">
+		<div v-if="latestTeamActivity">
 			<TeamActivityCardEntry
 				v-for="activity in latestTeamActivity"
 				:key="activity.time_entry_id"

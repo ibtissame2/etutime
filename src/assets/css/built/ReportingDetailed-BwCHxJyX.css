@@ -3907,7 +3907,6 @@ body {
 	--color-border-tertiary: #2c2e33;
 	--color-border-quaternary: #393b42;
 	--color-input-border-active: rgba(255, 255, 255, 0.3);
-	--theme-color-chart: var(--color-accent-200);
 	--theme-color-menu-active: var(--color-bg-secondary);
 	--theme-color-card-background: var(--color-bg-secondary);
 	--theme-shadow-card: 0 4px 7px 0px rgb(0 0 0 / 15%);
@@ -3945,7 +3944,6 @@ body {
 	--theme-color-menu-active: var(--color-bg-tertiary);
 	--theme-color-card-background: var(--color-bg-quaternary);
 	--theme-color-card-background-active: var(--color-bg-primary);
-	--theme-color-chart: var(--color-accent-400);
 	--theme-shadow-card: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 	--theme-shadow-dropdown: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
 	--theme-color-row-background: var(--theme-color-card-background);

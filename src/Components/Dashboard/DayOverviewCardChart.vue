@@ -1,25 +1,20 @@
 <script setup>
 import VChart from 'vue-echarts';
 import { computed, ref } from 'vue';
-import { useCssVar } from '@vueuse/core';
 
 const props = defineProps({
 	history: Array,
 });
 
-const accentColor = useCssVar('--theme-color-chart', null, { observe: true });
-
 const seriesData = computed(() =>
 	props.history.map((el) => {
 		return {
 			value: el,
-			...{
-				itemStyle: {
-					borderWidth: 1,
-					borderColor: 'rgba(' + accentColor.value + ',0.8)',
-					borderRadius: [2, 2, 0, 0],
-					color: 'rgba(' + accentColor.value + ',0.8)',
-				},
+			itemStyle: {
+				borderWidth: 1,
+				borderColor: 'rgba(56,189,248,0.8)',
+				color: 'rgba(56,189,248,0.8)',
+				borderRadius: [2, 2, 0, 0],
 			},
 		};
 	})

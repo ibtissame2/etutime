@@ -1,6 +1,7 @@
 <script setup>
 import { storeToRefs } from 'pinia';
 import { useChapitresStore } from '@/store/chapitres';
+import { useMinuteursStore } from '@/store/minuteurs';
 import { formatHumanReadableDuration } from '@/Components/src/utils/time';
 import TablePageView from '@/Layouts/TablePageView.vue';
 import ChapitreForm from '@/Components/Forms/ChapitreForm.vue';
@@ -8,6 +9,7 @@ import ModuleDropdown from '@/Components/Module/ModuleDropdown.vue';
 import BookCheckIcon from '@/Components/Icons/BookCheckIcon.vue';
 import DoneIcon from '@/Components/Icons/DoneIcon.vue';
 
+const { minuteurs } = storeToRefs(useMinuteursStore());
 const { chapitres } = storeToRefs(useChapitresStore());
 const { fetchChapitres, updateChapitre, deleteChapitre } = useChapitresStore();
 
@@ -37,6 +39,14 @@ const dropdown = [
 		onclick: (chapitre) => deleteChapitre(chapitre.id),
 	},
 ];
+
+function getTotalTimeForChapitre(chapitre) {
+	let total = 0;
+	minuteurs.value.forEach((minuteur) => {
+		if (minuteur.end && chapitre.id === minuteur.chapitre_id) total += minuteur.duration;
+	});
+	return total ? formatHumanReadableDuration(total) : '--';
+}
 </script>
 
 <template>
@@ -75,7 +85,7 @@ const dropdown = [
 		</template>
 
 		<template #time="{ data: chapitre }">
-			{{ chapitre.spent_time ? formatHumanReadableDuration(chapitre.spent_time) : '--' }}
+			{{ getTotalTimeForChapitre(chapitre) }}
 		</template>
 	</TablePageView>
 </template>

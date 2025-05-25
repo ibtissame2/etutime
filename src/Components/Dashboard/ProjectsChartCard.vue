@@ -6,12 +6,10 @@ import { CanvasRenderer } from 'echarts/renderers';
 import { PieChart } from 'echarts/charts';
 import { GridComponent, LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
 import { formatHumanReadableDuration } from '@/Components/src/utils/time';
-import { useCssVar } from '@vueuse/core';
 
 use([CanvasRenderer, PieChart, TitleComponent, GridComponent, TooltipComponent, LegendComponent]);
 
 provide(THEME_KEY, 'dark');
-const labelColor = useCssVar('--color-text-secondary', null, { observe: true });
 
 const props = defineProps({
 	weeklyProjectOverview: Object,
@@ -33,7 +31,7 @@ const option = computed(() => ({
 		bottom: 'bottom',
 		top: '250px',
 		textStyle: {
-			color: labelColor.value,
+			color: 'var(--color-text-secondary)',
 		},
 	},
 	backgroundColor: 'transparent',

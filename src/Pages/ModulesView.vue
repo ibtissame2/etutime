@@ -2,6 +2,7 @@
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 import { useModulesStore } from '@/store/modules';
+import { useMinuteursStore } from '@/store/minuteurs';
 import { formatHumanReadableDuration } from '@/Components/src/utils/time';
 import { CheckCircleIcon, ArchiveBoxIcon } from '@heroicons/vue/20/solid';
 import { FolderIcon } from '@heroicons/vue/16/solid';
@@ -11,6 +12,7 @@ import TabBarItem from '@/Components/Common/TabBar/TabBarItem.vue';
 import TabBar from '@/Components/Common/TabBar/TabBar.vue';
 import ModuleProgress from '@/Components/Module/ModuleProgress.vue';
 
+const { minuteurs } = storeToRefs(useMinuteursStore());
 const { modules } = storeToRefs(useModulesStore());
 const { fetchModules, updateModule, deleteModule } = useModulesStore();
 
@@ -52,6 +54,14 @@ const shownModules = computed(() => {
 	if (activeTab.value !== 'archived') return modules.value.filter((module) => module.is_public);
 	return modules.value.filter((module) => !module.is_public);
 });
+
+function getTotalTimeForModule(module) {
+	let total = 0;
+	minuteurs.value.forEach((minuteur) => {
+		if (minuteur.end && module.id === minuteur.module_id) total += minuteur.duration;
+	});
+	return total ? formatHumanReadableDuration(total) : '--';
+}
 </script>
 
 <template>
@@ -86,7 +96,7 @@ const shownModules = computed(() => {
 		</template>
 
 		<template #time="{ data: module }">
-			{{ module.spent_time ? formatHumanReadableDuration(module.spent_time) : '--' }}
+			{{ getTotalTimeForModule(module) }}
 		</template>
 
 		<template #progress="{ data: module }">

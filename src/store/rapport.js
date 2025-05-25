@@ -7,16 +7,16 @@ import { CheckCircleIcon, UserGroupIcon } from '@heroicons/vue/20/solid';
 import { DocumentTextIcon, FolderIcon } from '@heroicons/vue/16/solid';
 const api = new Proxy({}, { get: () => () => ({}) });
 
-export const useReportingStore = defineStore('reporting', () => {
-	const reportingGraphResponse = ref(null);
-	const reportingTableResponse = ref(null);
+export const useRapportStore = defineStore('rapport', () => {
+	const rapportGraphResponse = ref(null);
+	const rapportTableResponse = ref(null);
 
 	const { handleApiRequestNotifications } = useNotificationsStore();
 
-	async function fetchGraphReporting(params) {
+	async function fetchGraphRapport(params) {
 		const organization = 1;
 		if (organization) {
-			reportingGraphResponse.value = await handleApiRequestNotifications(
+			rapportGraphResponse.value = await handleApiRequestNotifications(
 				() =>
 					api.getAggregatedTimeEntries({
 						params: {
@@ -25,15 +25,15 @@ export const useReportingStore = defineStore('reporting', () => {
 						queries: params,
 					}),
 				undefined,
-				'Failed to fetch reporting data'
+				'Failed to fetch rapport data'
 			);
 		}
 	}
 
-	async function fetchTableReporting(params) {
+	async function fetchTableRapport(params) {
 		const organization = 1;
 		if (organization) {
-			reportingTableResponse.value = await handleApiRequestNotifications(
+			rapportTableResponse.value = await handleApiRequestNotifications(
 				() =>
 					api.getAggregatedTimeEntries({
 						params: {
@@ -42,17 +42,17 @@ export const useReportingStore = defineStore('reporting', () => {
 						queries: params,
 					}),
 				undefined,
-				'Failed to fetch reporting data'
+				'Failed to fetch rapport data'
 			);
 		}
 	}
 
 	const aggregatedGraphTimeEntries = computed(() => {
-		return reportingGraphResponse.value?.data;
+		return rapportGraphResponse.value?.data;
 	});
 
 	const aggregatedTableTimeEntries = computed(() => {
-		return reportingTableResponse.value?.data;
+		return rapportTableResponse.value?.data;
 	});
 
 	const emptyPlaceholder = {
@@ -62,7 +62,7 @@ export const useReportingStore = defineStore('reporting', () => {
 		description: 'No Description',
 	};
 
-	function getNameForReportingRowEntry(key, type) {
+	function getNameForRapportRowEntry(key, type) {
 		if (type === null) return null;
 		if (key === null) return emptyPlaceholder[type];
 		if (type === 'project') {
@@ -101,10 +101,10 @@ export const useReportingStore = defineStore('reporting', () => {
 
 	return {
 		aggregatedGraphTimeEntries,
-		fetchGraphReporting,
-		fetchTableReporting,
+		fetchGraphRapport,
+		fetchTableRapport,
 		aggregatedTableTimeEntries,
-		getNameForReportingRowEntry,
+		getNameForRapportRowEntry,
 		groupByOptions,
 		emptyPlaceholder,
 	};

@@ -1,4 +1,5 @@
 <script setup>
+import { formatHumanReadableDate, formatHumanReadableDuration } from '@/Components/src/utils/time';
 import DayOverviewCardChart from '@/Components/Dashboard/DayOverviewCardChart.vue';
 
 defineProps({
@@ -6,8 +7,6 @@ defineProps({
 	duration: Number,
 	history: Array,
 });
-
-import { formatHumanReadableDate, formatHumanReadableDuration } from '@/Components/src/utils/time';
 </script>
 
 <template>

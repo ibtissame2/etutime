@@ -4,7 +4,7 @@ import DashboardView from '@/Pages/DashboardView.vue';
 import EmploiView from '@/Pages/EmploiView.vue';
 import EnvView from '@/Pages/EnvView.vue';
 import TimeView from '@/Pages/TimeView.vue';
-import ReportingView from '@/Pages/ReportingView.vue';
+import RapportView from '@/Pages/RapportView.vue';
 import ModulesView from '@/Pages/ModulesView.vue';
 import ChapitresView from '@/Pages/ChapitresView.vue';
 import TagsView from '@/Pages/TagsView.vue';
@@ -48,7 +48,7 @@ const routes = [
 	{
 		path: '/rapport',
 		name: 'Rapport',
-		component: ReportingView,
+		component: RapportView,
 	},
 	{
 		path: '/modules',

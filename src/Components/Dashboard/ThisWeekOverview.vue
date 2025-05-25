@@ -1,153 +1,27 @@
 <script setup>
-import { use } from 'echarts/core';
-import { CanvasRenderer } from 'echarts/renderers';
-import { BarChart } from 'echarts/charts';
-import { GridComponent, LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
-import VChart, { THEME_KEY } from 'vue-echarts';
-import { computed, provide } from 'vue';
-import StatCard from '@/Components/Common/StatCard.vue';
-import { ClockIcon } from '@heroicons/vue/20/solid';
-import CardTitle from '@/Components/src/CardTitle.vue';
-import LinearGradient from 'zrender/lib/graphic/LinearGradient';
-import ProjectsChartCard from '@/Components/Dashboard/ProjectsChartCard.vue';
+import dayjs from 'dayjs';
+import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useMinuteursStore } from '@/store/minuteurs';
 import { formatHumanReadableDuration } from '@/Components/src/utils/time';
-import { useCssVar } from '@vueuse/core';
-import { useQuery } from '@/utils/tanstack';
-import { getCurrentOrganizationId } from '@/utils/useUser';
+import { ClockIcon } from '@heroicons/vue/20/solid';
+import StatCard from '@/Components/Common/StatCard.vue';
+import CardTitle from '@/Components/src/CardTitle.vue';
+import RapportChart from '@/Components/Rapport/RapportChart.vue';
+import RapportPieChart from '@/Components/Rapport/RapportPieChart.vue';
 
-use([CanvasRenderer, BarChart, TitleComponent, GridComponent, TooltipComponent, LegendComponent]);
+const { minuteurs } = storeToRefs(useMinuteursStore());
 
-provide(THEME_KEY, 'dark');
-
-const weekdays = computed(() => {
-	return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const filteredMinuteurs = computed(() => {
+	const start = dayjs().startOf('week').format('YYYY-MM-DD HH:mm:ss');
+	const end = dayjs().endOf('week').format('YYYY-MM-DD HH:mm:ss');
+	return minuteurs.value.filter((m) => m.end && m.start >= start && m.start <= end);
 });
 
-const accentColor = useCssVar('--theme-color-chart', null, { observe: true });
-
-const organizationId = computed(() => getCurrentOrganizationId());
-
-const { data: weeklyProjectOverview } = useQuery({
-	queryKey: ['weeklyProjectOverview', organizationId],
-	queryFn: () => {
-		return api.weeklyProjectOverview({
-			params: {
-				organization: organizationId.value,
-			},
-		});
-	},
-	enabled: computed(() => !!organizationId.value),
-});
-
-const { data: totalWeeklyTime } = useQuery({
-	queryKey: ['totalWeeklyTime', organizationId],
-	queryFn: () => {
-		return api.totalWeeklyTime({
-			params: {
-				organization: organizationId.value,
-			},
-		});
-	},
-	enabled: computed(() => !!organizationId.value),
-});
-
-const { data: weeklyHistory } = useQuery({
-	queryKey: ['weeklyHistory', organizationId],
-	queryFn: () => {
-		return api.weeklyHistory({
-			params: {
-				organization: organizationId.value,
-			},
-		});
-	},
-	enabled: computed(() => !!organizationId.value),
-});
-
-const seriesData = computed(() => {
-	if (!weeklyHistory.value) {
-		return [];
-	}
-	return weeklyHistory.value?.map((el) => {
-		return {
-			value: el.duration,
-			...{
-				itemStyle: {
-					borderColor: new LinearGradient(0, 0, 0, 1, [
-						{ offset: 0, color: 'rgba(' + accentColor.value + ',0.7)' },
-						{ offset: 1, color: 'rgba(' + accentColor.value + ',0.5)' },
-					]),
-					emphasis: {
-						color: new LinearGradient(0, 0, 0, 1, [
-							{ offset: 0, color: 'rgba(' + accentColor.value + ',0.9)' },
-							{ offset: 1, color: 'rgba(' + accentColor.value + ',0.7)' },
-						]),
-					},
-					borderRadius: [12, 12, 0, 0],
-					color: new LinearGradient(0, 0, 0, 1, [
-						{ offset: 0, color: 'rgba(' + accentColor.value + ',0.7)' },
-						{ offset: 1, color: 'rgba(' + accentColor.value + ',0.5)' },
-					]),
-				},
-			},
-		};
-	});
-});
-
-const markLineColor = useCssVar('--color-border-secondary', null, { observe: true });
-const labelColor = useCssVar('--color-text-secondary', null, { observe: true });
-const option = computed(() => {
-	return {
-		tooltip: {
-			trigger: 'item',
-		},
-		grid: {
-			top: 0,
-			right: 0,
-			bottom: 50,
-			left: 0,
-		},
-		backgroundColor: 'transparent',
-		xAxis: {
-			type: 'category',
-			data: weekdays.value,
-			axisLine: {
-				lineStyle: {
-					color: 'transparent',
-				},
-			},
-			axisLabel: {
-				fontSize: 16,
-				fontWeight: 600,
-				margin: 24,
-				fontFamily: 'Outfit, sans-serif',
-				color: labelColor.value,
-			},
-			axisTick: {
-				lineStyle: {
-					color: 'transparent',
-				},
-			},
-		},
-		yAxis: {
-			type: 'value',
-			splitLine: {
-				lineStyle: {
-					color: markLineColor.value,
-				},
-			},
-		},
-		series: [
-			{
-				data: seriesData.value,
-				type: 'bar',
-				tooltip: {
-					valueFormatter: (value) => {
-						return formatHumanReadableDuration(value);
-					},
-				},
-			},
-		],
-	};
+const totalWeeklyTime = computed(() => {
+	let total = 0;
+	filteredMinuteurs.value.forEach((minuteur) => (total = total + minuteur.duration));
+	return total;
 });
 </script>
 
@@ -155,14 +29,11 @@ const option = computed(() => {
 	<div class="grid space-y-5 sm:space-y-0 sm:gap-x-6 xl:gap-x-6 grid-cols-1 lg:grid-cols-3 xl:grid-cols-4">
 		<div class="col-span-2 xl:col-span-3">
 			<CardTitle title="This Week" class="pb-8" :icon="ClockIcon"></CardTitle>
-			<v-chart v-if="weeklyHistory" :autoresize="true" class="chart" :option="option" />
+			<RapportChart :minuteurs="filteredMinuteurs" :is-this-week="true"></RapportChart>
 		</div>
 		<div class="space-y-6">
 			<StatCard title="Spent Time" :value="totalWeeklyTime ? formatHumanReadableDuration(totalWeeklyTime) : '--'" />
-			<ProjectsChartCard
-				v-if="weeklyProjectOverview"
-				:weekly-project-overview="weeklyProjectOverview"
-			></ProjectsChartCard>
+			<RapportPieChart :minuteurs="filteredMinuteurs"></RapportPieChart>
 		</div>
 	</div>
 </template>

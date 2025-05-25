@@ -70,14 +70,14 @@ function isElementSelected(element, type) {
 
 function moveHighlightUp() {
 	mouseEnterHighlightActivated.value = false;
-	const currentHighlightedIndex = searchResults.value.findIndex((it) => it.id === currentElement.value);
+	let currentHighlightedIndex = searchResults.value.findIndex((it) => it.id === currentElement.value);
 	if (currentHighlightedIndex === 0) currentHighlightedIndex = searchResults.value.length;
 	selectElement(searchResults.value[currentHighlightedIndex - 1], props.type);
 }
 
 function moveHighlightDown() {
 	mouseEnterHighlightActivated.value = false;
-	const currentHighlightedIndex = searchResults.value.findIndex((it) => it.id === currentElement.value);
+	let currentHighlightedIndex = searchResults.value.findIndex((it) => it.id === currentElement.value);
 	if (currentHighlightedIndex === searchResults.value.length - 1) currentHighlightedIndex = -1;
 	selectElement(searchResults.value[currentHighlightedIndex + 1], props.type);
 }
