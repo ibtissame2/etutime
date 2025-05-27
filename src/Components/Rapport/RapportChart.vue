@@ -1,8 +1,8 @@
 <script setup>
 import dayjs from 'dayjs';
 import VChart, { THEME_KEY } from 'vue-echarts';
-import { ref, computed, provide } from 'vue';
-import { formatHumanReadableDuration, formatWeek } from '@/Components/src/utils/time';
+import { computed, provide } from 'vue';
+import { formatHumanReadableDuration } from '@/Components/src/utils/time';
 import { use } from 'echarts/core';
 import { BarChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';

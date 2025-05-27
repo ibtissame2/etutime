@@ -1,10 +1,6 @@
-DROP DATABASE IF EXISTS `etutime_test_1`;
-CREATE DATABASE `etutime_test_1` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `etutime_test_1`;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
--- Table users
 CREATE TABLE users (
     id INT(11) NOT NULL AUTO_INCREMENT,
     first_name VARCHAR(255) NOT NULL,
@@ -25,7 +21,6 @@ CREATE TABLE users (
     UNIQUE KEY (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Table modules
 CREATE TABLE modules (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
@@ -38,7 +33,6 @@ CREATE TABLE modules (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Table chapitres
 CREATE TABLE chapitres (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(500) NOT NULL,
@@ -51,7 +45,6 @@ CREATE TABLE chapitres (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Table minuteurs
 CREATE TABLE minuteurs (
     id INT NOT NULL AUTO_INCREMENT,
     module_id INT,
@@ -65,7 +58,6 @@ CREATE TABLE minuteurs (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Table taches
 CREATE TABLE taches (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
@@ -75,7 +67,6 @@ CREATE TABLE taches (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Table de jointure pour relation many-to-many entre minuteurs et taches
 CREATE TABLE minuteur_taches (
     minuteur_id INT NOT NULL,
     tache_id INT NOT NULL,
@@ -84,7 +75,6 @@ CREATE TABLE minuteur_taches (
     FOREIGN KEY (tache_id) REFERENCES taches(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Table notes
 CREATE TABLE notes (
     id INT NOT NULL AUTO_INCREMENT,
     title VARCHAR(255) NOT NULL,
@@ -96,17 +86,90 @@ CREATE TABLE notes (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Table emplois_du_temps
-CREATE TABLE emplois_du_temps (
+CREATE TABLE questionnaire_resultats (
     id INT NOT NULL AUTO_INCREMENT,
     user_id INT NOT NULL,
-    module_id INT,
-    emploi JSON NOT NULL,
-    horaire_fixe JSON,
     niveau_concentration ENUM('faible', 'moyen', 'élevé') NOT NULL,
+    score_total INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
+    INDEX idx_user_id (user_id),
+    INDEX idx_niveau_concentration (niveau_concentration),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE emplois_du_temps (
+    id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    module_id INT NULL,
+    questionnaire_id INT NOT NULL,
+    emploi JSON NOT NULL ,
+    horaire_fixe JSON NULL ,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    INDEX idx_user_id (user_id),
+    INDEX idx_module_id (module_id),
+    INDEX idx_questionnaire_id (questionnaire_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (module_id) REFERENCES modules(id) ON DELETE SET NULL
+    FOREIGN KEY (module_id) REFERENCES modules(id) ON DELETE SET NULL,
+    FOREIGN KEY (questionnaire_id) REFERENCES questionnaire_resultats(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE user_profiles (
+    id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    phone VARCHAR(20) NULL,
+    location VARCHAR(255) NULL,
+    bio TEXT NULL,
+    program VARCHAR(255) NULL,
+    role VARCHAR(50) NOT NULL DEFAULT 'Étudiant',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY (user_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE sessions_etude (
+    id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    minuteur_id INT NULL,
+    module_id INT NULL, 
+    questionnaire_id INT NOT NULL, 
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
+    is_paused TINYINT(1) NOT NULL DEFAULT 0,
+    start_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    pause_time TIMESTAMP NULL,
+    end_time TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    INDEX idx_active_sessions (is_active),
+    INDEX idx_user_active (user_id, is_active),
+    INDEX idx_questionnaire_id (questionnaire_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (minuteur_id) REFERENCES minuteurs(id) ON DELETE SET NULL,
+    FOREIGN KEY (module_id) REFERENCES modules(id) ON DELETE SET NULL,
+    FOREIGN KEY (questionnaire_id) REFERENCES questionnaire_resultats(id) ON DELETE CASCADE   
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE imports (
+    id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    file_path VARCHAR(2048) NOT NULL,
+    file_type ENUM('ical', 'csv', 'json', 'xml', 'other') NOT NULL,
+    import_type ENUM('schedule', 'tasks', 'modules', 'notes', 'other') NOT NULL,
+    status ENUM('pending', 'processing', 'completed', 'failed') NOT NULL DEFAULT 'pending',
+    processed_items INT DEFAULT 0,
+    total_items INT DEFAULT 0,
+    errors JSON NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    INDEX idx_user_id (user_id),
+    INDEX idx_status (status),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -1,36 +1,48 @@
 <script setup>
-import VChart, { THEME_KEY } from 'vue-echarts';
-import { ref, provide, computed } from 'vue';
-import { use } from 'echarts/core';
-import DashboardCard from '@/Components/Dashboard/DashboardCard.vue';
-import { BoltIcon } from '@heroicons/vue/20/solid';
-import { HeatmapChart } from 'echarts/charts';
-import { CalendarComponent, TitleComponent, TooltipComponent, VisualMapComponent } from 'echarts/components';
-import { CanvasRenderer } from 'echarts/renderers';
 import dayjs from 'dayjs';
+import VChart, { THEME_KEY } from 'vue-echarts';
+import { provide, computed } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useMinuteursStore } from '@/Store/minuteurs';
 import { formatDate, formatHumanReadableDuration } from '@/Components/src/utils/time';
-import { useCssVar } from '@vueuse/core';
+import { use } from 'echarts/core';
+import { HeatmapChart } from 'echarts/charts';
+import { CanvasRenderer } from 'echarts/renderers';
+import { CalendarComponent, TitleComponent, TooltipComponent, VisualMapComponent } from 'echarts/components';
+import { BoltIcon } from '@heroicons/vue/20/solid';
+import DashboardCard from '@/Components/Dashboard/DashboardCard.vue';
 
 use([TitleComponent, TooltipComponent, VisualMapComponent, CalendarComponent, HeatmapChart, CanvasRenderer]);
 
-const dailyHoursTracked = ref([
-	{ date: '2025-04-21', duration: 50, history: [1] },
-	{ date: '2025-04-20', duration: 50, history: [1] },
-	{ date: '2025-04-19', duration: 50, history: [1] },
-	{ date: '2025-04-18', duration: 3650, history: [1] },
-	{ date: '2025-04-17', duration: 93, history: [1, 2, 3] },
-	{ date: '2025-04-16', duration: 93, history: [1, 2, 3] },
-	{ date: '2025-04-15', duration: 93, history: [1, 2, 3] },
-]);
-
 provide(THEME_KEY, 'dark');
 
-const max = computed(() => {
-	return Math.max(Math.max(...dailyHoursTracked.value.map((el) => el.duration)), 1);
+const { minuteurs } = storeToRefs(useMinuteursStore());
+
+const range = computed(() => {
+	const end = dayjs();
+	const start = end.subtract(30, 'day').startOf('week');
+	return [
+		[end.endOf('day').format('YYYY-MM-DD HH:mm:ss'), start.startOf('day').format('YYYY-MM-DD HH:mm:ss')],
+		[end.format('YYYY-MM-DD'), start.format('YYYY-MM-DD')],
+	];
 });
 
-const backgroundColor = useCssVar('--color-card-background', null, { observe: true });
-const itemBackgroundColor = useCssVar('--color-bg-tertiary', null, { observe: true });
+const filteredMinuteurs = computed(() => {
+	const list = [];
+	for (const minuteur of minuteurs.value) {
+		if (minuteur.end && minuteur.start >= range.value[0][1] && minuteur.start <= range.value[0][0]) {
+			const date = dayjs(minuteur.start).format('YYYY-MM-DD');
+			const entry = list.find((e) => e[0] === date);
+			if (!entry) list.push([date, minuteur.duration]);
+			else entry[1] += minuteur.duration;
+		}
+	}
+	return list;
+});
+
+const max = computed(() => {
+	return Math.max(1, ...filteredMinuteurs.value.map(([_, duration]) => duration));
+});
 
 const option = computed(() => {
 	return {
@@ -42,9 +54,7 @@ const option = computed(() => {
 			orient: 'horizontal',
 			left: 'center',
 			top: 'center',
-			inRange: {
-				color: [itemBackgroundColor.value, '#2DBE45'],
-			},
+			inRange: { color: ['#2a2c32', '#2DBE45'] },
 			show: false,
 		},
 		calendar: {
@@ -53,32 +63,20 @@ const option = computed(() => {
 			left: 40,
 			right: 10,
 			cellSize: [40, 40],
-			dayLabel: { firstDay: 'monday' },
 			splitLine: { show: false },
-			range: [dayjs().format('YYYY-MM-DD'), dayjs().subtract(50, 'day').startOf('week').format('YYYY-MM-DD')],
-			itemStyle: {
-				color: 'transparent',
-				borderWidth: 8,
-				borderColor: backgroundColor.value,
-			},
+			range: range.value[1],
+			itemStyle: { color: 'transparent', borderWidth: 1, borderColor: '#2a2c32' },
 			yearLabel: { show: false },
 		},
 		series: {
 			type: 'heatmap',
 			coordinateSystem: 'calendar',
-			data: dailyHoursTracked.value.map((el) => [el.date, el.duration]) ?? [],
-			itemStyle: {
-				borderRadius: 5,
-				borderColor: 'rgba(255,255,255,0.05)',
-				borderWidth: 1,
-			},
+			data: filteredMinuteurs.value,
+			itemStyle: { borderRadius: 5, borderColor: 'rgba(255,255,255,0.05)', borderWidth: 1 },
 			tooltip: {
 				valueFormatter: (value, dataIndex) => {
-					if (dailyHoursTracked.value.length) {
-						return formatDate(dailyHoursTracked.value[dataIndex].date) + ': ' + formatHumanReadableDuration(value);
-					} else {
-						return '';
-					}
+					if (!filteredMinuteurs.value.length) return '';
+					return formatDate(filteredMinuteurs.value[dataIndex][0]) + ': ' + formatHumanReadableDuration(value);
 				},
 			},
 		},
@@ -88,9 +86,9 @@ const option = computed(() => {
 </script>
 
 <template>
-	<DashboardCard title="Activity Graph" :icon="BoltIcon">
+	<DashboardCard title="Graphique d'activité" :icon="BoltIcon">
 		<div class="px-2">
-			<div v-if="dailyHoursTracked">
+			<div v-if="filteredMinuteurs.length">
 				<v-chart
 					class="chart"
 					:autoresize="true"
@@ -98,7 +96,7 @@ const option = computed(() => {
 					style="height: 260px; background-color: transparent"
 				/>
 			</div>
-			<div v-else class="text-center text-gray-500 py-8">No activity data available</div>
+			<div v-else class="text-center text-gray-500 pt-12 py-8">Aucune donnée d'activité<br />disponible</div>
 		</div>
 	</DashboardCard>
 </template>
