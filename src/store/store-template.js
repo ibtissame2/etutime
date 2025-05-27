@@ -8,16 +8,16 @@ export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 		const isLoading = ref(false);
 
 		function getSessionInfo() {
-			return { user: 1, team: 1 };
+			return { user: 1 };
 		}
 
 		async function fetchData() {
 			isLoading.value = true;
-			const { user, team } = getSessionInfo();
-			if (!team || !user) return;
+			const { user } = getSessionInfo();
+			if (!user) return;
 			const response = await useAxios.post(
 				typo.name + '/all',
-				{ team, user },
+				{ user },
 				undefined,
 				undefined,
 				'Échec de la récupération des ' + typo.elements
@@ -32,11 +32,11 @@ export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 		}
 
 		async function createElement(object, onSuccess, refresh = true) {
-			const { user, team } = getSessionInfo();
-			if (!team || !user) return;
+			const { user } = getSessionInfo();
+			if (!user) return;
 			const id = await useAxios.post(
 				typo.name + '/create',
-				{ team, user, ...object },
+				{ user, ...object },
 				(data) => onSuccess?.(data),
 				typo.Element + ' créé avec succès',
 				'Échec de la création du ' + typo.element
@@ -46,11 +46,11 @@ export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 		}
 
 		async function updateElement(id, object, onSuccess, refresh = true) {
-			const { user, team } = getSessionInfo();
-			if (!team || !user) return;
+			const { user } = getSessionInfo();
+			if (!user) return;
 			const response = await useAxios.post(
 				typo.name + '/update',
-				{ id, team, user, ...object },
+				{ id, user, ...object },
 				(data) => (onSuccess?.(data), refresh && fetchData()),
 				typo.Element + ' mis à jour avec succès',
 				'Échec de la mise à jour du ' + typo.element
@@ -59,11 +59,11 @@ export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 		}
 
 		async function deleteElement(id, onSuccess, refresh = true) {
-			const { user, team } = getSessionInfo();
-			if (!team || !user) return;
+			const { user } = getSessionInfo();
+			if (!user) return;
 			const response = await useAxios.post(
 				typo.name + '/delete',
-				{ id, team, user },
+				{ id, user },
 				(data) => (onSuccess?.(data), refresh && fetchData()),
 				typo.Element + ' supprimé avec succès',
 				'Échec de la suppression du ' + typo.element

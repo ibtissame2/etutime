@@ -6,20 +6,7 @@ import { useNotificationsStore } from '@/utils/notification';
 import { getCurrentOrganizationId } from '@/utils/useUser';
 const api = new Proxy({}, { get: () => () => ({}) });
 
-export function switchOrganization(organizationId) {
-	router.put(
-		route('current-team.update'),
-		{
-			team_id: organizationId,
-		},
-		{
-			preserveState: false,
-			onSuccess: () => {
-				initializeStores();
-			},
-		}
-	);
-}
+export function switchOrganization(organizationId) {}
 
 export const useOrganizationStore = defineStore('organization', () => {
 	const organizationResponse = ref(null);

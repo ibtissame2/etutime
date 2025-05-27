@@ -77,11 +77,11 @@ export const useMinuteursStore = createCRUDStore({
 				onSuccess?.(data);
 			};
 			if (items.length > 1) {
-				const { user, team } = this.getSessionInfo();
-				if (!team || !user) return;
+				const { user } = this.getSessionInfo();
+				if (!user) return;
 				return await this.useAxios.post(
 					this.typo.name + '/delete-many',
-					{ team, user, ids: items.map((it) => it.id) },
+					{ user, ids: items.map((it) => it.id) },
 					(data) => (onSuccessWrapper(data), refresh && fetchMinuteurs()),
 					'Minuteurs supprimé avec succès',
 					'Échec de la suppression des minuteurs'

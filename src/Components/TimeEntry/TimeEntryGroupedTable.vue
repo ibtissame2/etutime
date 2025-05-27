@@ -2,20 +2,14 @@
 import dayjs from 'dayjs';
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useModulesStore } from '@/store/modules';
-import { useChapitresStore } from '@/store/chapitres';
-import { useTachesStore } from '@/store/taches';
 import { useMinuteursStore } from '@/store/minuteurs';
 import TimeEntryRowHeading from '@/Components/TimeEntry/TimeEntryRowHeading.vue';
 import TimeEntryRow from '@/Components/TimeEntry/TimeEntryRow.vue';
 
 const selectedMinuteurs = defineModel({ default: [] });
 
-const { modules } = storeToRefs(useModulesStore());
-const { chapitres } = storeToRefs(useChapitresStore());
-const { taches } = storeToRefs(useTachesStore());
 const { minuteurs, currentMinuteur } = storeToRefs(useMinuteursStore());
-const { toggleStartStopMinuteur, createMinuteur, deleteMinuteurs } = useMinuteursStore();
+const { toggleStartStopMinuteur, deleteMinuteurs } = useMinuteursStore();
 
 const minuteursDayGroups = computed(() => {
 	const groups = [];

@@ -2,7 +2,6 @@
 import { onMounted, ref, watch } from 'vue';
 import { initializeStores, refreshStores } from '@/utils/init';
 import { theme } from '@/utils/theme';
-import OrganizationSwitcher from '@/Components/OrganizationSwitcher.vue';
 import CurrentSidebarTimer from '@/Components/CurrentSidebarTimer.vue';
 import NotificationContainer from '@/Components/NotificationContainer.vue';
 import NavigationSidebarItem from '@/Components/NavigationSidebarItem.vue';
@@ -65,9 +64,6 @@ onMounted(async () => {
 			class="flex-shrink-0 h-screen hidden fixed w-[230px] 2xl:w-[250px] px-2.5 2xl:px-3 py-4 lg:flex flex-col justify-between"
 		>
 			<div class="flex flex-col h-full">
-				<div class="border-b border-default-background-separator pb-2 flex justify-between">
-					<OrganizationSwitcher class="w-full"></OrganizationSwitcher>
-				</div>
 				<div class="border-b border-default-background-separator">
 					<CurrentSidebarTimer></CurrentSidebarTimer>
 				</div>
