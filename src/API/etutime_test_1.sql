@@ -109,4 +109,4 @@ CREATE TABLE emplois_du_temps (
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (module_id) REFERENCES modules(id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;  
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -1,10 +1,10 @@
 <?php
 require_once __DIR__ . '/../database.php';
 
-$data = getPostData();
+$data = getAxiosData();
 $db = openDatabase();
 $sql = 'SELECT * FROM `taches` WHERE `user_id` = ?;';
-$response = exequteSQL($db, $sql, [$data['user']]);
+$response = executeSQL($db, $sql, [$data['user']]);
 $db->close();
 echo $response;
 ?>

@@ -8,6 +8,7 @@ export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 		const isLoading = ref(false);
 
 		function getSessionInfo() {
+			// Ibtissame: User id
 			return { user: 1 };
 		}
 

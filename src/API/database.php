@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit(0);
 }
 
-function getPostData()
+function getAxiosData()
 {
     $json = file_get_contents('php://input');
     if (empty($json)) {
@@ -63,37 +63,22 @@ function openDatabase()
     return $conn;
 }
 
-// Fonction database2.php (nouvelle version)
-function executeSQL($db, $sql, $params = [], $returnId = false)
-{
-    $statement = $db->prepare($sql);
-    if (!$statement) {
-        throw new Exception('SQL Prepare failed: ' . $db->error);
-    }
-
-    if (!empty($params)) {
-        $types = str_repeat('s', count($params));
-        $statement->bind_param($types, ...$params);
-    }
-
-    if (!$statement->execute()) {
-        throw new Exception('SQL Execute failed: ' . $statement->error);
-    }
-
-    if ($returnId) {
-        return $statement->insert_id;
-    }
-
-    $result = $statement->get_result();
-    if ($result) {
-        return $result->fetch_all(MYSQLI_ASSOC);
-    }
-
-    return true;
-}
-
-// Fonction database.php (ancienne version) - renommée pour éviter les conflits
-function exequteSQL($db, $sql, $params = [], $encode = true)
+/**
+ * Execute a prepared SQL statement with optional parameters and return the result.
+ *
+ * @param mysqli        $db      The open MySQLi database connection. {{ $db = openDatabase() }}
+ * @param string        $sql     The SQL query to execute (can contain "?" placeholders).
+ * @param array         $params  (Optional) Parameters to bind to the SQL statement "?" placeholders.
+ * @param bool          $encode  (Optional) If true, returns JSON-encoded string for SELECT queries; otherwise use false to return a PHP array. Default: true.
+ *
+ * @return mixed Returns:
+ *   - For SELECT queries: (array of associative arrays if $encode is false) (or JSON string if $encode is true).
+ *   - For INSERT queries: the inserted row ID as integer number.
+ *   - For UPDATE/DELETE queries: true on success.
+ *
+ * @throws Exception If SQL preparation or execution fails.
+ */
+function executeSQL($db, $sql, $params = [], $encode = true)
 {
     $response = true;
     $statment = $db->prepare($sql);
@@ -123,10 +108,7 @@ function exequteSQL($db, $sql, $params = [], $encode = true)
         } else {
             $result = $statment->get_result();
             if (!is_bool($result)) {
-                $entries = array();
-                while ($row = $result->fetch_assoc()) {
-                    $entries[] = $row;
-                }
+                $entries = $result->fetch_all(MYSQLI_ASSOC);
                 $response = $encode ? json_encode($entries) : $entries;
             }
         }
