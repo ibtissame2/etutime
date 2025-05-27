@@ -3,7 +3,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import TimeTracker from '@/Components/TimeTracker/TimeTracker.vue';
 import RecentlyTrackedTasksCard from '@/Components/Dashboard/RecentlyTrackedTasksCard.vue';
 import LastSevenDaysCard from '@/Components/Dashboard/LastSevenDaysCard.vue';
-import TeamActivityCard from '@/Components/Dashboard/TeamActivityCard.vue';
+// import TeamActivityCard from '@/Components/Dashboard/TeamActivityCard.vue';
 import ThisWeekOverview from '@/Components/Dashboard/ThisWeekOverview.vue';
 import ActivityGraphCard from '@/Components/Dashboard/ActivityGraphCard.vue';
 import MainContainer from '@/Components/src/MainContainer.vue';
@@ -21,7 +21,7 @@ import MainContainer from '@/Components/src/MainContainer.vue';
 			<RecentlyTrackedTasksCard></RecentlyTrackedTasksCard>
 			<LastSevenDaysCard></LastSevenDaysCard>
 			<ActivityGraphCard></ActivityGraphCard>
-			<TeamActivityCard class="flex lg:hidden xl:flex"> </TeamActivityCard>
+			<!-- <TeamActivityCard class="flex lg:hidden xl:flex"> </TeamActivityCard> -->
 		</MainContainer>
 		<MainContainer class="py-5">
 			<ThisWeekOverview></ThisWeekOverview>
