@@ -125,5 +125,3 @@ function focusNextElement(e) {
 		</Dropdown>
 	</div>
 </template>
-
-<style></style>

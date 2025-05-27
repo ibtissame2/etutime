@@ -100,5 +100,3 @@ const option = computed(() => {
 		</div>
 	</DashboardCard>
 </template>
-
-<style></style>

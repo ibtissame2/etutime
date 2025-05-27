@@ -621,75 +621,7 @@ async handleResetPassword() {
 }
 </script>
 
-<style>
-/* Variables pour les deux thèmes */
-:root {
-  /* Thème clair */
-  --primary-color: #667eea;
-  --primary-dark: #5a67d8;
-  --primary-light: #e0e7ff;
-  --success-color: #10b981;
-  --error-color: #ef4444;
-  --warning-color: #f59e0b;
-  --info-color: #3b82f6;
-  
-  /* Couleurs de fond et texte - thème clair */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
-  --bg-gradient: linear-gradient(135deg, #eff2ff 0%, #d3d3d3 100%);
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
-  --border-color: #e5e7eb;
-  --input-bg: #ffffff;
-  --card-bg: #ffffff;
-  --hover-bg: #f9fafb;
-  
-  /* Ombres */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --border-radius: 12px;
-  --border-radius-sm: 8px;
-}
-
-/* Thème sombre */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg-primary: #111827;
-    --bg-secondary: #1f2937;
-    --bg-gradient: linear-gradient(135deg, #050c33 0%, #000000 30%, #000000 100%);
-    --text-primary: #f9fafb;
-    --text-secondary: #d1d5db;
-    --border-color: #374151;
-    --input-bg: #374151;
-    --card-bg: #1f2937;
-    --hover-bg: #374151;
-    
-    /* Ombres pour le thème sombre */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
-  }
-}
-
-/* Reset */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--bg-gradient);
-  color: var(--text-primary);
-  transition: var(--transition);
-}
-
+<style scoped>
 /* Container principal */
 .auth-container {
   display: flex;

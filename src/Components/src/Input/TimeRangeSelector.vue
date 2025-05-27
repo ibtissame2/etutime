@@ -76,5 +76,3 @@ function updateRange() {
 		</div>
 	</div>
 </template>
-
-<style></style>
