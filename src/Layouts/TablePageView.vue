@@ -9,7 +9,6 @@ import PageTitle from '@/Components/Common/PageTitle.vue';
 import MainContainer from '@/Components/src/MainContainer.vue';
 import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 import TableHeading from '@/Components/Common/TableHeading.vue';
-import TableRow from '@/Components/TableRow.vue';
 import MoreOptionsDropdown from '@/Components/src/MoreOptionsDropdown.vue';
 
 const emit = defineEmits(['fetch', 'rowClick']);
@@ -96,7 +95,11 @@ onMounted(async () => {
 					</div>
 
 					<template v-for="element in data" :key="element.id">
-						<TableRow @click="onRowClick(element)">
+						<div
+							@click="onRowClick(element)"
+							role="row"
+							class="contents group [&>*]:transition [&>*]:border-row-separator [&>*]:bg-row-background [&>*]:border-b"
+						>
 							<div
 								class="py-1.5 pl-4 pr-3 sm:pl-6 lg:pl-8 3xl:pl-12 whitespace-nowrap flex items-center text-text-primary min-w-0"
 							>
@@ -133,7 +136,7 @@ onMounted(async () => {
 									</div>
 								</MoreOptionsDropdown>
 							</div>
-						</TableRow>
+						</div>
 					</template>
 				</div>
 			</div>

@@ -1,5 +1,4 @@
 <script setup>
-import TableRow from '@/Components/TableRow.vue';
 import { capitalizeFirstLetter } from '@/utils/format';
 import InvitationMoreOptionsDropdown from '@/Components/Common/Invitation/InvitationMoreOptionsDropdown.vue';
 import { getCurrentOrganizationId } from '@/utils/useUser';
@@ -54,7 +53,10 @@ async function resendInvitation() {
 </script>
 
 <template>
-	<TableRow>
+	<div
+		role="row"
+		class="contents group [&>*]:transition [&>*]:border-row-separator [&>*]:bg-row-background [&>*]:border-b"
+	>
 		<div class="whitespace-nowrap px-3 py-4 text-sm text-muted pl-4 sm:pl-6 lg:pl-8 3xl:pl-12">
 			{{ props.invitation.email }}
 		</div>
@@ -66,7 +68,7 @@ async function resendInvitation() {
 		>
 			<InvitationMoreOptionsDropdown @delete="deleteInvitation" @resend="resendInvitation" />
 		</div>
-	</TableRow>
+	</div>
 </template>
 
 <style scoped></style>

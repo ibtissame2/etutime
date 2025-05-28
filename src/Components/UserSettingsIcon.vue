@@ -1,12 +1,17 @@
 <script setup>
-import DropdownLink from '@/Components/DropdownLink.vue';
+import { useRouter } from 'vue-router';
+import { usePage, route } from '@/utils/inertia';
 import Dropdown from '@/Components/src/Input/Dropdown.vue';
-import { router, usePage, route } from '@/utils/inertia';
 
+const router = useRouter();
 const page = usePage();
 
 const logout = () => {
-	router.post('logout');
+	sessionStorage.removeItem('user');
+	sessionStorage.removeItem('token');
+	localStorage.removeItem('user');
+	localStorage.removeItem('token');
+	router.push('/');
 };
 </script>
 
@@ -49,14 +54,22 @@ const logout = () => {
 
 			<template #content>
 				<div class="block px-4 py-2 text-xs text-gray-400">Manage Account</div>
-				<DropdownLink :href="route('profile')"> Profile </DropdownLink>
 
-				<DropdownLink v-if="page.props.jetstream.hasApiFeatures" href="api-tokens.index"> API Tokens </DropdownLink>
-				<div class="border-t border-card-border" />
+				<router-link
+					:to="route('profile')"
+					class="block px-4 py-2 text-sm leading-5 text-text-primary hover:bg-card-background-active focus:outline-none focus:bg-card-background-active transition duration-150 ease-in-out"
+				>
+					Profile
+				</router-link>
 
-				<form @submit.prevent="logout">
-					<DropdownLink as="button" data-testid="logout_button"> Log Out </DropdownLink>
-				</form>
+				<div class="border-t border-card-border"></div>
+
+				<button
+					@click="logout"
+					class="block w-full px-4 py-2 text-start text-sm leading-5 text-text-primary hover:bg-card-background-active focus:outline-none focus:bg-card-background-active transition duration-150 ease-in-out"
+				>
+					Se Déconnecter
+				</button>
 			</template>
 		</Dropdown>
 	</div>

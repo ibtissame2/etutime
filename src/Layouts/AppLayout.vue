@@ -10,7 +10,7 @@ import { useTachesStore } from '@/store/taches';
 import { useMinuteursStore } from '@/store/minuteurs';
 import CurrentSidebarTimer from '@/Components/CurrentSidebarTimer.vue';
 import NotificationContainer from '@/Components/NotificationContainer.vue';
-import NavigationSidebarItem from '@/Components/NavigationSidebarItem.vue';
+import NavigationSidebarLink from '@/Components/NavigationSidebarLink.vue';
 import UserSettingsIcon from '@/Components/UserSettingsIcon.vue';
 import MainContainer from '@/Components/src/MainContainer.vue';
 import HomeIcon from '@/Components/Icons/HomeIcon.vue';
@@ -83,40 +83,40 @@ onMounted(async () => {
 				>
 					<nav class="pt-2">
 						<ul>
-							<NavigationSidebarItem
+							<NavigationSidebarLink
 								title="Accueil"
 								:icon="HomeIcon"
 								:href="route('dashboard')"
 								:current="route.current('dashboard')"
-							></NavigationSidebarItem>
+							></NavigationSidebarLink>
 
-							<NavigationSidebarItem
+							<NavigationSidebarLink
 								title="Emploi du Temps"
 								:icon="CalendarIcon"
 								:current="route.current('emploi')"
 								:href="route('emploi')"
-							></NavigationSidebarItem>
+							></NavigationSidebarLink>
 
-							<NavigationSidebarItem
+							<NavigationSidebarLink
 								title="Envirenement du travail"
 								:icon="EnvGroupIcon"
 								:current="route.current('env')"
 								:href="route('env')"
-							></NavigationSidebarItem>
+							></NavigationSidebarLink>
 
-							<NavigationSidebarItem
+							<NavigationSidebarLink
 								title="Tempt"
 								:icon="ClockIcon"
 								:current="route.current('time')"
 								:href="route('time')"
-							></NavigationSidebarItem>
+							></NavigationSidebarLink>
 
-							<NavigationSidebarItem
+							<NavigationSidebarLink
 								title="Rapport"
 								:icon="ChartBarIcon"
 								:current="route.current('rapport')"
 								:href="route('rapport')"
-							></NavigationSidebarItem>
+							></NavigationSidebarLink>
 						</ul>
 					</nav>
 
@@ -124,57 +124,57 @@ onMounted(async () => {
 
 					<nav>
 						<ul>
-							<NavigationSidebarItem
+							<NavigationSidebarLink
 								title="Modules"
 								:icon="FolderIcon"
 								:href="route('modules')"
 								:current="route.current('modules')"
-							></NavigationSidebarItem>
+							></NavigationSidebarLink>
 
-							<NavigationSidebarItem
+							<NavigationSidebarLink
 								title="Chapitres"
 								:icon="BookCheckIcon"
 								:href="route('chapitres')"
 								:current="route.current('chapitres')"
-							></NavigationSidebarItem>
+							></NavigationSidebarLink>
 
-							<NavigationSidebarItem
+							<NavigationSidebarLink
 								title="Tâches"
 								:icon="TagIcon"
 								:current="route.current('taches')"
 								:href="route('taches')"
-							></NavigationSidebarItem>
+							></NavigationSidebarLink>
 						</ul>
 					</nav>
 					<div class="text-text-tertiary text-sm font-semibold pt-5 pb-1.5">Documents</div>
 
 					<nav>
 						<ul>
-							<NavigationSidebarItem
+							<NavigationSidebarLink
 								title="Notes"
 								:icon="NotesIcon"
 								:current="route.current('notes')"
 								:href="route('notes')"
-							></NavigationSidebarItem>
+							></NavigationSidebarLink>
 
-							<NavigationSidebarItem
+							<NavigationSidebarLink
 								title="Importer"
 								:icon="ArrowsRightLeftIcon"
 								:current="route.current('import')"
 								:href="route('import')"
-							></NavigationSidebarItem>
+							></NavigationSidebarLink>
 						</ul>
 					</nav>
 				</div>
 
 				<div class="justify-self-end">
 					<ul class="border-t border-default-background-separator pt-3 flex justify-between pr-4 items-center">
-						<NavigationSidebarItem
+						<NavigationSidebarLink
 							class="flex-1"
 							title="Profile Settings"
 							:icon="Cog6ToothIcon"
 							:href="route('profile')"
-						></NavigationSidebarItem>
+						></NavigationSidebarLink>
 
 						<UserSettingsIcon></UserSettingsIcon>
 					</ul>
