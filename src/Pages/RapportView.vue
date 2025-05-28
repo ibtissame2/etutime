@@ -3,8 +3,8 @@ import dayjs from 'dayjs';
 import { computed, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { formatHumanReadableDuration } from '@/Components/src/utils/time';
-import { useRapportStore } from '@/store/rapport';
 import { useModulesStore } from '@/store/modules';
+import { useChapitresStore } from '@/store/chapitres';
 import { useMinuteursStore } from '@/store/minuteurs';
 import { FolderIcon, ChartBarIcon } from '@heroicons/vue/20/solid';
 import MainContainer from '@/Components/src/MainContainer.vue';
@@ -15,15 +15,11 @@ import DateRangePicker from '@/Components/src/Input/DateRangePicker.vue';
 import RapportChart from '@/Components/Rapport/RapportChart.vue';
 import RapportFilterBadge from '@/Components/Rapport/RapportFilterBadge.vue';
 import ModuleMultiselectDropdown from '@/Components/Module/ModuleMultiselectDropdown.vue';
-import RapportGroupBySelect from '@/Components/Rapport/RapportGroupBySelect.vue';
-import RapportRow from '@/Components/Rapport/RapportRow.vue';
 import RapportPieChart from '@/Components/Rapport/RapportPieChart.vue';
 
-const { getNameForRapportRowEntry, emptyPlaceholder, groupByOptions } = useRapportStore();
-const { aggregatedTableTimeEntries } = storeToRefs(useRapportStore());
 const { modules } = storeToRefs(useModulesStore());
+const { chapitres } = storeToRefs(useChapitresStore());
 const { minuteurs } = storeToRefs(useMinuteursStore());
-
 const startDate = ref(dayjs().subtract(14, 'd').format('YYYY-MM-DD'));
 const endDate = ref(dayjs().format('YYYY-MM-DD'));
 const selectedModules = ref([]);
@@ -38,31 +34,32 @@ const range = computed(() => {
 });
 
 const filteredMinuteurs = computed(() => {
-	const modules = selectedModules.value;
+	const list = selectedModules.value;
 	return minuteurs.value.filter((minuteur) => {
 		if (!minuteur.end) return false;
-		if (modules.length && !modules.includes(minuteur.module_id)) return false;
+		if (list.length && !list.includes(minuteur.module_id)) return false;
 		return minuteur.start >= range.value[0] && minuteur.start <= range.value[1];
 	});
 });
 
 const tableData = computed(() => {
-	return [];
-	return aggregatedTableTimeEntries.value?.grouped_data?.map((entry) => {
-		return {
-			seconds: entry.seconds,
-			cost: entry.cost,
-			description: getNameForRapportRowEntry(entry.key, aggregatedTableTimeEntries.value?.grouped_type),
-			grouped_data:
-				entry.grouped_data?.map((el) => {
-					return {
-						seconds: el.seconds,
-						cost: el.cost,
-						description: getNameForRapportRowEntry(el.key, entry.grouped_type),
-					};
-				}) ?? [],
-		};
+	const list = [];
+	let duration = 0;
+	filteredMinuteurs.value.forEach((minuteur) => {
+		const chapitre = list.find((ch) => ch.id === (minuteur.chapitre_id || null));
+		if (!chapitre) {
+			const ch = minuteur.chapitre_id ? chapitres.value.find((ch) => ch.id === minuteur.chapitre_id) : { id: null };
+			const module = modules.value.find((module) => module.id === minuteur.module_id);
+			list.push({
+				id: ch.id,
+				name: ch.id ? ch.name || '' : null,
+				module: module ? module.name || '' : null,
+				duration: minuteur.duration,
+			});
+		} else chapitre.duration += minuteur.duration;
+		duration += minuteur.duration;
 	});
+	return { list, duration };
 });
 </script>
 
@@ -95,48 +92,40 @@ const tableData = computed(() => {
 
 		<MainContainer>
 			<div class="sm:grid grid-cols-4 pt-6 items-start">
-				<div class="col-span-3 bg-card-background rounded-lg border border-card-border pt-3">
-					<div
-						class="text-sm flex text-text-primary items-center space-x-3 font-medium px-6 border-b border-card-background-separator pb-3"
-					>
-						<span>Grouper par</span>
-						<RapportGroupBySelect
-							v-model="group"
-							:group-by-options="groupByOptions"
-						></RapportGroupBySelect>
-						<span>et</span>
-						<RapportGroupBySelect
-							v-model="subGroup"
-							:group-by-options="groupByOptions.filter((el) => el.value !== group)"
-						></RapportGroupBySelect>
-					</div>
-					<div class="grid items-center" style="grid-template-columns: 1fr 100px 150px">
+				<div class="col-span-3 bg-card-background rounded-lg border border-card-border overflow-hidden">
+					<div class="grid-container">
 						<div
 							class="contents [&>*]:border-card-background-separator [&>*]:border-b [&>*]:bg-tertiary [&>*]:pb-1.5 [&>*]:pt-1 text-muted text-sm"
 						>
-							<div class="pl-6">Nom</div>
-							<div class="text-right">Durée</div>
-							<div class="text-right pr-6">Coût</div>
+							<div><span>Nom</span></div>
+							<div><span>Module</span></div>
+							<div><span>Durée</span></div>
 						</div>
-						<template
-							v-if="aggregatedTableTimeEntries?.grouped_data && aggregatedTableTimeEntries.grouped_data?.length > 0"
-						>
-							<RapportRow
-								v-for="entry in tableData"
-								:key="entry.description ?? 'none'"
-								:entry="entry"
-								:type="aggregatedTableTimeEntries.grouped_type"
-							></RapportRow>
-							<div class="contents [&>*]:transition text-text-tertiary [&>*]:h-[50px]">
-								<div class="flex items-center pl-6 font-medium">
-									<span>Total</span>
+						<template v-if="tableData.list.length > 0">
+							<div
+								v-for="chapitre in tableData.list"
+								:key="chapitre.id"
+								class="contents text-text-primary [&>*]:transition [&>*]:border-card-background-separator [&>*]:border-b [&>*]:h-[50px]"
+							>
+								<div class="font-medium space-x-3">
+									<span>{{ chapitre.name === null ? 'Aucun chapitre' : chapitre.name }}</span>
 								</div>
-								<div class="justify-end flex items-center font-medium">
-									{{ formatHumanReadableDuration(aggregatedTableTimeEntries.seconds) }}
+								<div class="font-medium space-x-3">
+									<span>{{ chapitre.module === null ? 'Aucun module' : chapitre.module }}</span>
+								</div>
+								<div class="">
+									<span>{{ formatHumanReadableDuration(chapitre.duration) }}</span>
+								</div>
+							</div>
+							<div class="contents [&>*]:transition text-text-tertiary [&>*]:h-[50px]">
+								<div class="font-medium"><span>Total</span></div>
+								<div></div>
+								<div class="font-medium">
+									<span>{{ formatHumanReadableDuration(tableData.duration) }}</span>
 								</div>
 							</div>
 						</template>
-						<div v-else class="chart flex flex-col items-center justify-center py-12 col-span-3">
+						<div v-else class="is-empty chart flex flex-col items-center justify-center py-12 col-span-3">
 							<p class="text-lg text-text-primary font-semibold">Aucune minuteur trouvée</p>
 							<p>Essayez de changer les filtres et la plage horaire</p>
 						</div>
@@ -149,3 +138,29 @@ const tableData = computed(() => {
 		</MainContainer>
 	</AppLayout>
 </template>
+
+<style scoped>
+.grid-container > *:not(.is-empty) {
+	display: grid;
+	align-items: center;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr) minmax(0, 126px);
+}
+
+.grid-container > * > * {
+	display: flex;
+	align-content: center;
+	flex-wrap: wrap;
+}
+
+.grid-container > * > :first-child {
+	padding-left: 1.5rem /* 24px */;
+}
+
+.grid-container > * > :last-child {
+	padding-right: 1.5rem /* 24px */;
+}
+
+.grid-container span {
+	height: fit-content;
+}
+</style>
