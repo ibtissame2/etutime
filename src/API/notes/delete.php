@@ -4,7 +4,7 @@ require_once __DIR__ . '/../database.php';
 
 $data = getPostData();
 $db = openDatabase();
-$user_id = get_user_id($db);
+$user_id = get_user_id($db, $data);
 $sql = 'DELETE FROM `notes` WHERE `id` = ? AND `user_id` = ?;';
 executeSQL($db, $sql, [$data['id'], $user_id]);
 $db->close();

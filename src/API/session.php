@@ -22,8 +22,15 @@ function startUserSession($user)
 	];
 }
 
-function get_user_id($db)
+function get_user_id($db, $data, $entire_user = false)
 {
-	return 1;
+	if (isset($data['credentials']) && isset($data['credentials']['user']) && isset($data['credentials']['user']['id'])) {
+		$id = $data['credentials']['user']['id'];
+		$result = executeSQL($db, 'SELECT * from users WHERE id = ?', [$id], false);
+		if (!empty($result)) {
+			return $entire_user ? $result[0] : $id;
+		}
+	}
+	handleError('Utilisateur non connecté', 401);
 }
 ?>

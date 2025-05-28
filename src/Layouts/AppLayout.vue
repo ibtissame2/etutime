@@ -1,7 +1,9 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import { ref, watch, onMounted, onBeforeMount } from 'vue';
 import { theme } from '@/utils/theme';
 import { route } from '@/utils/inertia';
+import { fetch, getCredentials } from '@/store/axios';
+import { useRouter } from 'vue-router';
 import { useModulesStore } from '@/store/modules';
 import { useChapitresStore } from '@/store/chapitres';
 import { useTachesStore } from '@/store/taches';
@@ -27,8 +29,10 @@ defineProps({
 	title: String,
 });
 
+const router = useRouter();
+const isConnecting = ref(null);
+const isConnected = ref(false);
 const showSidebarMenu = ref(false);
-const isConnected = ref(true);
 
 function appTheme() {
 	document.documentElement.classList.add(theme.value);
@@ -38,18 +42,31 @@ function appTheme() {
 	});
 }
 
+onBeforeMount(() => {
+	isConnecting.value = new Promise(async (resolve) => {
+		const credentials = getCredentials();
+		if (credentials) {
+			const connected = await fetch('connection/middleware', { credentials });
+			if (connected?.success) return resolve((isConnected.value = true));
+		}
+		router.push('/');
+	});
+});
+
 onMounted(async () => {
 	appTheme();
-	useModulesStore().fetchModules();
-	useChapitresStore().fetchChapitres();
-	useTachesStore().fetchTaches();
-	useMinuteursStore().fetchMinuteurs();
+	await isConnecting.value;
+	if (isConnected.value) {
+		useModulesStore().fetchModules();
+		useChapitresStore().fetchChapitres();
+		useTachesStore().fetchTaches();
+		useMinuteursStore().fetchMinuteurs();
+	}
 });
 </script>
 
 <template>
-	<div v-if="!isConnected"></div>
-	<div v-else v-bind="$attrs" class="flex flex-wrap bg-background text-muted">
+	<div v-if="isConnected" v-bind="$attrs" class="flex flex-wrap bg-background text-muted">
 		<div
 			:class="{
 				'!flex bg-default-background w-full z-[9999999999]': showSidebarMenu,

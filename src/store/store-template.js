@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
-import { fetch } from '@/store/axios';
+import { fetch, getCredentials } from '@/store/axios';
 
 export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 	return defineStore(typo.name, () => {
@@ -9,9 +9,11 @@ export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 
 		async function fetchData() {
 			isLoading.value = true;
+			const credentials = getCredentials();
+			if (!credentials) return [];
 			const response = await fetch(
 				typo.name + '/all',
-				{},
+				{ credentials },
 				undefined,
 				undefined,
 				'Échec de la récupération des ' + typo.elements
@@ -26,9 +28,11 @@ export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 		}
 
 		async function createElement(object, onSuccess, refresh = true) {
+			const credentials = getCredentials();
+			if (!credentials) return { id: -1, fetching: refresh ? new Promise() : undefined };
 			const id = await fetch(
 				typo.name + '/create',
-				{ ...object },
+				{ ...object, credentials },
 				(data) => onSuccess?.(data),
 				typo.Element + ' créé avec succès',
 				'Échec de la création du ' + typo.element
@@ -38,9 +42,11 @@ export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 		}
 
 		async function updateElement(id, object, onSuccess, refresh = true) {
+			const credentials = getCredentials();
+			if (!credentials) return;
 			const response = await fetch(
 				typo.name + '/update',
-				{ id, ...object },
+				{ id, credentials, ...object },
 				(data) => (onSuccess?.(data), refresh && fetchData()),
 				typo.Element + ' mis à jour avec succès',
 				'Échec de la mise à jour du ' + typo.element
@@ -49,9 +55,11 @@ export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 		}
 
 		async function deleteElement(id, onSuccess, refresh = true) {
+			const credentials = getCredentials();
+			if (!credentials) return;
 			const response = await fetch(
 				typo.name + '/delete',
-				{ id },
+				{ id, credentials },
 				(data) => (onSuccess?.(data), refresh && fetchData()),
 				typo.Element + ' supprimé avec succès',
 				'Échec de la suppression du ' + typo.element
@@ -68,7 +76,7 @@ export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 			['delete' + typo.method]: deleteElement,
 		};
 
-		const currentStore = { typo, fetch, ...crudProps };
+		const currentStore = { typo, fetch, getCredentials, ...crudProps };
 		if (setup) Object.assign(currentStore, setup.call(currentStore, crudProps) || {});
 		return currentStore;
 	});

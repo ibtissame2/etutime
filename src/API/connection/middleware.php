@@ -4,9 +4,7 @@ require_once __DIR__ . '/../database.php';
 
 $data = getPostData();
 $db = openDatabase();
-$user_id = get_user_id($db, $data);
-$sql = 'SELECT * FROM `taches` WHERE `user_id` = ?;';
-$response = executeSQL($db, $sql, [$user_id]);
+$user = get_user_id($db, $data, true);
 $db->close();
-echo $response;
+echo json_encode(["success" => true, "data" => $user]);
 ?>

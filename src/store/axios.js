@@ -1,6 +1,17 @@
 import axios from 'axios';
 import { useNotificationsStore } from '@/utils/notification';
 
+export const getCredentials = () => {
+	let user = sessionStorage.getItem('user') || localStorage.getItem('user');
+	let token = sessionStorage.getItem('token') || localStorage.getItem('token');
+	if (user && token) {
+		try {
+			user = JSON.parse(user);
+			return { user, token };
+		} catch {}
+	}
+};
+
 export const fetch = async (endpoint, variables, onSuccess = () => {}, successMessage, onError) => {
 	try {
 		const response = await axios.post(`http://localhost/etutime/front-end/src/API/${endpoint}.php`, variables);

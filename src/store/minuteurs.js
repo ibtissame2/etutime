@@ -77,9 +77,11 @@ export const useMinuteursStore = createCRUDStore({
 				onSuccess?.(data);
 			};
 			if (items.length > 1) {
+				const credentials = this.getCredentials();
+				if (!credentials) return;
 				return await this.fetch(
 					this.typo.name + '/delete-many',
-					{ ids: items.map((it) => it.id) },
+					{ ids: items.map((it) => it.id), credentials },
 					(data) => (onSuccessWrapper(data), refresh && fetchMinuteurs()),
 					'Minuteurs supprimé avec succès',
 					'Échec de la suppression des minuteurs'

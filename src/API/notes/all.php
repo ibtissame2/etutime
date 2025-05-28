@@ -4,7 +4,7 @@ require_once __DIR__ . '/../database.php';
 
 $data = getPostData();
 $db = openDatabase();
-$user_id = get_user_id($db);
+$user_id = get_user_id($db, $data);
 $sql = 'SELECT * FROM `notes` WHERE `user_id` = ?;';
 $response = executeSQL($db, $sql, [$user_id]);
 $db->close();

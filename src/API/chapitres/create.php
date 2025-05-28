@@ -4,6 +4,7 @@ require_once __DIR__ . '/../database.php';
 
 function createChapitreIfNotExist($db, $data, $throwError = false)
 {
+	$user_id = get_user_id($db, $data);
 	if (!$data['name']) {
 		if (!$throwError)
 			return ["chapitre_id" => null, "module_id" => $data['module_id']];
@@ -14,9 +15,9 @@ function createChapitreIfNotExist($db, $data, $throwError = false)
 	$response = [];
 	$sql = 'SELECT id, module_id FROM `chapitres` WHERE `name` = ? AND `module_id` = ? AND `user_id` = ? LIMIT 1;';
 	if ($data['module_id']) {
-		$response = executeSQL($db, $sql, [$data['name'], $data['module_id'], get_user_id($db)], false);
+		$response = executeSQL($db, $sql, [$data['name'], $data['module_id'], $user_id], false);
 	} else {
-		$response = executeSQL($db, $sql, [$data['name'], null, get_user_id($db)], false);
+		$response = executeSQL($db, $sql, [$data['name'], null, $user_id], false);
 	}
 	$id = -1;
 	$module_id = null;
@@ -25,7 +26,7 @@ function createChapitreIfNotExist($db, $data, $throwError = false)
 		$module_id = $response[0]["module_id"];
 	} else {
 		$sql = 'INSERT INTO `chapitres` (`name`, `module_id`, `user_id`) VALUES (?, ?, ?);';
-		$id = executeSQL($db, $sql, [$data['name'], $data['module_id'], get_user_id($db)]);
+		$id = executeSQL($db, $sql, [$data['name'], $data['module_id'], $user_id]);
 		$module_id = $data["module_id"];
 	}
 	return ["chapitre_id" => $id, "module_id" => $module_id];

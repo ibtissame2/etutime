@@ -1,5 +1,5 @@
 <template>
-	<div class="auth-container">
+	<div v-if="!isConnected" class="auth-container">
 		<div class="app-branding">
 			<h1>Etutime</h1>
 			<p>Gestion de temps et organisation d'études</p>
@@ -258,12 +258,15 @@
 </template>
 
 <script>
-import { fetch } from '@/store/axios';
+import { fetch, getCredentials } from '@/store/axios';
 
 export default {
 	name: 'AuthComponent',
+
 	data() {
 		return {
+			isConnected: true,
+
 			activeTab: 'login',
 			showLoginPassword: false,
 			showRegisterPassword: false,
@@ -430,9 +433,13 @@ export default {
 					if (this.registerForm.rememberMe) {
 						localStorage.setItem('user', JSON.stringify(data.user));
 						localStorage.setItem('token', data.token);
+						sessionStorage.removeItem('user');
+						sessionStorage.removeItem('token');
 					} else {
 						sessionStorage.setItem('user', JSON.stringify(data.user));
 						sessionStorage.setItem('token', data.token);
+						localStorage.removeItem('user');
+						localStorage.removeItem('token');
 					}
 
 					this.notification = {
@@ -477,9 +484,13 @@ export default {
 					if (this.loginForm.rememberMe) {
 						localStorage.setItem('user', JSON.stringify(data.user));
 						localStorage.setItem('token', data.token);
+						sessionStorage.removeItem('user');
+						sessionStorage.removeItem('token');
 					} else {
 						sessionStorage.setItem('user', JSON.stringify(data.user));
 						sessionStorage.setItem('token', data.token);
+						localStorage.removeItem('user');
+						localStorage.removeItem('token');
 					}
 
 					this.notification = {
@@ -548,6 +559,14 @@ export default {
 				message: `Fonctionnalité de connexion via ${provider} non implémentée.`,
 			};
 		},
+	},
+
+	async beforeMount() {
+		const credentials = getCredentials();
+		if (!credentials) return (this.isConnected = false);
+		const connected = await fetch('connection/middleware', { credentials });
+		if (connected?.success) this.$router.push('/dashboard');
+		else this.isConnected = false;
 	},
 };
 </script>
