@@ -17,9 +17,10 @@ dayjs.extend(weekOfYear);
 
 export function formatHumanReadableDuration(duration) {
 	const dayJsDuration = dayjs.duration(duration, 's');
-	const hours = Math.floor(dayJsDuration.asHours());
-	const minutes = dayJsDuration.minutes();
-	return `${hours}h ${minutes.toString().padStart(2, '0')}min`;
+	const hours = Math.floor(dayJsDuration.asHours()).toString().padStart(2, '0');
+	const minutes = Math.floor(dayJsDuration.minutes()).toString().padStart(2, '0');
+	const seconds = Math.floor(dayJsDuration.seconds()).toString().padStart(2, '0');
+	return `${hours}:${minutes}:${seconds}`;
 }
 
 export function formatDuration(duration) {

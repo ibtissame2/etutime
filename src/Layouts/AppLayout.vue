@@ -24,6 +24,7 @@ import FolderIcon from '@/Components/Icons/FolderIcon.vue';
 import TagIcon from '@/Components/Icons/TagIcon.vue';
 import EnvGroupIcon from '@/Components/Icons/EnvGroupIcon.vue';
 import BookCheckIcon from '@/Components/Icons/BookCheckIcon.vue';
+import SidebarIcon from '@/Components/Icons/SidebarIcon.vue';
 
 defineProps({
 	title: String,
@@ -68,9 +69,7 @@ onMounted(async () => {
 <template>
 	<div v-if="isConnected" v-bind="$attrs" class="flex flex-wrap bg-background text-muted">
 		<div
-			:class="{
-				'!flex bg-default-background w-full z-[9999999999]': showSidebarMenu,
-			}"
+			:class="{ 'sidebar-open bg-default-background': showSidebarMenu }"
 			class="flex-shrink-0 h-screen hidden fixed w-[230px] 2xl:w-[250px] px-2.5 2xl:px-3 py-4 lg:flex flex-col justify-between"
 		>
 			<div class="flex flex-col h-full">
@@ -84,6 +83,7 @@ onMounted(async () => {
 					<nav class="pt-2">
 						<ul>
 							<NavigationSidebarLink
+								@click="showSidebarMenu = false"
 								title="Accueil"
 								:icon="HomeIcon"
 								:href="route('dashboard')"
@@ -91,6 +91,7 @@ onMounted(async () => {
 							></NavigationSidebarLink>
 
 							<NavigationSidebarLink
+								@click="showSidebarMenu = false"
 								title="Emploi du Temps"
 								:icon="CalendarIcon"
 								:current="route.current('emploi')"
@@ -98,6 +99,7 @@ onMounted(async () => {
 							></NavigationSidebarLink>
 
 							<NavigationSidebarLink
+								@click="showSidebarMenu = false"
 								title="Envirenement du travail"
 								:icon="EnvGroupIcon"
 								:current="route.current('env')"
@@ -105,6 +107,7 @@ onMounted(async () => {
 							></NavigationSidebarLink>
 
 							<NavigationSidebarLink
+								@click="showSidebarMenu = false"
 								title="Tempt"
 								:icon="ClockIcon"
 								:current="route.current('time')"
@@ -112,6 +115,7 @@ onMounted(async () => {
 							></NavigationSidebarLink>
 
 							<NavigationSidebarLink
+								@click="showSidebarMenu = false"
 								title="Rapport"
 								:icon="ChartBarIcon"
 								:current="route.current('rapport')"
@@ -125,6 +129,7 @@ onMounted(async () => {
 					<nav>
 						<ul>
 							<NavigationSidebarLink
+								@click="showSidebarMenu = false"
 								title="Modules"
 								:icon="FolderIcon"
 								:href="route('modules')"
@@ -132,6 +137,7 @@ onMounted(async () => {
 							></NavigationSidebarLink>
 
 							<NavigationSidebarLink
+								@click="showSidebarMenu = false"
 								title="Chapitres"
 								:icon="BookCheckIcon"
 								:href="route('chapitres')"
@@ -139,6 +145,7 @@ onMounted(async () => {
 							></NavigationSidebarLink>
 
 							<NavigationSidebarLink
+								@click="showSidebarMenu = false"
 								title="Tâches"
 								:icon="TagIcon"
 								:current="route.current('taches')"
@@ -151,6 +158,7 @@ onMounted(async () => {
 					<nav>
 						<ul>
 							<NavigationSidebarLink
+								@click="showSidebarMenu = false"
 								title="Notes"
 								:icon="NotesIcon"
 								:current="route.current('notes')"
@@ -158,6 +166,7 @@ onMounted(async () => {
 							></NavigationSidebarLink>
 
 							<NavigationSidebarLink
+								@click="showSidebarMenu = false"
 								title="Importer"
 								:icon="ArrowsRightLeftIcon"
 								:current="route.current('import')"
@@ -170,6 +179,7 @@ onMounted(async () => {
 				<div class="justify-self-end">
 					<ul class="border-t border-default-background-separator pt-3 flex justify-between pr-4 items-center">
 						<NavigationSidebarLink
+							@click="showSidebarMenu = false"
 							class="flex-1"
 							title="Profile Settings"
 							:icon="Cog6ToothIcon"
@@ -182,6 +192,10 @@ onMounted(async () => {
 			</div>
 		</div>
 		<div class="flex-1 lg:ml-[230px] 2xl:ml-[250px] min-w-0">
+			<div class="app-branding flex items-center p-2 lg:hidden">
+				<SidebarIcon @click="showSidebarMenu = !showSidebarMenu" />
+				<h1>Etutime</h1>
+			</div>
 			<div class="min-h-screen bg-default-background border-l border-default-background-separator">
 				<header v-if="$slots.header" class="bg-default-background border-b border-default-background-separator shadow">
 					<div class="pt-8 pb-3">
@@ -199,3 +213,26 @@ onMounted(async () => {
 	</div>
 	<NotificationContainer></NotificationContainer>
 </template>
+
+<style scoped>
+.app-branding h1 {
+	font-size: 1.25rem;
+	margin-left: 1rem;
+	padding-top: 0.4rem;
+	font-weight: 800;
+	margin-bottom: 0.5rem;
+	background: rgb(184, 233, 255);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 1023.98px) {
+	.sidebar-open {
+		z-index: 9999999999;
+		width: 100%;
+		display: flex !important;
+	}
+}
+</style>
