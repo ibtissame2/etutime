@@ -4,12 +4,12 @@ import { computed, onMounted, ref } from 'vue';
 import { useNotificationsStore } from '@/utils/notification';
 import InputLabel from '@/Components/src/Input/InputLabel.vue';
 import { DocumentIcon } from '@heroicons/vue/24/solid';
-import { ArrowDownOnSquareIcon, InformationCircleIcon } from '@heroicons/vue/24/outline';
+import { ArrowDownOnSquareIcon } from '@heroicons/vue/24/outline';
 
 import { getCurrentOrganizationId } from '@/utils/useUser';
 import DialogModal from '@/Components/src/DialogModal.vue';
 import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
-import { initializeStores } from '@/utils/init';
+// import { initializeStores } from '@/store/init';
 import CardTitle from '@/Components/src/CardTitle.vue';
 import Card from '@/Components/Common/Card.vue';
 
@@ -69,7 +69,7 @@ async function importData() {
 					reject('Import type is null');
 				});
 			});
-			initializeStores();
+			// initializeStores();
 			if (reportResult.value) {
 				showResultModal.value = true;
 			}

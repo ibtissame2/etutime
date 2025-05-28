@@ -1,14 +1,16 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
-import { initializeStores, refreshStores } from '@/utils/init';
 import { theme } from '@/utils/theme';
+import { route } from '@/utils/inertia';
+import { useModulesStore } from '@/store/modules';
+import { useChapitresStore } from '@/store/chapitres';
+import { useTachesStore } from '@/store/taches';
+import { useMinuteursStore } from '@/store/minuteurs';
 import CurrentSidebarTimer from '@/Components/CurrentSidebarTimer.vue';
 import NotificationContainer from '@/Components/NotificationContainer.vue';
 import NavigationSidebarItem from '@/Components/NavigationSidebarItem.vue';
 import UserSettingsIcon from '@/Components/UserSettingsIcon.vue';
 import MainContainer from '@/Components/src/MainContainer.vue';
-import { route } from '@/utils/inertia';
-import { fetchToken, isTokenValid } from '@/utils/session';
 import HomeIcon from '@/Components/Icons/HomeIcon.vue';
 import ArrowsRightLeftIcon from '@/Components/Icons/ArrowsRightLeftIcon.vue';
 import CalendarIcon from '@/Components/Icons/CalendarIcon.vue';
@@ -26,37 +28,28 @@ defineProps({
 });
 
 const showSidebarMenu = ref(false);
-const isUnloading = ref(false);
+const isConnected = ref(true);
 
-onMounted(async () => {
+function appTheme() {
 	document.documentElement.classList.add(theme.value);
 	watch(theme, (newTheme, oldTheme) => {
 		document.documentElement.classList.remove(oldTheme);
 		document.documentElement.classList.add(newTheme);
 	});
+}
 
-	if (window.initialDataLoaded !== true) {
-		window.initialDataLoaded = true;
-		initializeStores();
-	}
-	window.onbeforeunload = () => {
-		isUnloading.value = true;
-	};
-	window.onfocus = async () => {
-		if (!isTokenValid()) {
-			await fetchToken();
-		}
-		setTimeout(() => {
-			if (isUnloading.value === false) {
-				refreshStores();
-			}
-		}, 100);
-	};
+onMounted(async () => {
+	appTheme();
+	useModulesStore().fetchModules();
+	useChapitresStore().fetchChapitres();
+	useTachesStore().fetchTaches();
+	useMinuteursStore().fetchMinuteurs();
 });
 </script>
 
 <template>
-	<div v-bind="$attrs" class="flex flex-wrap bg-background text-muted">
+	<div v-if="!isConnected"></div>
+	<div v-else v-bind="$attrs" class="flex flex-wrap bg-background text-muted">
 		<div
 			:class="{
 				'!flex bg-default-background w-full z-[9999999999]': showSidebarMenu,

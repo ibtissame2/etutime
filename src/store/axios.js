@@ -1,26 +1,18 @@
 import axios from 'axios';
 import { useNotificationsStore } from '@/utils/notification';
-let addNotification;
 
-const protectedObject = {
-	post: async (endpoint, variables, onSuccess = () => {}, successMessage, onError) => {
-		try {
-			const response = await axios.post(`http://localhost/etutime/front-end/src/API/${endpoint}.php`, variables);
-			const success = onSuccess(response.data);
-			const message = successMessage || success?.successMessage;
-			if (message) addNotification('success', message);
-			return response.data;
-		} catch (error) {
-			console.error(error?.message || error);
-			const message = typeof onError === 'string' ? onError : onError(error, error.message || '');
-			addNotification('error', message);
-		}
-	},
+export const fetch = async (endpoint, variables, onSuccess = () => {}, successMessage, onError) => {
+	try {
+		const response = await axios.post(`http://localhost/etutime/front-end/src/API/${endpoint}.php`, variables);
+		const success = onSuccess(response.data);
+		const message = successMessage || success?.successMessage;
+		if (message) useNotificationsStore().addNotification('success', message);
+		return response.data;
+	} catch (error) {
+		let _message = error?.response?.data?.message || error?.message || error || '';
+		console.error(_message);
+		const message = typeof onError === 'string' ? onError : onError ? onError(_message) : error?.message;
+		useNotificationsStore().addNotification('error', message);
+		return error?.response?.data;
+	}
 };
-
-export const useAxios = new Proxy(protectedObject, {
-	get: (_, prop) => {
-		addNotification = addNotification || useNotificationsStore().addNotification;
-		return protectedObject[prop];
-	},
-});

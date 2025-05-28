@@ -1,12 +1,13 @@
 <?php
+require_once __DIR__ . '/../session.php';
 require_once __DIR__ . '/../database.php';
 
 // Vérifier si l'utilisateur est connecté
-if (!isset($data['user']) || !$data['user']['logged_in']) {
+if (!isset($_SESSION['user']) || !$_SESSION['user']['logged_in']) {
     handleError('Utilisateur non connecté', 401);
 }
 
-$userId = $data['user']['id'];
+$userId = $_SESSION['user']['id'];
 
 try {
     $db = openDatabase();

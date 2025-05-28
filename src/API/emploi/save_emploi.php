@@ -1,19 +1,20 @@
 <?php
+require_once __DIR__ . '/../session.php';
 require_once __DIR__ . '/../database.php';
 
 // Recevoir et décoder les données JSON
-$data = getAxiosData();
+$data = getPostData();
 
 if (empty($data)) {
     handleError('Aucune donnée reçue', 400);
 }
 
 // Vérifier si l'utilisateur est connecté
-if (!isset($data['user']) || !$data['user']['logged_in']) {
+if (!isset($_SESSION['user']) || !$_SESSION['user']['logged_in']) {
     handleError('Utilisateur non connecté', 401);
 }
 
-$userId = $data['user']['id'];
+$userId = $_SESSION['user']['id'];
 $emploi = $data['emploi'] ?? null;
 $horaireFixe = $data['horaireFixe'] ?? null;
 

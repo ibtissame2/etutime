@@ -1,24 +1,17 @@
 import { ref, computed } from 'vue';
 import { defineStore } from 'pinia';
-import { useAxios } from '@/store/axios';
+import { fetch } from '@/store/axios';
 
 export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 	return defineStore(typo.name, () => {
 		const list = ref([]);
 		const isLoading = ref(false);
 
-		function getSessionInfo() {
-			// Ibtissame: User id
-			return { user: 1 };
-		}
-
 		async function fetchData() {
 			isLoading.value = true;
-			const { user } = getSessionInfo();
-			if (!user) return;
-			const response = await useAxios.post(
+			const response = await fetch(
 				typo.name + '/all',
-				{ user },
+				{},
 				undefined,
 				undefined,
 				'Échec de la récupération des ' + typo.elements
@@ -33,11 +26,9 @@ export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 		}
 
 		async function createElement(object, onSuccess, refresh = true) {
-			const { user } = getSessionInfo();
-			if (!user) return;
-			const id = await useAxios.post(
+			const id = await fetch(
 				typo.name + '/create',
-				{ user, ...object },
+				{ ...object },
 				(data) => onSuccess?.(data),
 				typo.Element + ' créé avec succès',
 				'Échec de la création du ' + typo.element
@@ -47,11 +38,9 @@ export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 		}
 
 		async function updateElement(id, object, onSuccess, refresh = true) {
-			const { user } = getSessionInfo();
-			if (!user) return;
-			const response = await useAxios.post(
+			const response = await fetch(
 				typo.name + '/update',
-				{ id, user, ...object },
+				{ id, ...object },
 				(data) => (onSuccess?.(data), refresh && fetchData()),
 				typo.Element + ' mis à jour avec succès',
 				'Échec de la mise à jour du ' + typo.element
@@ -60,11 +49,9 @@ export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 		}
 
 		async function deleteElement(id, onSuccess, refresh = true) {
-			const { user } = getSessionInfo();
-			if (!user) return;
-			const response = await useAxios.post(
+			const response = await fetch(
 				typo.name + '/delete',
-				{ id, user },
+				{ id },
 				(data) => (onSuccess?.(data), refresh && fetchData()),
 				typo.Element + ' supprimé avec succès',
 				'Échec de la suppression du ' + typo.element
@@ -81,7 +68,7 @@ export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 			['delete' + typo.method]: deleteElement,
 		};
 
-		const currentStore = { typo, useAxios, getSessionInfo, ...crudProps };
+		const currentStore = { typo, fetch, ...crudProps };
 		if (setup) Object.assign(currentStore, setup.call(currentStore, crudProps) || {});
 		return currentStore;
 	});

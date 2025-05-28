@@ -9,30 +9,8 @@ header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-W
 header("Access-Control-Max-Age: 1000");
 header('Content-Type: application/json');
 
-session_set_cookie_params([
-    'lifetime' => 86400,
-    'path' => '/',
-    'domain' => 'localhost',
-    'secure' => false,
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
-
-function startUserSession($user)
-{
-    $_SESSION['user'] = [
-        'id' => $user['id'],
-        'email' => $user['email'],
-        'first_name' => $user['first_name'],
-        'last_name' => $user['last_name'],
-        'level' => $user['level'],
-        'logged_in' => true
-    ];
-}
-
-session_start();
-
-if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], ['http://localhost:5173'])) {
+$acceptedOrigins = ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5176'];
+if (isset($_SERVER['HTTP_ORIGIN']) && in_array($_SERVER['HTTP_ORIGIN'], $acceptedOrigins)) {
     header("Access-Control-Allow-Origin: " . $_SERVER['HTTP_ORIGIN']);
 } else if (isset($_SERVER['HTTP_ORIGIN'])) {
     header('Access-Control-Allow-Origin: *');
@@ -42,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit(0);
 }
 
-function getAxiosData()
+function getPostData()
 {
     $json = file_get_contents('php://input');
     if (empty($json)) {

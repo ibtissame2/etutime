@@ -1,8 +1,9 @@
 <?php
+require_once __DIR__ . '/../session.php';
 require_once __DIR__ . '/../database.php';
 try {
     // Récupération des données du formulaire
-    $data = getAxiosData();
+    $data = getPostData();
 
     if (
         empty($data['firstName']) || empty($data['lastName']) || empty($data['email']) ||

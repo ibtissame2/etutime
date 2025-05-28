@@ -1,5 +1,3 @@
-import { router } from './inertia';
-import { initializeStores } from '@/utils/init';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { useNotificationsStore } from '@/utils/notification';

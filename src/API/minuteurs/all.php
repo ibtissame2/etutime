@@ -1,8 +1,10 @@
 <?php
+require_once __DIR__ . '/../session.php';
 require_once __DIR__ . '/../database.php';
 
-$data = getAxiosData();
+$data = getPostData();
 $db = openDatabase();
+$user_id = get_user_id($db);
 $sql = 'SELECT m.*, ch.name as chapitre_name, ch.module_id as chapitre_module_id, mt.tache_id as tache_id
         FROM minuteurs m
         LEFT JOIN chapitres ch ON ch.id = m.chapitre_id
@@ -10,7 +12,7 @@ $sql = 'SELECT m.*, ch.name as chapitre_name, ch.module_id as chapitre_module_id
         WHERE m.user_id = ?
         ORDER BY m.start DESC';
 $minuteurs = [];
-$response = executeSQL($db, $sql, [$data['user']], false);
+$response = executeSQL($db, $sql, [$user_id], false);
 foreach ($response as $row) {
         $found = false;
         foreach ($minuteurs as &$minuteur) {

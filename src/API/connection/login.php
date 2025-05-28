@@ -1,8 +1,10 @@
 <?php
+require_once __DIR__ . '/../session.php';
 require_once __DIR__ . '/../database.php';
+
 try {
     // Récupération des données du formulaire
-    $data = getAxiosData();
+    $data = getPostData();
 
     if (empty($data['email']) || empty($data['password'])) {
         throw new Exception("Email et mot de passe requis");
