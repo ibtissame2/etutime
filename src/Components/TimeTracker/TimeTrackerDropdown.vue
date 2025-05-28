@@ -125,7 +125,7 @@ onMounted(() => {
 					)
 				"
 			>
-				<div class="flex items-center lg:space-x-1 min-w-0">
+				<div class="flex items-center lg:space-x-1 min-w-0 pr-6">
 					<span class="whitespace-nowrap text-xs lg:text-sm">
 						{{ selectedElementName }}
 					</span>

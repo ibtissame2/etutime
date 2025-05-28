@@ -73,7 +73,7 @@ watch(open, (isOpen) => {
 	modules.value.sort((module) => (model.value === module.id ? -1 : 1));
 });
 
-onMounted(() => (model.value = props.value));
+onMounted(() => (model.value = model.value || props.value));
 </script>
 
 <template>
