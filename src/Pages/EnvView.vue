@@ -10,767 +10,1516 @@ import { storeToRefs } from 'pinia';
 import { useMinuteursStore } from '@/store/minuteurs';
 import dayjs from 'dayjs';
 import { useRouter } from 'vue-router';
+import { fetch, getCredentials } from '@/store/axios';
 
 defineProps({
-	availableRoles: Array,
+    availableRoles: Array,
 });
 
+const apiBaseUrl = 'import/';
+const studyApiBaseUrl = 'env/';
+
+const checkInterval = ref(null);
 const selectedCourse = ref(null);
+const selectedCourseContent = ref('');
 const importedCourses = ref([]);
 const activeTab = ref('study');
-function isActiveTab(tab) {
-	return activeTab.value === tab;
-}
-
-// Router pour la navigation
-const router = useRouter();
-
-// Utilisation du store minuteurs pour synchronisation
-const { minuteurs, currentMinuteur, clock } = storeToRefs(useMinuteursStore());
-const { toggleStartStopMinuteur } = useMinuteursStore();
-
-// Variables pour la fonctionnalité d'étude
-const activeMembers = ref(1);
+const isLoadingCourses = ref(false);
+const isLoadingContent = ref(false);
 const showImportedCourses = ref(false);
+const studyParticipants = ref([]);
+const studySessionId = ref(null);
+const concentrationLevel = ref(null);
+const studyStatus = ref('inactive');
 
-// Simuler le chargement des cours importés
+const router = useRouter();
+const { minuteurs, currentMinuteur, clock } = storeToRefs(useMinuteursStore());
+
+const checkStudySession = async () => {
+    try {
+        const credentials = getCredentials();
+        const response = await fetch(`${studyApiBaseUrl}checkStudySession`, {
+            method: 'POST',
+            credentials,
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+        
+        return response;
+    } catch (error) {
+        console.error("Erreur:", error);
+        return { success: false };
+    }
+};
+
+const loadStudyData = async () => {
+    await loadStudyParticipants();
+    const sessionCheck = await checkStudySession();
+    
+    if (sessionCheck.success) {
+        if (sessionCheck.action === 'start') {
+            await joinStudySpace();
+        } else if (sessionCheck.action === 'pause' || sessionCheck.action === 'resume') {
+            await updateStudyStatus(sessionCheck.action);
+        }
+    }
+};
+
+const loadStudyParticipants = async () => {
+    try {
+        const credentials = getCredentials();
+        const response = await fetch(`${studyApiBaseUrl}getStudyParticipants`, {
+            method: 'POST', // Ajout explicite
+            credentials,
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        });
+
+        if (response.success) {
+            studyParticipants.value = response.participants;
+            concentrationLevel.value = response.concentration_level;
+            
+            const hasActiveMinuteur = currentMinuteur.value.id && !currentMinuteur.value.end;
+            studyStatus.value = hasActiveMinuteur ? 'active' : 'inactive';
+            
+            const currentUserSession = response.participants.find(p => p.is_current_user);
+            if (currentUserSession) {
+                studySessionId.value = currentUserSession.session_id;
+                if (currentUserSession.is_paused) {
+                    studyStatus.value = 'paused';
+                }
+            }
+        } else {
+            console.error('Erreur API:', response.message);
+            // Gérer le cas d'authentification
+            if (response.message === 'Utilisateur non connecté') {
+                // Rediriger vers la page de connexion ou rafraîchir l'auth
+                console.warn('Session expirée, reconnexion nécessaire');
+            }
+        }
+    } catch (error) {
+        console.error('Erreur réseau:', error);
+    }
+};
+const participantTimers = ref({});
+
+const calculateParticipantTime = (participant) => {
+  // Si inactif ou en pause, retourner le temps stocké
+  if (!participant.is_active || participant.is_paused) {
+    return formatTime(participant.study_time);
+  }
+  
+  // Si le timer n'existe pas encore, l'initialiser
+  if (!participantTimers.value[participant.user_id]) {
+    participantTimers.value[participant.user_id] = {
+      baseSeconds: participant.study_time,
+      startTime: new Date().getTime()
+    };
+  }
+  
+  // Calculer le temps écoulé depuis le dernier rafraîchissement
+  const now = new Date().getTime();
+  const elapsedSeconds = Math.floor((now - participantTimers.value[participant.user_id].startTime) / 1000);
+  const totalSeconds = participantTimers.value[participant.user_id].baseSeconds + elapsedSeconds;
+  
+  return formatTime(totalSeconds);
+};
+
+const formatTime = (seconds) => {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = Math.floor(seconds % 60);
+  
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+};
+
+// Ajouter un intervalle pour rafraîchir les timers
+const timerInterval = ref(null);
+
 onMounted(() => {
-	// Dans une implémentation réelle, vous devriez charger ces données depuis votre API
-	importedCourses.value = [
-		{ id: 1, title: 'Introduction à la programmation', date: '2025-05-15', pages: 45 },
-		{ id: 2, title: 'Mathématiques avancées', date: '2025-05-10', pages: 32 },
-		{ id: 3, title: 'Littérature française', date: '2025-05-05', pages: 67 },
-		{ id: 4, title: 'Sciences physiques', date: '2025-04-30', pages: 28 },
-		{ id: 5, title: 'Histoire contemporaine', date: '2025-04-25', pages: 53 },
-	];
+  loadStudyData();
+  checkInterval.value = setInterval(loadStudyData, 1000);
+  
+  timerInterval.value = setInterval(() => {
+    // Force le recalcul en mettant à jour une ref inutilisée
+    clock.value = dayjs();
+  }, 1000);
+  
+  onBeforeUnmount(() => {
+    clearInterval(checkInterval.value);
+    clearInterval(timerInterval.value);
+  });
 });
 
-// Méthodes pour l'espace d'étude synchronisées avec le système de minuteurs
-function pauseStudy() {
-	if (currentMinuteur.value.id) {
-		// Arrêt du minuteur en cours
-		toggleStartStopMinuteur(false, currentMinuteur.value);
-	}
+const joinStudySpace = async () => {
+    try {
+        const credentials = getCredentials();
+        const response = await fetch(`${studyApiBaseUrl}joinStudySpace`, {
+            method: 'POST',
+            credentials,
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+            // ✅ SUPPRIMÉ: questionnaire_id: 1
+            // Le backend s'occupe de récupérer le bon questionnaire
+        });
+        
+        if (response.success) {
+            studySessionId.value = response.session_id;
+            studyStatus.value = 'active';
+            
+            startMinuteur({
+                id: Date.now(),
+                start: new Date().toISOString(),
+                module_id: null,
+                chapitre_id: null
+            });
+            
+            loadStudyParticipants();
+        } else {
+            console.error('Erreur API:', response.message);
+        }
+    } catch (error) {
+        console.error('Erreur réseau:', error);
+    }
+};
+
+
+const updateStudyStatus = async (action) => {
+    try {
+        const credentials = getCredentials();
+        const response = await fetch(`${studyApiBaseUrl}updateStudyStatus`, {
+            method: 'POST',
+            credentials,
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                action: action
+            })
+        });
+        
+        if (response.success) {
+            studyStatus.value = action === 'pause' ? 'paused' : 
+                              action === 'resume' ? 'active' : 'inactive';
+            
+            if (action === 'stop') {
+                toggleStartStopMinuteur();
+            }
+            
+            loadStudyParticipants();
+        } else {
+            console.error('Erreur API:', response.message);
+        }
+    } catch (error) {
+        console.error('Erreur réseau:', error);
+    }
+};
+const loadImportedCourses = async () => {
+    isLoadingCourses.value = true;
+    try {
+        const credentials = getCredentials();
+        const response = await fetch(`${apiBaseUrl}getCourses`, {
+            credentials
+        });
+        
+        if (response.success) {
+            importedCourses.value = response.data.map(course => ({
+                ...course,
+                date: dayjs(course.created_at).format('YYYY-MM-DD')
+            }));
+        } else {
+            console.error('Erreur API:', response.message);
+            importedCourses.value = [];
+        }
+    } catch (error) {
+        console.error('Erreur réseau:', error);
+        importedCourses.value = [];
+    } finally {
+        isLoadingCourses.value = false;
+    }
+};
+
+const loadCourseContent = async (courseId) => {
+    isLoadingContent.value = true;
+    selectedCourseContent.value = null;
+    selectedCourse.value = importedCourses.value.find(c => c.id === courseId);
+  
+    try {
+        const credentials = getCredentials();
+        const response = await fetch(`${apiBaseUrl}getFileContent`, {
+            import_id: courseId,
+            credentials
+        });
+
+        if (response.success) {
+            selectedCourseContent.value = {
+                ...response.data,
+                file_url: response.data.is_pdf ? response.data.file_url : '',
+                can_download: true
+            };
+        } else {
+            throw new Error(response.message || "Impossible de charger le fichier");
+        }
+    } catch (error) {
+        console.error("Erreur détaillée:", error);
+        selectedCourseContent.value = {
+            error: true,
+            message: error.message || "Erreur lors du chargement du fichier"
+        };
+    } finally {
+        isLoadingContent.value = false;
+    }
+};
+
+const closeCourse = () => {
+    selectedCourse.value = null;
+    selectedCourseContent.value = null;
+};
+
+const viewCourses = () => {
+    showImportedCourses.value = !showImportedCourses.value;
+    if (showImportedCourses.value) {
+        loadImportedCourses();
+    }
+};
+
+const goToImport = () => {
+    router.push({ name: 'import' });
+};
+
+const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
+
+const getFileIcon = (type) => {
+    const typeMapping = {
+        'pdf': '📄',
+        'document': '📝',
+        'spreadsheet': '📊',
+        'csv': '📊',
+        'json': '📋',
+        'xml': '🗂️',
+        'ical': '📅',
+        'text': '📄',
+        'markdown': '📄'
+    };
+    return typeMapping[type?.toLowerCase()] || '📁';
+};
+
+
+const formattedStudyTime = computed(() => {
+    if (!currentMinuteur.value.id || !clock.value) return '00:00:00';
+
+    const startTime = dayjs(currentMinuteur.value.start);
+    const currentTime = clock.value || dayjs();
+    const diffSeconds = currentTime.diff(startTime, 'second');
+
+    const hours = Math.floor(diffSeconds / 3600);
+    const minutes = Math.floor((diffSeconds % 3600) / 60);
+    const seconds = diffSeconds % 60;
+
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds
+        .toString()
+        .padStart(2, '0')}`;
+});
+
+onBeforeUnmount(() => {
+    closeCourse();
+});
+
+function isActiveTab(tab) {
+    return activeTab.value === tab;
 }
 
-function viewCourses() {
-	// Afficher la liste des cours importés
-	showImportedCourses.value = !showImportedCourses.value;
-}
 
-function goToImport() {
-	router.push({ name: 'import' });
-}
 
 function selectCourse(course) {
-	selectedCourse.value = course;
-	showImportedCourses.value = false;
+    selectedCourse.value = course;
+    showImportedCourses.value = false;
+    loadCourseContent(course.id);
 }
-
-function closeCourse() {
-	selectedCourse.value = null;
-}
-
-// Utiliser l'horloge du système de minuteurs pour afficher le temps écoulé
-const formattedStudyTime = computed(() => {
-	if (!currentMinuteur.value.id || !clock.value) return '00:00:00';
-
-	const startTime = dayjs(currentMinuteur.value.start);
-	const currentTime = clock.value || dayjs();
-	const diffSeconds = currentTime.diff(startTime, 'second');
-
-	const hours = Math.floor(diffSeconds / 3600);
-	const minutes = Math.floor((diffSeconds % 3600) / 60);
-	const seconds = diffSeconds % 60;
-
-	return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds
-		.toString()
-		.padStart(2, '0')}`;
-});
-
-// État de l'étude basé sur le minuteur actuel
-const studyActive = computed(() => !!currentMinuteur.value.id);
-
-// Nettoyer si nécessaire
-onBeforeUnmount(() => {
-	if (currentMinuteur.value.id) {
-		// Option: arrêter automatiquement le minuteur lors de la fermeture
-		// toggleStartStopMinuteur(false, currentMinuteur.value);
-	}
-});
 </script>
 
 <template>
-	<AppLayout title="Members" data-testid="members_view">
-		<MainContainer class="py-5 border-b border-default-background-separator flex justify-between items-center">
-			<div class="flex items-center space-x-4 sm:space-x-6">
-				<PageTitle :icon="UserGroupIcon" title="Members"> </PageTitle>
-				<TabBar>
-					<TabBarItem :active="isActiveTab('study')" @click="activeTab = 'study'">Espace d'étude</TabBarItem>
-				</TabBar>
-			</div>
-		</MainContainer>
+  <AppLayout title="Espace d'étude" data-testid="env_view">
+    <MainContainer class="py-5 border-b border-default-background-separator flex justify-between items-center">
+      <div class="flex items-center space-x-4 sm:space-x-6">
+        <PageTitle :icon="UserGroupIcon" title="Espace d'étude"></PageTitle>
+        <TabBar>
+          <TabBarItem :active="isActiveTab('study')" @click="activeTab = 'study'">Espace d'étude</TabBarItem>
+        </TabBar>
+      </div>
+    </MainContainer>
 
-		<!-- Intégration de l'espace d'étude -->
-		<div v-if="activeTab === 'study'" class="study-room-wrapper">
-			<div class="flex-container" :class="{ 'with-course': selectedCourse }">
-				<!-- Conteneur de l'espace d'étude -->
-				<div class="study-room-container" :class="{ 'with-course': selectedCourse }">
-					<!-- En-tête simplifié -->
-					<div class="room-header">
-						<h1 class="room-title">Espace d'étude</h1>
-						<button class="view-courses-btn-header" @click="viewCourses">
-							<span class="courses-icon">📚</span>
-							<span class="courses-text">{{ showImportedCourses ? 'Masquer les cours' : 'Voir les cours' }}</span>
-						</button>
-					</div>
+    <div class="study-room-wrapper">
+      <div class="flex-container" :class="{ 'with-course': selectedCourse }">
+        <!-- Espace d'étude principal -->
+        <div class="study-room-container" :class="{ 'with-course': selectedCourse }">
+          <div class="room-header">
+            <h1 class="room-title">Espace d'étude</h1>
+            <button class="view-courses-btn-header" @click="viewCourses">
+              <span class="courses-icon">📚</span>
+              <span class="courses-text">{{ showImportedCourses ? 'Masquer les cours' : 'Voir les cours' }}</span>
+            </button>
+          </div>
 
-					<!-- Statut d'étude -->
-					<div class="status-pill">
-						<span class="status-dot" :class="{ 'active-dot': studyActive }"></span>
-						<span class="status-label">{{ studyActive ? 'En étude' : 'En pause' }}</span>
-						<span class="member-count">{{ activeMembers }} membres</span>
-					</div>
+          <div class="status-pill">
+            <span class="status-dot" :class="{ 
+              'active-dot': studyStatus === 'active',
+              'paused-dot': studyStatus === 'paused'
+            }"></span>
+            <span class="status-label">{{ 
+              studyStatus === 'active' ? 'En étude' : 
+              studyStatus === 'paused' ? 'En pause' : 'Non connecté'
+            }}</span>
+            <span class="member-count">{{ studyParticipants.length }} membres</span>
+          </div>
 
-					<!-- Grille des participants -->
-					<div class="participants-grid">
-						<!-- Votre espace -->
-						<div class="participant-card active">
-							<div class="user-avatar">
-								<div class="avatar-placeholder"></div>
-							</div>
-							<div class="participant-info">
-								<div class="participant-name">Vous</div>
-								<div class="study-time">{{ formattedStudyTime }}</div>
-							</div>
-						</div>
+          <!-- Grille des participants -->
+          <div class="participants-grid">
+            <!-- Utilisateur actuel -->
+            <div class="participant-card active">
+              <div class="user-avatar">
+                <div class="avatar-placeholder"></div>
+              </div>
+              <div class="participant-info">
+                <div class="participant-name">Vous</div>
+                <div class="study-time">{{ formattedStudyTime }}</div>
+              </div>
+            </div>
 
-						<!-- Espaces vides pour d'autres participants -->
-						<div v-for="i in 11" :key="i" class="participant-card empty">
-							<div class="user-avatar">
-								<div class="avatar-placeholder empty"></div>
-							</div>
-							<div class="participant-info">
-								<div class="placeholder-name"></div>
-								<div class="placeholder-time"></div>
-							</div>
-						</div>
-					</div>
+            <!-- Autres participants -->
+            <div class="participant-card" 
+                 v-for="participant in studyParticipants.filter(p => !p.is_current_user)" 
+                 :key="participant.user_id"
+                 :class="{ 
+                   'paused': participant.is_paused,
+                   'active': participant.is_active && !participant.is_paused
+                 }">
+              <div class="user-avatar">
+                <div class="avatar-placeholder"></div>
+                <div v-if="participant.is_active && !participant.is_paused" class="active-indicator"></div>
+              </div>
+              <div class="participant-info">
+                <div class="participant-name">{{ participant.name }}</div>
+                <div class="study-time">
+                  {{ participant.study_time ? formatTime(participant.study_time) : '00:00:00' }}
+                </div>
+                <div v-if="participant.is_active && !participant.is_paused" class="live-status">
+                  <span class="live-dot"></span>
+                  En direct
+                </div>
+                <div v-else-if="participant.is_paused" class="paused-status">
+                  En pause
+                </div>
+              </div>
+            </div>
 
-					<!-- Bouton de contrôle principal -->
-					<div class="main-controls">
-						<button v-if="studyActive" class="main-btn pause-study-btn" @click="pauseStudy()">
-							<span class="btn-icon">⏸</span>
-							<span class="btn-text">Mettre en pause</span>
-						</button>
-					</div>
-				</div>
+            <!-- Espaces vides -->
+            <div 
+                v-for="i in Math.max(0, 12 - studyParticipants.length)" 
+                :key="'empty-'+i" 
+                class="participant-card empty">
+              <div class="user-avatar">
+                <div class="avatar-placeholder empty"></div>
+              </div>
+              <div class="participant-info">
+                <div class="placeholder-name"></div>
+                <div class="placeholder-time"></div>
+              </div>
+            </div>
+          </div>
 
-				<!-- Affichage du cours sélectionné -->
-				<div v-if="selectedCourse" class="course-display-container">
-					<div class="course-header">
-						<h2 class="course-title">{{ selectedCourse.title }}</h2>
-						<button class="close-course-btn" @click="closeCourse">×</button>
-					</div>
-					<div class="course-details">
-						<div class="course-meta">
-							<p><strong>Date d'import:</strong> {{ selectedCourse.date }}</p>
-							<p><strong>Pages:</strong> {{ selectedCourse.pages }}</p>
-						</div>
-						<div class="course-content">
-							<!-- Contenu du cours ici -->
-							<div class="course-placeholder">
-								<div class="course-placeholder-icon">
-									<BookOpenIcon class="h-8 w-8 text-gray-400 dark:text-gray-500" />
-								</div>
-								<p class="course-placeholder-text">Contenu du cours disponible</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+          <div class="study-status-indicator">
+            <span class="status-dot" :class="{
+                'active-dot': studyStatus === 'active',
+                'paused-dot': studyStatus === 'paused'
+            }"></span>
+            <span class="status-text">
+              {{ 
+                  studyStatus === 'active' ? 'Session d\'étude en cours' : 
+                  studyStatus === 'paused' ? 'Session en pause' : 
+                  'Pas de session active' 
+              }}
+            </span>
+          </div>
+        </div>
 
-			<!-- Liste des cours importés -->
-			<div v-if="showImportedCourses" class="imported-courses-overlay">
-				<div class="imported-courses-container">
-					<div class="imported-courses-header">
-						<h2 class="imported-courses-title">Cours importés</h2>
-						<button class="close-courses-btn" @click="showImportedCourses = false">×</button>
-					</div>
-					<div class="courses-list">
-						<div v-if="importedCourses.length === 0" class="no-courses">
-							<p>Aucun cours importé. Veuillez importer des cours d'abord.</p>
-							<button class="import-btn" @click="goToImport">Importer des cours</button>
-						</div>
-						<div v-else class="courses-grid">
-							<div v-for="course in importedCourses" :key="course.id" class="course-card" @click="selectCourse(course)">
-								<div class="course-card-icon">
-									<BookOpenIcon class="h-6 w-6 text-gray-500 dark:text-gray-400" />
-								</div>
-								<div class="course-card-content">
-									<h3 class="course-card-title">{{ course.title }}</h3>
-									<p class="course-card-date">Importé le {{ course.date }}</p>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</AppLayout>
+        <!-- Affichage du cours sélectionné -->
+        <div v-if="selectedCourseContent" class="file-display">
+          <div class="file-header">
+            <div class="file-info">
+              <span class="file-icon">{{ getFileIcon(selectedCourseContent.file_type) }}</span>
+              <div>
+                <h3 class="file-name">{{ selectedCourseContent.file_name }}</h3>
+                <p class="file-meta">
+                  {{ selectedCourseContent.file_type?.toUpperCase() }} • 
+                  {{ formatFileSize(selectedCourseContent.file_size) }}
+                </p>
+              </div>
+            </div>
+            <button @click="closeCourse" class="close-btn">
+              <XMarkIcon class="w-5 h-5" />
+            </button>
+          </div>
+
+          <div v-if="isLoadingContent" class="loading-content">
+            Chargement du contenu...
+          </div>
+
+          <div v-else-if="selectedCourseContent.error" class="error-message">
+            {{ selectedCourseContent.message }}
+          </div>
+
+          <div v-else-if="selectedCourseContent.is_pdf" class="pdf-container">
+            <iframe 
+              v-if="selectedCourseContent.file_url"
+              :src="selectedCourseContent.file_url"
+              class="pdf-viewer"
+              title="Aperçu du PDF"
+            ></iframe>
+          </div>
+
+          <div v-else-if="!selectedCourseContent.can_display" class="display-message">
+            {{ selectedCourseContent.display_message }}
+            <a 
+              v-if="selectedCourseContent.file_path"
+              :href="'/etutime/' + selectedCourseContent.file_path" 
+              download
+              class="download-btn"
+            >
+              <ArrowDownTrayIcon class="w-4 h-4 mr-2" />
+              Télécharger le fichier
+            </a>
+          </div>
+
+          <pre v-else class="file-content">{{ selectedCourseContent.content }}</pre>
+        </div>
+      </div>
+
+      <!-- Modal des cours importés -->
+      <div v-if="showImportedCourses" class="imported-courses-overlay" @click.self="showImportedCourses = false">
+        <div class="imported-courses-container">
+          <div class="imported-courses-header">
+            <h2 class="imported-courses-title">Cours importés</h2>
+            <button class="close-courses-btn" @click="showImportedCourses = false">×</button>
+          </div>
+          
+          <div class="courses-list">
+            <div v-if="isLoadingCourses" class="courses-loading">
+              <div class="loading-spinner"></div>
+              <p>Chargement des cours...</p>
+            </div>
+            
+            <div v-else-if="importedCourses.length > 0" class="courses-grid">
+              <div 
+                v-for="course in importedCourses" 
+                :key="course.id"
+                class="course-card"
+                @click="loadCourseContent(course.id)"
+              >
+                <div class="course-card-icon">
+                  <span class="file-icon">{{ getFileIcon(course.file_type) }}</span>
+                </div>
+                <div class="course-card-content">
+                  <h3 class="course-card-title">{{ course.title }}</h3>
+                  <p class="course-card-date">{{ course.date }}</p>
+                  <p class="course-card-type">{{ course.file_type?.toUpperCase() }}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div v-else class="no-courses">
+              <BookOpenIcon class="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <p>Aucun cours importé pour le moment</p>
+              <button class="import-btn" @click="goToImport">
+                Importer des cours
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </AppLayout>
 </template>
 
 <style scoped>
 /* Variables CSS pour la gestion des thèmes */
 :root {
-	--color-bg-primary: #ffffff;
-	--color-bg-secondary: #f9fafb;
-	--bg-tertiary: #f3f4f6;
-	--text-primary: #111827;
-	--text-secondary: #4b5563;
-	--text-tertiary: #6b7280;
-	--border-primary: #e5e7eb;
-	--border-secondary: #d1d5db;
-	--shadow-light: rgba(0, 0, 0, 0.1);
-	--shadow-medium: rgba(0, 0, 0, 0.15);
-	--accent-blue: #1f93ff;
-	--accent-green: #22c55e;
-	--accent-red: #ef4444;
+    --color-bg-primary: #ffffff;
+    --color-bg-secondary: #f9fafb;
+    --bg-tertiary: #f3f4f6;
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --text-tertiary: #6b7280;
+    --border-primary: #e5e7eb;
+    --border-secondary: #d1d5db;
+    --shadow-light: rgba(0, 0, 0, 0.1);
+    --shadow-medium: rgba(0, 0, 0, 0.15);
+    --accent-blue: #1f93ff;
+    --accent-green: #22c55e;
+    --accent-red: #ef4444;
 }
 
 /* Mode sombre */
 .dark {
-	--color-bg-primary: #1f2937;
-	--color-bg-secondary: #111827;
-	--bg-tertiary: #374151;
-	--text-primary: #f9fafb;
-	--text-secondary: #d1d5db;
-	--text-tertiary: #9ca3af;
-	--border-primary: #374151;
-	--border-secondary: #4b5563;
-	--shadow-light: rgba(0, 0, 0, 0.3);
-	--shadow-medium: rgba(0, 0, 0, 0.4);
-	--accent-blue: #3b82f6;
-	--accent-green: #10b981;
-	--accent-red: #f87171;
+    --color-bg-primary: #1f2937;
+    --color-bg-secondary: #111827;
+    --bg-tertiary: #374151;
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-tertiary: #9ca3af;
+    --border-primary: #374151;
+    --border-secondary: #4b5563;
+    --shadow-light: rgba(0, 0, 0, 0.3);
+    --shadow-medium: rgba(0, 0, 0, 0.4);
+    --accent-blue: #3b82f6;
+    --accent-green: #10b981;
+    --accent-red: #f87171;
 }
 
 @media (prefers-color-scheme: dark) {
-	:root {
-		--bg-tertiary: #2a2c32;
-		--text-primary: #f9fafb;
-		--text-secondary: #d1d5db;
-		--text-tertiary: #9ca3af;
-		--border-primary: #374151;
-		--border-secondary: #4b5563;
-		--shadow-light: rgba(0, 0, 0, 0.3);
-		--shadow-medium: rgba(0, 0, 0, 0.4);
-		--accent-blue: #3b82f6;
-		--accent-green: #10b981;
-		--accent-red: #f87171;
-	}
-	.status-label {
-		color: #f9fafb !important;
-	}
+    :root {
+        --bg-tertiary: #2a2c32;
+        --text-primary: #f9fafb;
+        --text-secondary: #d1d5db;
+        --text-tertiary: #9ca3af;
+        --border-primary: #374151;
+        --border-secondary: #4b5563;
+        --shadow-light: rgba(0, 0, 0, 0.3);
+        --shadow-medium: rgba(0, 0, 0, 0.4);
+        --accent-blue: #3b82f6;
+        --accent-green: #10b981;
+        --accent-red: #f87171;
+    }
+    .status-label {
+        color: #f9fafb !important;
+    }
 }
 
 .study-room-wrapper {
-	min-height: calc(100vh - 200px);
-	background-color: var(--color-bg-secondary);
-	padding: 20px;
-	display: flex;
-	justify-content: center;
-	align-items: flex-start;
-	font-family: 'Inter', 'Roboto', sans-serif;
-	position: relative;
+    min-height: calc(100vh - 200px);
+    background-color: var(--color-bg-secondary);
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    font-family: 'Inter', 'Roboto', sans-serif;
+    position: relative;
 }
 
 .flex-container {
-	display: flex;
-	width: 100%;
-	gap: 20px;
-	max-width: 1600px;
+    display: flex;
+    width: 100%;
+    gap: 20px;
+    max-width: 1600px;
 }
 
 .flex-container.with-course .study-room-container {
-	width: 50%;
+    width: 50%;
 }
 
 .study-room-container {
-	width: 100%;
-	max-width: 1400px;
-	background-color: var(--color-bg-primary);
-	border-radius: 8px;
-	padding: 25px;
-	box-shadow: 0 1px 3px var(--shadow-light);
-	position: relative;
-	height: 85vh;
-	display: flex;
-	flex-direction: column;
-	transition: width 0.3s ease;
-	margin: 0 auto;
-	border: 1px solid var(--border-primary);
+    width: 100%;
+    max-width: 1400px;
+    background-color: var(--color-bg-primary);
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 1px 3px var(--shadow-light);
+    position: relative;
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s ease;
+    margin: 0 auto;
+    border: 1px solid var(--border-primary);
 }
 
-.course-display-container {
-	width: 50%;
-	background-color: var(--color-bg-primary);
-	border-radius: 8px;
-	padding: 25px;
-	box-shadow: 0 1px 3px var(--shadow-light);
-	height: 85vh;
-	display: flex;
-	flex-direction: column;
-	border: 1px solid var(--border-primary);
+.file-display {
+    flex: 1;
+    height: 85vh;
+    background-color: var(--color-bg-primary);
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 1px 3px var(--shadow-light);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-primary);
 }
 
-.course-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	border-bottom: 1px solid var(--border-primary);
-	padding-bottom: 15px;
-	margin-bottom: 15px;
-}
-
-.course-title {
-	font-size: 20px;
-	font-weight: 600;
-	color: var(--text-primary);
-}
-
-.close-course-btn {
-	width: 30px;
-	height: 30px;
-	border-radius: 15px;
-	border: none;
-	background-color: var(--bg-tertiary);
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	font-size: 20px;
-	cursor: pointer;
-	color: var(--text-secondary);
-	transition: background-color 0.2s ease;
-}
-
-.close-course-btn:hover {
-	background-color: var(--border-secondary);
-}
-
-.course-details {
-	flex-grow: 1;
-	display: flex;
-	flex-direction: column;
-}
-
-.course-meta {
-	margin-bottom: 20px;
-	color: var(--text-secondary);
-	font-size: 14px;
-}
-
-.course-content {
-	flex-grow: 1;
-	border: 1px solid var(--border-primary);
-	border-radius: 6px;
-	padding: 15px;
-	overflow-y: auto;
-	background-color: var(--color-bg-secondary);
-}
-
-.course-placeholder {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	height: 100%;
-	color: var(--text-tertiary);
-}
-
-.course-placeholder-icon {
-	margin-bottom: 10px;
-}
-
-.course-placeholder-text {
-	font-size: 16px;
+.file-viewer {
+    width: 100%;
+    height: 100%;
+    min-height: 500px;
+    border: none;
 }
 
 .room-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding-bottom: 20px;
-	border-bottom: 1px solid var(--border-primary);
-	margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-primary);
+    margin-bottom: 20px;
 }
 
 .room-title {
-	font-size: 22px;
-	font-weight: 600;
-	margin: 0;
-	color: var(--text-primary);
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-primary);
 }
 
 .view-courses-btn-header {
-	display: flex;
-	align-items: center;
-	padding: 8px 16px;
-	background-color: var(--bg-tertiary);
-	border: 1px solid var(--border-primary);
-	border-radius: 6px;
-	cursor: pointer;
-	font-size: 14px;
-	color: var(--text-secondary);
-	transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
 }
 
 .view-courses-btn-header:hover {
-	background-color: var(--border-primary);
-	transform: translateY(-1px);
+    background-color: var(--border-primary);
+    transform: translateY(-1px);
 }
 
 .courses-icon {
-	font-size: 16px;
-	margin-right: 8px;
+    font-size: 16px;
+    margin-right: 8px;
 }
 
 .courses-text {
-	font-weight: 500;
+    font-weight: 500;
 }
 
 .status-pill {
-	background-color: var(--bg-tertiary);
-	border-radius: 4px;
-	padding: 8px 12px;
-	display: inline-flex;
-	align-items: center;
-	margin-bottom: 20px;
-	align-self: flex-start;
-	border: 1px solid var(--border-primary);
+    background-color: var(--bg-tertiary);
+    border-radius: 4px;
+    padding: 8px 12px;
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 20px;
+    align-self: flex-start;
+    border: 1px solid var(--border-primary);
 }
 
 .status-dot {
-	width: 8px;
-	height: 8px;
-	background-color: var(--accent-red);
-	border-radius: 50%;
-	margin-right: 8px;
+    width: 8px;
+    height: 8px;
+    background-color: var(--accent-red);
+    border-radius: 50%;
+    margin-right: 8px;
 }
 
 .status-dot.active-dot {
-	background-color: var(--accent-green);
+    background-color: var(--accent-green);
+}
+
+.status-dot.paused-dot {
+    background-color: var(--accent-red);
 }
 
 .status-label {
-	font-size: 14px;
-	font-weight: 500;
-	color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
 .member-count {
-	font-size: 14px;
-	color: var(--text-secondary);
-	margin-left: 8px;
-	font-weight: 400;
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-left: 8px;
+    font-weight: 400;
 }
 
 .participants-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-	gap: 20px;
-	flex-grow: 1;
-	overflow-y: auto;
-	padding-bottom: 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-bottom: 80px;
 }
 
 .participant-card {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	border-radius: 6px;
-	padding: 16px;
-	border: 1px solid var(--border-primary);
-	background-color: var(--color-bg-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 6px;
+    padding: 16px;
+    border: 1px solid var(--border-primary);
+    background-color: var(--color-bg-primary);
 }
 
 .participant-card.active {
-	background-color: var(--color-bg-secondary);
-	border-color: var(--border-secondary);
+    background-color: var(--color-bg-secondary);
+    border-color: var(--border-secondary);
+}
+
+.participant-card.paused {
+    opacity: 0.7;
+    border-left: 4px solid var(--accent-red);
 }
 
 .user-avatar {
-	width: 64px;
-	height: 64px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	margin-bottom: 12px;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 12px;
 }
 
 .avatar-placeholder {
-	width: 64px;
-	height: 64px;
-	background-color: var(--text-secondary);
-	border-radius: 50%;
+    width: 64px;
+    height: 64px;
+    background-color: var(--text-secondary);
+    border-radius: 50%;
 }
 
 .avatar-placeholder.empty {
-	background-color: var(--border-primary);
+    background-color: var(--border-primary);
 }
 
 .participant-info {
-	text-align: center;
+    text-align: center;
 }
 
 .participant-name {
-	font-size: 14px;
-	font-weight: 500;
-	color: var(--text-primary);
-	margin-bottom: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 4px;
 }
 
 .study-time {
-	font-size: 13px;
-	color: var(--text-tertiary);
+    font-size: 13px;
+    color: var(--text-tertiary);
 }
 
 .placeholder-name {
-	width: 60px;
-	height: 10px;
-	background-color: var(--border-primary);
-	border-radius: 2px;
-	margin-bottom: 6px;
+    width: 60px;
+    height: 10px;
+    background-color: var(--border-primary);
+    border-radius: 2px;
+    margin-bottom: 6px;
 }
 
 .placeholder-time {
-	width: 40px;
-	height: 8px;
-	background-color: var(--border-primary);
-	border-radius: 2px;
-	margin: 0 auto;
+    width: 40px;
+    height: 8px;
+    background-color: var(--border-primary);
+    border-radius: 2px;
+    margin: 0 auto;
 }
 
-/* Styles pour le bouton principal de contrôle */
-.main-controls {
-	position: absolute;
-	bottom: 25px;
-	left: 25px;
-	right: 25px;
-	display: flex;
-	justify-content: center;
+.study-status-indicator {
+    padding: 10px 15px;
+    background-color: var(--bg-tertiary);
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    margin: 15px 0;
 }
 
-.main-btn {
-	height: 50px;
-	padding: 0 30px;
-	border-radius: 6px;
-	border: none;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	cursor: pointer;
-	font-size: 15px;
-	font-weight: 500;
-	transition: all 0.2s ease;
-	box-shadow: 0 2px 4px var(--shadow-light);
+.status-text {
+    margin-left: 8px;
+    font-weight: 500;
 }
 
-.pause-study-btn {
-	background-color: var(--accent-blue);
-	color: white;
-}
-
-.btn-icon {
-	font-size: 18px;
-	margin-right: 10px;
-}
-
-.main-btn:hover {
-	filter: brightness(1.05);
-	transform: translateY(-1px);
-}
-
-.main-btn:active {
-	transform: translateY(1px);
-}
-
-/* Styles pour la liste des cours importés */
+/* Styles pour l'overlay et la liste des cours importés */
 .imported-courses-overlay {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-color: rgba(0, 0, 0, 0.5);
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	z-index: 10;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
 .imported-courses-container {
-	width: 80%;
-	max-width: 900px;
-	background-color: var(--color-bg-primary);
-	border-radius: 8px;
-	padding: 25px;
-	box-shadow: 0 4px 6px var(--shadow-medium);
-	max-height: 80vh;
-	display: flex;
-	flex-direction: column;
-	border: 1px solid var(--border-primary);
+    width: 90%;
+    max-width: 900px;
+    background-color: var(--color-bg-primary);
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 4px 6px var(--shadow-medium);
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-primary);
 }
 
 .imported-courses-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding-bottom: 15px;
-	border-bottom: 1px solid var(--border-primary);
-	margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-primary);
+    margin-bottom: 20px;
 }
 
 .imported-courses-title {
-	font-size: 20px;
-	font-weight: 600;
-	margin: 0;
-	color: var(--text-primary);
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-primary);
 }
 
 .close-courses-btn {
-	width: 30px;
-	height: 30px;
-	border-radius: 15px;
-	border: none;
-	background-color: var(--bg-tertiary);
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	font-size: 20px;
-	cursor: pointer;
-	color: var(--text-secondary);
-	transition: background-color 0.2s ease;
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    border: none;
+    background-color: var(--bg-tertiary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: background-color 0.2s ease;
 }
 
 .close-courses-btn:hover {
-	background-color: var(--border-secondary);
+    background-color: var(--border-secondary);
 }
 
 .courses-list {
-	flex-grow: 1;
-	overflow-y: auto;
+    flex-grow: 1;
+    overflow-y: auto;
 }
 
-.no-courses {
-	text-align: center;
-	padding: 30px;
-	color: var(--text-tertiary);
+.courses-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: var(--text-secondary);
 }
 
-.import-btn {
-	margin-top: 15px;
-	padding: 8px 15px;
-	background-color: var(--bg-tertiary);
-	border: 1px solid var(--border-primary);
-	border-radius: 4px;
-	cursor: pointer;
-	font-size: 14px;
-	color: var(--text-secondary);
-	transition: background-color 0.2s ease;
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border-primary);
+    border-top: 3px solid var(--accent-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
 }
 
-.import-btn:hover {
-	background-color: var(--border-primary);
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 .courses-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-	gap: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    padding: 10px 0;
 }
 
 .course-card {
-	border: 1px solid var(--border-primary);
-	border-radius: 6px;
-	padding: 15px;
-	cursor: pointer;
-	transition: all 0.2s ease;
-	display: flex;
-	align-items: center;
-	background-color: var(--color-bg-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: flex-start;
+    background-color: var(--color-bg-primary);
 }
 
 .course-card:hover {
-	background-color: var(--color-bg-secondary);
-	border-color: var(--border-secondary);
+    background-color: var(--color-bg-secondary);
+    border-color: var(--border-secondary);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px var(--shadow-light);
 }
 
 .course-card-icon {
-	margin-right: 12px;
+    margin-right: 12px;
+    flex-shrink: 0;
 }
 
 .course-card-content {
-	flex-grow: 1;
+    flex-grow: 1;
 }
 
 .course-card-title {
-	font-size: 15px;
-	font-weight: 500;
-	color: var(--text-primary);
-	margin: 0 0 5px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0 0 5px;
+    line-height: 1.4;
 }
 
 .course-card-date {
-	font-size: 12px;
-	color: var(--text-tertiary);
-	margin: 0;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin: 0 0 3px;
 }
 
-/* Ajout d'un style pour les conteneurs de table dans les onglets All et Invitations */
-.member-table-container,
-.invitation-table-container {
-	width: 100%;
-	max-width: 1400px;
-	margin: 0 auto;
+.course-card-type {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    background-color: var(--bg-tertiary);
+    padding: 2px 6px;
+    border-radius: 3px;
+    display: inline-block;
+    margin: 0;
 }
 
-/* Responsive design */
+.no-courses {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-tertiary);
+}
+
+.import-btn {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.import-btn:hover {
+    background-color: var(--accent-blue);
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.error-message, .other-file {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-primary);
+}
+
+.download-btn {
+    display: inline-block;
+    padding: 10px 15px;
+    background: var(--accent-green);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 10px;
+    transition: all 0.2s ease;
+}
+
+.download-btn:hover {
+    background: var(--accent-blue);
+}
+
+/* Responsive pour les cours */
 @media (max-width: 768px) {
-	.flex-container.with-course {
-		flex-direction: column;
-	}
+    .flex-container {
+        flex-direction: column;
+    }
+    
+    .flex-container.with-course .study-room-container,
+    .file-display {
+        width: 100%;
+    }
+    
+    .imported-courses-container {
+        width: 95%;
+        padding: 20px;
+        max-height: 90vh;
+    }
+    
+    .courses-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .course-card {
+        padding: 12px;
+    }
+}
+.participant-card.active {
+    border-left: 4px solid var(--accent-green);
+    background-color: rgba(34, 197, 94, 0.05);
+}
 
-	.flex-container.with-course .study-room-container,
-	.course-display-container {
-		width: 100%;
-	}
+.active-indicator {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    background-color: var(--accent-green);
+    border-radius: 50%;
+    border: 2px solid var(--color-bg-primary);
+}
 
-	.participants-grid {
-		grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-		gap: 15px;
-	}
+.live-status {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: var(--accent-green);
+    margin-top: 4px;
+}
 
-	.main-controls {
-		position: relative;
-		bottom: auto;
-		left: auto;
-		right: auto;
-		margin-top: 20px;
-	}
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--accent-green);
+    border-radius: 50%;
+    margin-right: 4px;
+    animation: pulse 1.5s infinite;
+}
 
-	.courses-grid {
-		grid-template-columns: 1fr;
-	}
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+/* Ajouter ces styles */
+.participant-card.active {
+  border-left: 4px solid var(--accent-green);
+  background-color: rgba(34, 197, 94, 0.05);
+}
 
-	.room-header {
-		flex-direction: column;
-		gap: 15px;
-		align-items: flex-start;
-	}
+.active-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  background-color: var(--accent-green);
+  border-radius: 50%;
+  border: 2px solid var(--color-bg-primary);
+}
 
-	.view-courses-btn-header {
-		align-self: flex-end;
-	}
+.live-status {
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: var(--accent-green);
+  margin-top: 4px;
+}
+
+.paused-status {
+  font-size: 12px;
+  color: var(--accent-red);
+  margin-top: 4px;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent-green);
+  border-radius: 50%;
+  margin-right: 4px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.study-time {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+}
+/* Styles inchangés de l'espace d'étude */
+.study-room-wrapper {
+    min-height: calc(100vh - 200px);
+    background-color: var(--color-bg-secondary);
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    font-family: 'Inter', 'Roboto', sans-serif;
+    position: relative;
+}
+
+.flex-container {
+    display: flex;
+    width: 100%;
+    gap: 20px;
+    max-width: 1600px;
+}
+
+.flex-container.with-course .study-room-container {
+    width: 50%;
+}
+
+.study-room-container {
+    width: 100%;
+    max-width: 1400px;
+    background-color: var(--color-bg-primary);
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 1px 3px var(--shadow-light);
+    position: relative;
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s ease;
+    margin: 0 auto;
+    border: 1px solid var(--border-primary);
+}
+
+.file-display {
+    flex: 1;
+    height: 85vh;
+    background-color: var(--color-bg-primary);
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 1px 3px var(--shadow-light);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-primary);
+}
+
+.file-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-primary);
+    margin-bottom: 20px;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.file-icon {
+    font-size: 24px;
+}
+
+.file-name {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.file-meta {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 4px 0 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.loading-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.error-message {
+    color: var(--accent-red);
+    padding: 20px;
+    text-align: center;
+}
+
+.pdf-container {
+    flex: 1;
+    min-height: 600px;
+}
+
+.pdf-viewer {
+    width: 100%;
+    height: 100%;
+    min-height: 600px;
+    border: none;
+    border-radius: 0.5rem;
+}
+
+.display-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    text-align: center;
+    background-color: var(--bg-secondary);
+    border-radius: 0.5rem;
+    margin: 1.5rem;
+}
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 15px;
+    background: var(--accent-blue);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 15px;
+    transition: all 0.2s ease;
+}
+
+.download-btn:hover {
+    background: var(--accent-blue-dark);
+}
+
+.file-content {
+    flex: 1;
+    margin: 0;
+    padding: 1.5rem;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    border: none;
+}
+
+/* Styles pour la modal des cours importés */
+.imported-courses-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.imported-courses-container {
+    width: 90%;
+    max-width: 900px;
+    background-color: var(--color-bg-primary);
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 4px 6px var(--shadow-medium);
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-primary);
+}
+
+.imported-courses-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-primary);
+    margin-bottom: 20px;
+}
+
+.imported-courses-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.close-courses-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    border: none;
+    background-color: var(--bg-tertiary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: background-color 0.2s ease;
+}
+
+.close-courses-btn:hover {
+    background-color: var(--border-secondary);
+}
+
+.courses-list {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.courses-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: var(--text-secondary);
+}
+
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border-primary);
+    border-top: 3px solid var(--accent-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    padding: 10px 0;
+}
+
+.course-card {
+    border: 1px solid var(--border-primary);
+    border-radius: 6px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: flex-start;
+    background-color: var(--color-bg-primary);
+}
+
+.course-card:hover {
+    background-color: var(--color-bg-secondary);
+    border-color: var(--border-secondary);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px var(--shadow-light);
+}
+
+.course-card-icon {
+    margin-right: 12px;
+    flex-shrink: 0;
+    font-size: 24px;
+}
+
+.course-card-content {
+    flex-grow: 1;
+}
+
+.course-card-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin: 0 0 5px;
+    line-height: 1.4;
+}
+
+.course-card-date {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin: 0 0 3px;
+}
+
+.course-card-type {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    background-color: var(--bg-tertiary);
+    padding: 2px 6px;
+    border-radius: 3px;
+    display: inline-block;
+    margin: 0;
+}
+
+.no-courses {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-tertiary);
+}
+
+.import-btn {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.import-btn:hover {
+    background-color: var(--accent-blue);
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .flex-container {
+        flex-direction: column;
+    }
+    
+    .flex-container.with-course .study-room-container,
+    .file-display {
+        width: 100%;
+    }
+    
+    .imported-courses-container {
+        width: 95%;
+        padding: 20px;
+        max-height: 90vh;
+    }
+    
+    .courses-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .course-card {
+        padding: 12px;
+    }
 }
 </style>

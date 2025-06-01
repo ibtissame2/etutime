@@ -2,42 +2,91 @@
 require_once __DIR__ . '/../session.php';
 require_once __DIR__ . '/../database.php';
 
-// Vérifier si l'utilisateur est connecté
-if (!isset($_SESSION['user']) || !$_SESSION['user']['logged_in']) {
-    handleError('Utilisateur non connecté', 401);
-}
-
-$userId = $_SESSION['user']['id'];
+$data = getPostData();
+$db = openDatabase();
 
 try {
-    $db = openDatabase();
+    // Récupérer l'ID utilisateur depuis la session
+    $user = get_user_id($db, $data, true);
+    $userId = $user['id'];
 
-    // Récupérer l'emploi du temps de l'utilisateur
-    $sql = "SELECT emploi, horaire_fixe, niveau_concentration, created_at, updated_at 
-            FROM emplois_du_temps 
-            WHERE user_id = ?";
+    // Récupérer d'abord le niveau de concentration depuis le dernier questionnaire
+    $sqlQuestionnaire = "SELECT niveau_concentration, score_total, id as questionnaire_id
+                        FROM questionnaire_resultats 
+                        WHERE user_id = ? 
+                        ORDER BY created_at DESC 
+                        LIMIT 1";
+    
+    $questionnaireResult = executeSQL($db, $sqlQuestionnaire, [$userId], false);
+    
+    if (count($questionnaireResult) === 0) {
+        echo json_encode([
+            'success' => false,
+            'data' => null,
+            'message' => 'Aucun questionnaire trouvé. Veuillez d\'abord passer le questionnaire de niveau de concentration.'
+        ]);
+        exit;
+    }
+
+    $niveauConcentration = $questionnaireResult[0]['niveau_concentration'];
+    $scoreTotal = $questionnaireResult[0]['score_total'];
+    $questionnaireId = $questionnaireResult[0]['questionnaire_id'];
+
+    // Maintenant récupérer l'emploi du temps s'il existe
+    $sql = "SELECT 
+                edt.emploi, 
+                edt.horaire_fixe, 
+                edt.module_id,
+                edt.created_at, 
+                edt.updated_at,
+                m.name as module_nom
+            FROM emplois_du_temps edt
+            LEFT JOIN modules m ON edt.module_id = m.id
+            WHERE edt.user_id = ?
+            ORDER BY edt.updated_at DESC
+            LIMIT 1";
+    
     $result = executeSQL($db, $sql, [$userId], false);
 
     if (count($result) > 0) {
+        $row = $result[0];
         echo json_encode([
             'success' => true,
             'data' => [
-                'emploi' => json_decode($result[0]['emploi']),
-                'horaireFixe' => json_decode($result[0]['horaire_fixe']),
-                'niveauConcentration' => $result[0]['niveau_concentration'],
-                'createdAt' => $result[0]['created_at'],
-                'updatedAt' => $result[0]['updated_at']
+                'emploi' => json_decode($row['emploi']),
+                'horaireFixe' => json_decode($row['horaire_fixe']) ?: null,
+                'niveauConcentration' => $niveauConcentration,
+                'scoreTotal' => $scoreTotal,
+                'moduleId' => $row['module_id'],
+                'moduleNom' => $row['module_nom'],
+                'createdAt' => $row['created_at'],
+                'updatedAt' => $row['updated_at']
             ]
         ]);
     } else {
+        // Aucun emploi du temps trouvé, mais niveau de concentration disponible
         echo json_encode([
             'success' => true,
-            'data' => null,
-            'message' => 'Aucun emploi du temps trouvé'
+            'data' => [
+                'emploi' => null,
+                'horaireFixe' => null,
+                'niveauConcentration' => $niveauConcentration,
+                'scoreTotal' => $scoreTotal,
+                'moduleId' => null,
+                'moduleNom' => null,
+                'createdAt' => null,
+                'updatedAt' => null
+            ],
+            'message' => 'Aucun emploi du temps trouvé, mais niveau de concentration récupéré'
         ]);
     }
 
 } catch (Exception $e) {
-    handleError('Erreur lors de la récupération: ' . $e->getMessage());
+    error_log('Erreur get_emploi.php: ' . $e->getMessage());
+    echo json_encode([
+        'success' => false,
+        'data' => null,
+        'message' => 'Erreur lors de la récupération: ' . $e->getMessage()
+    ]);
 }
 ?>

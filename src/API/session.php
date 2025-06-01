@@ -24,6 +24,12 @@ function startUserSession($user)
 
 function get_user_id($db, $data, $entire_user = false)
 {
+	// Check: we get the user id only from localStorage variables, {{ credientials.user.id }} as integer number
+	//	- Credentials contains also {{ credientials.token }} as string
+	//	- These values can be accessed and sent to to PHP server via the function 'getCredentials' from 'src/store/axios.js'
+	//		search in vs code: const credentials = getCredentials(); 
+	//	- These values are saved in localStorage after a successfull log in or sign up in 'src/pages/SeConnecter.vue'
+	//	- These values will unsset from localStorage when log out in 'src/Components/UserSettingsIcon.vue'
 	if (isset($data['credentials']) && isset($data['credentials']['user']) && isset($data['credentials']['user']['id'])) {
 		$id = $data['credentials']['user']['id'];
 		$result = executeSQL($db, 'SELECT * from users WHERE id = ?', [$id], false);

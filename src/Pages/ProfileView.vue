@@ -1,111 +1,404 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+import { getCredentials } from '@/store/axios';
+
+const apiBaseUrl = 'http://localhost/etutime/front-end/src/API/profil';
+const editMode = ref(false);
+const isLoading = ref(false);
+const errorMessage = ref('');
+const successMessage = ref('');
 
 const user = ref({
-	name: 'Sarah Martin',
-	email: 'sarah.martin@example.com',
-	avatar: '/api/placeholder/120/120',
-	role: 'Étudiant',
-	program: "Sciences de l'informatique",
-	joinedAt: '12 mars 2024',
-	phone: '+33 6 12 34 56 78',
-	location: 'Paris, France',
-	bio: "Passionnée par le développement web et les nouvelles technologies. Toujours en quête d'apprentissage et d'innovation.",
+    id: null,
+    first_name: '',
+    last_name: '',
+    name: '',
+    email: '',
+    avatar: '/api/placeholder/120/120',
+    role: 'Étudiant',
+    program: '',
+    joinedAt: '',
+    phone: '',
+    location: '',
+    bio: ''
 });
-
-// Pour la démo de mise à jour de profil
-const editMode = ref(false);
 const editableUser = ref({ ...user.value });
 
-function saveProfile() {
-	user.value = { ...editableUser.value };
-	editMode.value = false;
-	// Dans un cas réel, il y aurait ici un appel API pour sauvegarder les modifications
+async function loadProfile() {
+    try {
+        isLoading.value = true;
+        errorMessage.value = '';
+        
+        console.log('Chargement du profil...');
+        const credentials = getCredentials();
+        const response = await axios.get(`${apiBaseUrl}/get_profile.php`, {
+            params: { credentials },
+            withCredentials: true,
+            timeout: 10000
+        });
+        
+        console.log('Réponse du serveur:', response.data);
+        
+        if (response.data.success) {
+            const profileData = response.data.profile;
+            
+            user.value = {
+                id: profileData.id,
+                first_name: profileData.first_name,
+                last_name: profileData.last_name,
+                name: `${profileData.first_name} ${profileData.last_name}`,
+                email: profileData.email,
+                joinedAt: new Date(profileData.created_at).toLocaleDateString('fr-FR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }),
+                avatar: profileData.profile_photo_path 
+                       ? `/storage/${profileData.profile_photo_path}` 
+                       : '/api/placeholder/120/120',
+                role: profileData.role || 'Étudiant',
+                program: profileData.program || '',
+                phone: profileData.phone || '',
+                location: profileData.location || '',
+                bio: profileData.bio || ''
+            };
+
+            editableUser.value = { ...user.value };
+            console.log('Profil chargé avec succès:', user.value);
+        } else {
+            throw new Error(response.data.message || 'Erreur lors du chargement du profil');
+        }
+    } catch (error) {
+        console.error('Erreur de chargement du profil:', error);
+        errorMessage.value = error.response?.data?.message || error.message || 'Erreur lors du chargement du profil';
+    } finally {
+        isLoading.value = false;
+    }
+}
+
+async function handleSubmit(e) {
+    e.preventDefault();
+    console.log('Formulaire soumis');
+    await saveProfile();
+}
+
+async function saveProfile() {
+    try {
+        isLoading.value = true;
+        errorMessage.value = '';
+        successMessage.value = '';
+
+        console.log('Début de la sauvegarde...');
+        console.log('Données editableUser:', editableUser.value);
+
+        // Vérification des champs requis
+        if (!editableUser.value.first_name?.trim() || 
+            !editableUser.value.last_name?.trim() || 
+            !editableUser.value.email?.trim()) {
+            throw new Error('Les champs Prénom, Nom et Email sont obligatoires');
+        }
+
+        // Validation de l'email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(editableUser.value.email.trim())) {
+            throw new Error('Format d\'email invalide');
+        }
+
+        const credentials = getCredentials();
+        const dataToSend = {
+            credentials,
+            userData: {
+                first_name: editableUser.value.first_name.trim(),
+                last_name: editableUser.value.last_name.trim(),
+                email: editableUser.value.email.trim(),
+                role: editableUser.value.role || 'Étudiant',
+                program: editableUser.value.program?.trim() || '',
+                phone: editableUser.value.phone?.trim() || '',
+                location: editableUser.value.location?.trim() || '',
+                bio: editableUser.value.bio?.trim() || ''
+            }
+        };
+
+        console.log('Données à envoyer à l\'API:', dataToSend);
+
+        const response = await axios.post(
+            `${apiBaseUrl}/update_profile.php`,
+            dataToSend,
+            {
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                timeout: 15000
+            }
+        );
+
+        console.log('Réponse de l\'API:', response.data);
+
+        if (response.data?.success) {
+            // Mettre à jour les données locales
+            user.value = { 
+                ...editableUser.value,
+                name: `${editableUser.value.first_name} ${editableUser.value.last_name}`
+            };
+            
+            editMode.value = false;
+            successMessage.value = 'Profil mis à jour avec succès';
+            
+            console.log('Sauvegarde réussie');
+            
+            setTimeout(() => {
+                successMessage.value = '';
+            }, 5000);
+        } else {
+            throw new Error(response.data?.message || 'Erreur inconnue lors de la mise à jour');
+        }
+    } catch (error) {
+        console.error('Erreur complète:', error);
+        
+        if (error.response) {
+            console.error('Status:', error.response.status);
+            console.error('Data:', error.response.data);
+            
+            switch (error.response.status) {
+                case 401:
+                    errorMessage.value = 'Session expirée. Veuillez vous reconnecter.';
+                    break;
+                case 400:
+                    errorMessage.value = error.response.data?.message || 'Données invalides';
+                    break;
+                case 404:
+                    errorMessage.value = 'Utilisateur non trouvé';
+                    break;
+                case 500:
+                    errorMessage.value = 'Erreur serveur. Veuillez réessayer plus tard.';
+                    break;
+                default:
+                    errorMessage.value = error.response.data?.message || `Erreur serveur (${error.response.status})`;
+            }
+        } else if (error.request) {
+            console.error('Erreur réseau:', error.request);
+            errorMessage.value = 'Impossible de contacter le serveur. Vérifiez votre connexion.';
+        } else {
+            console.error('Erreur:', error.message);
+            errorMessage.value = error.message || 'Erreur inconnue lors de la mise à jour du profil';
+        }
+    } finally {
+        isLoading.value = false;
+    }
 }
 
 function cancelEdit() {
-	editableUser.value = { ...user.value };
-	editMode.value = false;
+    editableUser.value = { ...user.value };
+    editMode.value = false;
+    errorMessage.value = '';
+    successMessage.value = '';
+    console.log('Édition annulée');
 }
+
+function clearMessages() {
+    errorMessage.value = '';
+    successMessage.value = '';
+}
+
+onMounted(() => {
+    console.log('Composant monté, chargement du profil...');
+    loadProfile();
+});
 </script>
 
 <template>
 	<AppLayout title="Profil">
 		<div class="profile-page">
-			<!-- En-tête du profil avec avatar et infos principales -->
-			<div class="profile-header">
-				<div class="profile-cover-image"></div>
+			<!-- Messages d'erreur/succès -->
+			<div v-if="errorMessage" class="error-message" @click="clearMessages">
+				{{ errorMessage }}
+				<button type="button" class="close-btn">×</button>
+			</div>
+			<div v-if="successMessage" class="success-message" @click="clearMessages">
+				{{ successMessage }}
+				<button type="button" class="close-btn">×</button>
+			</div>
 
-				<div class="profile-header-content">
-					<div class="profile-avatar">
-						<img :src="user.avatar" alt="Avatar de profil" class="avatar-image" />
-						<div v-if="!editMode" class="edit-avatar-overlay">
-							<span class="edit-icon">📷</span>
-						</div>
-					</div>
+			<!-- Indicateur de chargement -->
+			<div v-if="isLoading && !editMode" class="loading-indicator">
+				Chargement du profil...
+			</div>
 
-					<div class="profile-main-info">
-						<div v-if="!editMode" class="profile-name">{{ user.name }}</div>
-						<input v-else v-model="editableUser.name" class="edit-input name-input" type="text" />
+			<!-- Formulaire de profil -->
+			<form @submit="handleSubmit" class="profile-form" v-if="!isLoading || editMode">
+				<!-- En-tête du profil -->
+				<div class="profile-header">
+					<div class="profile-cover-image"></div>
 
-						<div class="profile-details">
-							<div class="detail-item">
-								<span class="detail-icon">✉️</span>
-								<span v-if="!editMode" class="detail-text">{{ user.email }}</span>
-								<input v-else v-model="editableUser.email" class="edit-input" type="email" />
-							</div>
-							<div class="detail-item">
-								<span class="detail-icon">📱</span>
-								<span v-if="!editMode" class="detail-text">{{ user.phone }}</span>
-								<input v-else v-model="editableUser.phone" class="edit-input" type="tel" />
-							</div>
-							<div class="detail-item">
-								<span class="detail-icon">👨‍🎓</span>
-								<span v-if="!editMode" class="detail-text">{{ user.role }}</span>
-								<input v-else v-model="editableUser.role" class="edit-input" type="text" />
-							</div>
-							<div class="detail-item">
-								<span class="detail-icon">🎓</span>
-								<span v-if="!editMode" class="detail-text">{{ user.program }}</span>
-								<input v-else v-model="editableUser.program" class="edit-input" type="text" />
-							</div>
-							<div class="detail-item">
-								<span class="detail-icon">📍</span>
-								<span v-if="!editMode" class="detail-text">{{ user.location }}</span>
-								<input v-else v-model="editableUser.location" class="edit-input" type="text" />
-							</div>
-							<div class="detail-item">
-								<span class="detail-icon">📅</span>
-								<span class="detail-text">Membre depuis {{ user.joinedAt }}</span>
+					<div class="profile-header-content">
+						<div class="profile-avatar">
+							<img :src="user.avatar" alt="Avatar de profil" class="avatar-image" />
+							<div v-if="!editMode" class="edit-avatar-overlay">
+								<span class="edit-icon">📷</span>
 							</div>
 						</div>
-					</div>
 
-					<div class="profile-actions">
-						<button v-if="!editMode" @click="editMode = true" class="edit-profile-btn">Modifier le profil</button>
-						<div v-else class="edit-actions">
-							<button @click="saveProfile" class="save-btn">Enregistrer</button>
-							<button @click="cancelEdit" class="cancel-btn">Annuler</button>
+						<div class="profile-main-info">
+							<template v-if="!editMode">
+								<div class="profile-name">{{ user.name }}</div>
+							</template>
+							<template v-else>
+								<input 
+									v-model="editableUser.first_name" 
+									id="first_name" 
+									name="first_name" 
+									class="edit-input name-input" 
+									placeholder="Prénom" 
+									type="text" 
+									required
+									maxlength="255"
+								/>
+								<input 
+									v-model="editableUser.last_name" 
+									id="last_name" 
+									name="last_name" 
+									class="edit-input name-input" 
+									placeholder="Nom" 
+									type="text" 
+									required
+									maxlength="255"
+									style="margin-top: 8px;"
+								/>
+							</template>
+
+							<div class="profile-details">
+								<div class="detail-item">
+									<span class="detail-icon">✉️</span>
+									<span v-if="!editMode" class="detail-text">{{ user.email }}</span>
+									<input 
+										v-else 
+										v-model="editableUser.email" 
+										id="email" 
+										name="email" 
+										class="edit-input" 
+										type="email" 
+										required
+										maxlength="255"
+									/>
+								</div>
+								<div class="detail-item">
+									<span class="detail-icon">📱</span>
+									<span v-if="!editMode" class="detail-text">{{ user.phone || 'Non renseigné' }}</span>
+									<input 
+										v-else 
+										v-model="editableUser.phone" 
+										id="phone" 
+										name="phone" 
+										class="edit-input" 
+										type="tel" 
+										placeholder="Téléphone"
+										maxlength="20"
+									/>
+								</div>
+								<div class="detail-item">
+									<span class="detail-icon">👨‍🎓</span>
+									<span v-if="!editMode" class="detail-text">{{ user.role }}</span>
+									<select 
+										v-else 
+										v-model="editableUser.role" 
+										id="role" 
+										name="role" 
+										class="edit-input"
+									>
+										<option value="Étudiant">Étudiant</option>
+										<option value="Enseignant">Enseignant</option>
+										<option value="Administrateur">Administrateur</option>
+									</select>
+								</div>
+								<div class="detail-item">
+									<span class="detail-icon">🎓</span>
+									<span v-if="!editMode" class="detail-text">{{ user.program || 'Non renseigné' }}</span>
+									<input 
+										v-else 
+										v-model="editableUser.program" 
+										id="program" 
+										name="program" 
+										class="edit-input" 
+										type="text" 
+										placeholder="Programme d'étude"
+										maxlength="255"
+									/>
+								</div>
+								<div class="detail-item">
+									<span class="detail-icon">📍</span>
+									<span v-if="!editMode" class="detail-text">{{ user.location || 'Non renseigné' }}</span>
+									<input 
+										v-else 
+										v-model="editableUser.location" 
+										id="location" 
+										name="location" 
+										class="edit-input" 
+										type="text" 
+										placeholder="Localisation"
+										maxlength="255"
+									/>
+								</div>
+								<div class="detail-item">
+									<span class="detail-icon">📅</span>
+									<span class="detail-text">Membre depuis {{ user.joinedAt }}</span>
+								</div>
+							</div>
+						</div>
+
+						<div class="profile-actions">
+							<button 
+								v-if="!editMode" 
+								@click="editMode = true" 
+								type="button" 
+								class="edit-profile-btn"
+								:disabled="isLoading"
+							>
+								Modifier le profil
+							</button>
+							<div v-else class="edit-actions">
+								<button 
+									type="submit" 
+									class="save-btn" 
+									:disabled="isLoading"
+								>
+									<span v-if="isLoading">Enregistrement...</span>
+									<span v-else>Enregistrer</span>
+								</button>
+								<button 
+									@click="cancelEdit" 
+									type="button" 
+									class="cancel-btn" 
+									:disabled="isLoading"
+								>
+									Annuler
+								</button>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
 
-			<!-- Section Biographie -->
-			<div class="profile-bio-section">
-				<h2 class="section-title">À propos</h2>
-				<div class="bio-content">
-					<div v-if="!editMode" class="bio-text">{{ user.bio }}</div>
-					<textarea
-						v-else
-						v-model="editableUser.bio"
-						class="edit-textarea"
-						rows="4"
-						placeholder="Parlez-nous de vous..."
-					></textarea>
+				<!-- Section Biographie -->
+				<div class="profile-bio-section">
+					<h2 class="section-title">À propos</h2>
+					<div class="bio-content">
+						<div v-if="!editMode" class="bio-text">{{ user.bio || 'Aucune biographie renseignée' }}</div>
+						<textarea
+							v-else
+							v-model="editableUser.bio"
+							id="bio"
+							name="bio"
+							class="edit-textarea"
+							rows="4"
+							placeholder="Parlez-nous de vous..."
+							maxlength="1000"
+						></textarea>
+					</div>
 				</div>
-			</div>
+			</form>
 		</div>
 	</AppLayout>
 </template>
@@ -118,6 +411,55 @@ function cancelEdit() {
 	padding: 20px;
 	color: var(--text-primary);
 	background-color: var(--color-bg-primary);
+}
+
+.profile-form {
+	display: block;
+}
+
+.error-message {
+	background-color: #f8d7da;
+	color: #721c24;
+	padding: 12px;
+	border-radius: 4px;
+	margin-bottom: 20px;
+	border: 1px solid #f5c6cb;
+	position: relative;
+	cursor: pointer;
+}
+
+.success-message {
+	background-color: #d4edda;
+	color: #155724;
+	padding: 12px;
+	border-radius: 4px;
+	margin-bottom: 20px;
+	border: 1px solid #c3e6cb;
+	position: relative;
+	cursor: pointer;
+}
+
+.close-btn {
+	position: absolute;
+	top: 8px;
+	right: 12px;
+	background: none;
+	border: none;
+	font-size: 18px;
+	cursor: pointer;
+	color: inherit;
+	opacity: 0.7;
+}
+
+.close-btn:hover {
+	opacity: 1;
+}
+
+.loading-indicator {
+	text-align: center;
+	padding: 40px;
+	font-size: 16px;
+	color: var(--text-secondary);
 }
 
 /* Variables CSS pour le mode sombre/clair automatique */
@@ -279,8 +621,13 @@ function cancelEdit() {
 	font-size: 14px;
 }
 
-.edit-profile-btn:hover {
+.edit-profile-btn:hover:not(:disabled) {
 	background-color: var(--accent-hover);
+}
+
+.edit-profile-btn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
 }
 
 .edit-actions {
@@ -300,8 +647,13 @@ function cancelEdit() {
 	font-size: 14px;
 }
 
-.save-btn:hover {
+.save-btn:hover:not(:disabled) {
 	background-color: var(--accent-hover);
+}
+
+.save-btn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
 }
 
 .cancel-btn {
@@ -316,9 +668,14 @@ function cancelEdit() {
 	font-size: 14px;
 }
 
-.cancel-btn:hover {
+.cancel-btn:hover:not(:disabled) {
 	background-color: var(--color-bg-tertiay);
 	color: var(--text-primary);
+}
+
+.cancel-btn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
 }
 
 .edit-input {
@@ -435,6 +792,7 @@ function cancelEdit() {
 	}
 
 	.edit-actions {
+		flex-direction: column;
 		flex-direction: column;
 		width: 100%;
 		gap: 6px;
