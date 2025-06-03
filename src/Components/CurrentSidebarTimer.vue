@@ -21,7 +21,7 @@ const currentTime = computed(() => {
 <template>
 	<div class="pt-3 pb-2.5 px-2 flex justify-between items-center relative">
 		<div>
-			<div class="text-muted font-extrabold text-xs">Current Timer</div>
+			<div class="text-muted font-extrabold text-xs">Minuteur actuelle</div>
 			<div class="text-text-primary font-medium text-lg">
 				{{ currentTime }}
 			</div>
