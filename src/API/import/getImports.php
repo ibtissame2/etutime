@@ -4,7 +4,7 @@ require_once __DIR__ . '/../database.php';
 
 $data = getPostData();
 $db = openDatabase();
-$user_id = get_user_id($db, $data);
+$user_id = get_user($db);
 
 try {
     $sql = "SELECT 
@@ -21,7 +21,7 @@ try {
         WHERE user_id = ?
         ORDER BY created_at DESC
         LIMIT 50";
-    
+
     $imports = executeSQL($db, $sql, [$user_id], false);
 
     foreach ($imports as &$import) {
@@ -35,7 +35,7 @@ try {
         'data' => $imports,
         'count' => count($imports)
     ]);
-    
+
 } catch (Exception $e) {
     http_response_code($e->getCode() ?: 500);
     echo json_encode([

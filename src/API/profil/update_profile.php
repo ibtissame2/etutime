@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 try {
     $data = getPostData();
     $db = openDatabase();
-    $user = get_user_id($db, $data, true);
+    $user = get_user($db, true);
 
     if (empty($data['userData'])) {
         throw new Exception('Données utilisateur manquantes', 400);

@@ -7,7 +7,7 @@ $db = openDatabase();
 
 try {
     // Récupérer l'ID utilisateur depuis la session
-    $user = get_user_id($db, $data, true);
+    $user = get_user($db, true);
     $userId = $user['id'];
 
     // Récupérer les modules de l'utilisateur

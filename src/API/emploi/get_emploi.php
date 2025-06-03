@@ -7,7 +7,7 @@ $db = openDatabase();
 
 try {
     // Récupérer l'ID utilisateur depuis la session
-    $user = get_user_id($db, $data, true);
+    $user = get_user($db, true);
     $userId = $user['id'];
 
     // Récupérer d'abord le niveau de concentration depuis le dernier questionnaire
@@ -16,9 +16,9 @@ try {
                         WHERE user_id = ? 
                         ORDER BY created_at DESC 
                         LIMIT 1";
-    
+
     $questionnaireResult = executeSQL($db, $sqlQuestionnaire, [$userId], false);
-    
+
     if (count($questionnaireResult) === 0) {
         echo json_encode([
             'success' => false,
@@ -45,7 +45,7 @@ try {
             WHERE edt.user_id = ?
             ORDER BY edt.updated_at DESC
             LIMIT 1";
-    
+
     $result = executeSQL($db, $sql, [$userId], false);
 
     if (count($result) > 0) {

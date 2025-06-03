@@ -4,7 +4,7 @@ require_once __DIR__ . '/../database.php';
 
 $data = getPostData();
 $db = openDatabase();
-$user = get_user_id($db, $data, true);
+$user = get_user($db, true);
 $db->close();
 echo json_encode(["success" => true, "data" => $user]);
 ?>

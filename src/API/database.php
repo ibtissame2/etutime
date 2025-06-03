@@ -22,11 +22,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 function getPostData()
 {
-    $json = file_get_contents('php://input');
-    if (empty($json)) {
+    try {
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+        if (strpos($contentType, 'application/json') !== false) {
+            $jsonData = file_get_contents('php://input');
+            $data = json_decode($jsonData, true);
+            return $data ?: [];
+        } else {
+            return $_POST;
+        }
+    } catch (Exception $e) {
         return [];
     }
-    return json_decode($json, true);
 }
 
 function openDatabase()
@@ -95,7 +102,7 @@ function executeSQL($db, $sql, $params = [], $encode = true)
     return $response;
 }
 
-function handleError($message, $code = 500)
+function handleError($message = '', $code = 500)
 {
     http_response_code($code);
     echo json_encode(['success' => false, 'message' => $message]);

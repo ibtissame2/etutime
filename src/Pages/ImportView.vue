@@ -5,6 +5,7 @@ import { ArrowsRightLeftIcon, XMarkIcon, EyeIcon } from '@heroicons/vue/16/solid
 import PageTitle from '@/Components/Common/PageTitle.vue';
 import { ref, onMounted } from 'vue';
 import { fetch, getCredentials } from '@/store/axios';
+import { TrashIcon } from '@heroicons/vue/16/solid';
 
 const files = ref([]);
 const imports = ref([]);
@@ -129,151 +130,32 @@ const getFileIcon = (type) => {
 	return iconMapping[fileType] || '📁';
 };
 
-// Helper function to categorize import types
-const getImportCategory = (fileType) => {
-	const categoryMapping = {
-		ical: 'schedule',
-		ics: 'schedule',
-		csv: 'tasks',
-		json: 'modules',
-		xml: 'other',
-		pdf: 'notes',
-		doc: 'notes',
-		docx: 'notes',
-		xls: 'tasks',
-		xlsx: 'tasks',
-		txt: 'notes',
-		md: 'notes',
-	};
-
-	return categoryMapping[fileType] || 'other';
-};
-
-// Helper function to estimate items in file
-const estimateItemsFromFile = (file, uploadResponse) => {
-	if (uploadResponse.line_count) {
-		return Math.max(1, uploadResponse.line_count - 1); // Subtract header row
-	}
-
-	// Rough estimation based on file size and type
-	const extension = file.name.split('.').pop().toLowerCase();
-
-	switch (extension) {
-		case 'csv':
-			return Math.floor(file.size / 100); // Rough estimate: 100 bytes per row
-		case 'json':
-			return Math.floor(file.size / 200); // JSON is more verbose
-		case 'ical':
-		case 'ics':
-			return Math.floor(file.size / 150); // Calendar events
-		default:
-			return Math.max(1, Math.floor(file.size / 1000)); // Very rough estimate
-	}
-};
-
-// Enhanced network error handler
-const handleNetworkError = (error) => {
-	console.error('Erreur réseau détaillée:', error);
-
-	if (error.name === 'AbortError') {
-		return "Opération annulée par l'utilisateur.";
-	}
-
-	if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
-		return 'Erreur de connexion. Vérifiez votre connexion internet et que le serveur est accessible.';
-	}
-
-	if (error.message.includes('timeout') || error.name === 'TimeoutError') {
-		return "Délai d'attente dépassé. Le serveur met trop de temps à répondre. Essayez avec un fichier plus petit.";
-	}
-
-	if (error.message.includes('413')) {
-		return 'Fichier trop volumineux pour le serveur.';
-	}
-
-	if (error.message.includes('500')) {
-		return 'Erreur interne du serveur. Veuillez réessayer plus tard.';
-	}
-
-	return error.message || 'Erreur réseau inconnue. Veuillez réessayer.';
-};
-
-// Enhanced credential validation helper
-const validateCredentials = (credentials) => {
-	if (!credentials) {
-		return { valid: false, error: "Aucune donnée d'authentification" };
-	}
-
-	if (!credentials.token) {
-		return { valid: false, error: "Token d'authentification manquant" };
-	}
-
-	if (!credentials.user?.id) {
-		return { valid: false, error: 'ID utilisateur manquant' };
-	}
-
-	// Additional validation could include token expiry check
-	try {
-		// If token is JWT, you could decode and check expiry
-		// const tokenPayload = JSON.parse(atob(credentials.token.split('.')[1]));
-		// if (tokenPayload.exp && Date.now() >= tokenPayload.exp * 1000) {
-		//   return { valid: false, error: 'Token expiré' };
-		// }
-	} catch (e) {
-		// Token validation failed, but continue for now
-		console.warn('Validation du token échouée:', e);
-	}
-
-	return { valid: true };
-};
-
-// Enhanced saveImport function with better validation
+// Fonction modifiée pour sauvegarder l'import avec le bon type
 const saveImport = async (file, filePath, uploadResponse) => {
 	try {
 		const credentials = getCredentials();
-
-		if (!credentials?.token || !credentials?.user?.id) {
-			throw new Error('Credentials manquants pour la sauvegarde');
-		}
-
-		// Enhanced type detection
 		const detectedType = uploadResponse.file_type || getImportType(file.name);
-		const importType = getImportCategory(detectedType);
-
-		// Calculate estimated processing info
-		const estimatedItems = uploadResponse.estimated_items || estimateItemsFromFile(file, uploadResponse);
-		const estimatedPages = uploadResponse.pages || Math.max(1, Math.floor(file.size / 1000));
 
 		const importData = {
 			file_name: file.name,
 			file_path: filePath,
 			file_type: detectedType,
-			import_type: importType,
+			import_type: detectedType,
 			status: 'completed',
-			processed_items: uploadResponse.processed_items || 0,
-			total_items: estimatedItems,
-			title: file.name.replace(/\.[^/.]+$/, ''), // Remove extension
-			pages: estimatedPages,
+			processed_items: 0,
+			total_items: 0,
+			title: file.name.replace(/\.[^/.]+$/, ''),
+			pages: Math.floor(Math.random() * 100) + 10,
 			date: new Date().toISOString().split('T')[0],
-			file_size: file.size,
-			mime_type: file.type,
-			upload_info: {
-				original_name: file.name,
-				upload_date: new Date().toISOString(),
-				user_agent: navigator.userAgent,
-				file_hash: uploadResponse.file_hash || null,
-			},
-			credentials,
 		};
 
-		console.log('Données de sauvegarde import:', importData);
+		const response = await fetch('import/saveImport', {
+			...importData,
+			credentials,
+		});
 
-		const response = await fetch('import/saveImport', importData);
-
-		console.log('Réponse sauvegarde:', response);
-
-		if (!response?.success) {
-			throw new Error(response?.message || "Erreur lors de la sauvegarde de l'import");
+		if (!response.success) {
+			throw new Error(response.message || 'Erreur lors de la sauvegarde');
 		}
 
 		return response.data;
@@ -283,7 +165,7 @@ const saveImport = async (file, filePath, uploadResponse) => {
 	}
 };
 
-// Enhanced upload function with better error handling and progress tracking
+// Fonction modifiée pour l'upload des fichiers
 const uploadFiles = async () => {
 	if (files.value.length === 0) {
 		uploadMessage.value = 'Veuillez sélectionner au moins un fichier';
@@ -295,364 +177,111 @@ const uploadFiles = async () => {
 
 	try {
 		const credentials = getCredentials();
-
-		// Enhanced credential validation
 		if (!credentials) {
-			throw new Error("Aucune donnée d'authentification trouvée. Veuillez vous reconnecter.");
+			throw new Error('Utilisateur non connecté');
 		}
 
-		if (!credentials.token) {
-			throw new Error("Token d'authentification manquant. Veuillez vous reconnecter.");
-		}
+		const uploadPromises = files.value.map(async (file) => {
+			const formData = new FormData();
+			formData.append('file', file);
+			formData.append('credentials[token]', credentials.token);
 
-		if (!credentials.user?.id) {
-			throw new Error('Informations utilisateur manquantes. Veuillez vous reconnecter.');
-		}
+			// Upload du fichier
+			const uploadResponse = await fetch('import/uploadFile', formData);
 
-		console.log("Début de l'upload de", files.value.length, 'fichier(s)');
-
-		// Sequential upload with better progress tracking
-		const results = [];
-		let uploadedCount = 0;
-		let failedCount = 0;
-		const errors = [];
-
-		for (let i = 0; i < files.value.length; i++) {
-			const file = files.value[i];
-
-			try {
-				console.log(`Upload du fichier ${i + 1}/${files.value.length}: ${file.name} (${formatFileSize(file.size)})`);
-
-				// Enhanced file validation
-				if (file.size === 0) {
-					throw new Error(`Le fichier "${file.name}" est vide`);
-				}
-
-				if (file.size > 10 * 1024 * 1024) {
-					// 10MB
-					throw new Error(`Le fichier "${file.name}" est trop volumineux (max 10MB)`);
-				}
-
-				// Check file type based on extension
-				const allowedExtensions = [
-					'ical',
-					'ics',
-					'csv',
-					'json',
-					'xml',
-					'pdf',
-					'doc',
-					'docx',
-					'xls',
-					'xlsx',
-					'txt',
-					'md',
-				];
-				const fileExtension = file.name.split('.').pop().toLowerCase();
-				if (!allowedExtensions.includes(fileExtension)) {
-					throw new Error(`Type de fichier non supporté: ${fileExtension}`);
-				}
-
-				const formData = new FormData();
-				formData.append('file', file);
-
-				// Enhanced credentials handling
-				formData.append('credentials[user][id]', credentials.user.id.toString());
-				formData.append('credentials[token]', credentials.token);
-
-				// Add additional user info if available
-				if (credentials.user.email) {
-					formData.append('credentials[user][email]', credentials.user.email);
-				}
-				if (credentials.user.first_name) {
-					formData.append('credentials[user][first_name]', credentials.user.first_name);
-				}
-
-				// Update progress message
-				uploadMessage.value = `Upload en cours: ${file.name} (${i + 1}/${files.value.length})`;
-
-				// Upload with enhanced timeout and retry logic
-				let uploadResponse;
-				let retryCount = 0;
-				const maxRetries = 2;
-
-				while (retryCount <= maxRetries) {
-					try {
-						uploadResponse = await fetch(
-							'import/uploadFile',
-							formData,
-							(data) => data, // onSuccess callback - just return the data
-							null, // successMessage
-							null // onError
-						);
-						break; // Success, exit retry loop
-					} catch (fetchError) {
-						retryCount++;
-						if (retryCount > maxRetries) {
-							throw fetchError;
-						}
-						console.log(`Tentative ${retryCount}/${maxRetries} échouée pour ${file.name}, nouvelle tentative...`);
-						await new Promise((resolve) => setTimeout(resolve, 1000 * retryCount)); // Progressive delay
-					}
-				}
-
-				console.log('Réponse upload:', uploadResponse);
-
-				if (!uploadResponse) {
-					throw new Error(`Aucune réponse du serveur pour ${file.name}`);
-				}
-
-				if (!uploadResponse.success) {
-					// Enhanced error handling based on error codes
-					if (uploadResponse.error_code === 401) {
-						throw new Error('Session expirée. Veuillez vous reconnecter.');
-					} else if (uploadResponse.error_code === 413) {
-						throw new Error(`Fichier trop volumineux: ${file.name}`);
-					} else if (uploadResponse.error_code === 415) {
-						throw new Error(`Type de fichier non supporté: ${file.name}`);
-					} else if (uploadResponse.error_code === 422) {
-						throw new Error(`Données invalides pour: ${file.name}`);
-					} else if (uploadResponse.error_code >= 500) {
-						throw new Error(`Erreur serveur pour: ${file.name}. Veuillez réessayer.`);
-					}
-
-					throw new Error(uploadResponse.message || `Échec de l'upload pour ${file.name}`);
-				}
-
-				console.log(`Upload réussi pour ${file.name}`);
-
-				// Enhanced import saving with validation
-				try {
-					const importRecord = await saveImport(file, uploadResponse.file_path, uploadResponse);
-
-					if (!importRecord) {
-						throw new Error(`Échec de la sauvegarde pour ${file.name}`);
-					}
-
-					results.push(importRecord);
-					uploadedCount++;
-
-					console.log(`Import sauvegardé pour ${file.name}:`, importRecord);
-
-					// Update progress
-					uploadMessage.value = `Traitement terminé: ${file.name} (${uploadedCount}/${files.value.length} réussis)`;
-				} catch (saveError) {
-					console.error('Erreur lors de la sauvegarde:', saveError);
-					failedCount++;
-					errors.push(`${file.name}: ${saveError.message}`);
-
-					// Even if save fails, we might want to continue with other files
-					// depending on business logic
-					uploadMessage.value = `Fichier uploadé mais erreur de sauvegarde pour ${file.name}`;
-				}
-			} catch (fileError) {
-				console.error(`Erreur pour le fichier ${file.name}:`, fileError);
-				failedCount++;
-				errors.push(`${file.name}: ${fileError.message}`);
-
-				// Check if it's an authentication error that should stop the process
-				if (
-					fileError.message.includes('Session expirée') ||
-					fileError.message.includes('reconnecter') ||
-					fileError.message.includes('authentification')
-				) {
-					throw fileError; // Stop the entire process
-				}
-
-				// For other errors, continue with next file after a short pause
-				uploadMessage.value = `Erreur pour ${file.name}: ${fileError.message}`;
-				await new Promise((resolve) => setTimeout(resolve, 500));
+			if (!uploadResponse?.success) {
+				throw new Error(uploadResponse?.message || `Échec de l'upload pour ${file.name}`);
 			}
-		}
 
-		// Enhanced final status messages
-		if (uploadedCount === files.value.length) {
-			uploadMessage.value = `✅ ${uploadedCount} fichier(s) importé(s) avec succès !`;
-		} else if (uploadedCount > 0 && failedCount > 0) {
-			uploadMessage.value = `⚠️ ${uploadedCount}/${files.value.length} fichier(s) importé(s). ${failedCount} ont échoué.`;
+			// Sauvegarde de l'import avec les informations du type de fichier
+			const importRecord = await saveImport(file, uploadResponse.file_path, uploadResponse);
 
-			// Show detailed errors in console or could be displayed in UI
-			if (errors.length > 0) {
-				console.error('Détails des erreurs:', errors);
-				// Optionally show errors to user:
-				// uploadMessage.value += '\nErreurs: ' + errors.slice(0, 3).join(', ') + (errors.length > 3 ? '...' : '');
+			if (!importRecord) {
+				throw new Error(`Échec de la sauvegarde pour ${file.name}`);
 			}
-		} else if (failedCount === files.value.length) {
-			uploadMessage.value = `❌ Aucun fichier n'a pu être importé. Vérifiez les logs pour plus de détails.`;
-		} else {
-			uploadMessage.value = 'Importation terminée avec des résultats mixtes.';
-		}
 
-		// Clean up
+			return importRecord;
+		});
+
+		const results = await Promise.all(uploadPromises);
+		uploadMessage.value = `${results.length} fichier(s) importé(s) avec succès !`;
 		files.value = [];
 		if (fileInput.value) fileInput.value.value = '';
 
-		// Reload imports list to show new uploads
 		await loadImports();
 	} catch (error) {
-		console.error("Erreur critique lors de l'importation:", error);
-
-		// Enhanced authentication error handling
-		if (
-			error.message.includes('Session expirée') ||
-			error.message.includes('reconnecter') ||
-			error.message.includes('authentification') ||
-			error.message.includes('Token')
-		) {
-			uploadMessage.value = '🔐 Session expirée. Redirection vers la page de connexion...';
-
-			// Clear potentially invalid credentials
-			if (typeof localStorage !== 'undefined') {
-				localStorage.removeItem('user_credentials');
-				localStorage.removeItem('auth_token');
-			}
-
-			// Redirect after showing message
-			setTimeout(() => {
-				window.location.href = '/login';
-			}, 2000);
-		} else if (error.message.includes('Network') || error.message.includes('fetch')) {
-			uploadMessage.value = '🌐 Erreur de connexion. Vérifiez votre connexion internet et réessayez.';
-		} else {
-			uploadMessage.value = `❌ ${error.message || "Erreur inattendue lors de l'importation"}`;
-		}
+		console.error("Erreur lors de l'importation:", error);
+		uploadMessage.value = error.message || "Erreur lors de l'importation";
 	} finally {
 		isUploading.value = false;
 	}
 };
 
-// Helper function to format file size
+const deleteImport = async (importId) => {
+	if (!confirm('Êtes-vous sûr de vouloir supprimer cet import ?')) {
+		return;
+	}
+
+	try {
+		const credentials = getCredentials();
+		const response = await fetch('import/deleteImport', {
+			import_id: importId,
+			credentials,
+		});
+
+		if (response.success) {
+			uploadMessage.value = 'Import supprimé avec succès';
+			await loadImports(); // Recharger la liste
+		} else {
+			throw new Error(response.message || 'Erreur lors de la suppression');
+		}
+	} catch (error) {
+		console.error('Erreur lors de la suppression:', error);
+		uploadMessage.value = error.message || 'Erreur lors de la suppression';
+	}
+};
+
+// Nouvelle fonction pour afficher le contenu d'un fichier
+const viewFileContent = async (importItem) => {
+	isLoadingContent.value = true;
+	try {
+		const credentials = getCredentials();
+		const response = await fetch('import/getFileContent', {
+			import_id: importItem.id,
+			credentials,
+		});
+
+		if (response.success) {
+			currentFile.value = response.data;
+			fileContent.value = response.data.content;
+			showFileModal.value = true;
+		} else {
+			alert('Erreur lors du chargement du fichier: ' + response.message);
+		}
+	} catch (error) {
+		console.error('Erreur lors du chargement du contenu:', error);
+		alert('Erreur lors du chargement du fichier');
+	} finally {
+		isLoadingContent.value = false;
+	}
+};
+
+const closeFileModal = () => {
+	showFileModal.value = false;
+	currentFile.value = null;
+	fileContent.value = '';
+};
+
 const formatFileSize = (bytes) => {
 	if (bytes === 0) return '0 Bytes';
 	const k = 1024;
 	const sizes = ['Bytes', 'KB', 'MB', 'GB'];
 	const i = Math.floor(Math.log(bytes) / Math.log(k));
-	return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+	return parseFloat((bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i]);
 };
 
-// Helper function to format date
 const formatDate = (dateString) => {
-	if (!dateString) return 'Date inconnue';
-	const date = new Date(dateString);
-	return date.toLocaleDateString('fr-FR', {
-		year: 'numeric',
-		month: 'short',
-		day: 'numeric',
-		hour: '2-digit',
-		minute: '2-digit',
-	});
-};
-
-// Replace your viewFileContent function with this corrected version:
-
-const viewFileContent = async (importItem) => {
-	if (isLoadingContent.value) return;
-
-	currentFile.value = importItem;
-	showFileModal.value = true;
-	isLoadingContent.value = true;
-	fileContent.value = '';
-
-	try {
-		const credentials = getCredentials();
-
-		if (!credentials?.token || !credentials?.user?.id) {
-			throw new Error('Credentials manquants pour la visualisation');
-		}
-
-		console.log('viewFileContent called with importItem:', importItem);
-		console.log('importItem.id:', importItem.id);
-
-		const requestData = {
-			import_id: importItem.id,
-			credentials,
-		};
-
-		console.log('Request data:', requestData);
-
-		// Use the fetch utility correctly
-		const response = await fetch(
-			'import/getFileContent',
-			requestData,
-			(data) => {
-				console.log('Success response:', data);
-				return data;
-			},
-			null, // successMessage - set to null to avoid showing notification
-			(error) => {
-				console.error('Error in onError callback:', error);
-				throw new Error(`Failed to load file: ${error}`);
-			}
-		);
-
-		console.log('Final response:', response);
-
-		// Handle the response
-		if (response && response.success) {
-			const responseData = response.data || response;
-
-			if (responseData.is_pdf) {
-				currentFile.value = {
-					...importItem,
-					is_pdf: true,
-					file_url: responseData.file_url || getPdfUrl(importItem),
-					can_display: true,
-				};
-			} else if (responseData.can_display) {
-				fileContent.value = responseData.content || 'Contenu non disponible';
-				currentFile.value = {
-					...importItem,
-					is_pdf: false,
-					can_display: true,
-					lines_count: responseData.lines_count,
-				};
-			} else {
-				fileContent.value = responseData.display_message || 'Impossible de charger le contenu de ce fichier.';
-				currentFile.value = {
-					...importItem,
-					is_pdf: false,
-					can_display: false,
-					display_message: responseData.display_message || 'Impossible de charger le contenu de ce fichier.',
-				};
-			}
-		} else {
-			const errorMessage = response?.message || 'Erreur inconnue';
-			fileContent.value = 'Erreur lors du chargement du contenu: ' + errorMessage;
-			currentFile.value = {
-				...importItem,
-				can_display: false,
-				display_message: 'Impossible de charger le contenu de ce fichier.',
-			};
-		}
-	} catch (error) {
-		console.error('Erreur lors du chargement du contenu:', error);
-		let errorMessage = 'Erreur de connexion lors du chargement du contenu.';
-
-		if (error.message?.includes('CORS')) {
-			errorMessage = 'Erreur CORS: Le serveur doit être configuré pour permettre les requêtes cross-origin.';
-		} else if (error.message?.includes('Network Error')) {
-			errorMessage = 'Erreur réseau: Vérifiez que le serveur backend est accessible.';
-		} else if (error.message?.includes('Credentials manquants')) {
-			errorMessage = 'Session expirée. Veuillez vous reconnecter.';
-		} else if (error.message) {
-			errorMessage = error.message;
-		}
-
-		fileContent.value = errorMessage;
-		currentFile.value = {
-			...importItem,
-			can_display: false,
-			display_message: errorMessage,
-		};
-	} finally {
-		isLoadingContent.value = false;
-	}
-};
-// Function to close file modal
-const closeFileModal = () => {
-	showFileModal.value = false;
-	currentFile.value = null;
-	fileContent.value = '';
+	return new Date(dateString).toLocaleString('fr-FR');
 };
 </script>
 
@@ -758,6 +387,9 @@ const closeFileModal = () => {
 									title="Voir le contenu"
 								>
 									<EyeIcon class="w-4 h-4" />
+								</button>
+								<button @click="deleteImport(importItem.id)" class="delete-btn" title="Supprimer">
+									<TrashIcon class="w-4 h-4" />
 								</button>
 								<div class="import-status">
 									<span
@@ -1378,5 +1010,20 @@ const closeFileModal = () => {
 	.pdf-viewer {
 		min-height: 400px;
 	}
+}
+.delete-btn {
+	background: none;
+	border: 1px solid var(--border-color);
+	padding: 0.5rem;
+	border-radius: 0.25rem;
+	cursor: pointer;
+	color: var(--text-secondary);
+	transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+	background-color: var(--error-bg);
+	border-color: var(--error-text);
+	color: var(--error-text);
 }
 </style>

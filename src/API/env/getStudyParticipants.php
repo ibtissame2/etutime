@@ -4,7 +4,7 @@ require_once __DIR__ . '/../database.php';
 
 $data = getPostData();
 $db = openDatabase();
-$user_id = get_user_id($db, $data);
+$user_id = get_user($db);
 
 try {
     // 1. Récupérer le niveau de concentration de l'utilisateur actuel

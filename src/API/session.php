@@ -10,6 +10,8 @@ session_set_cookie_params([
 
 session_start();
 
+$hashKey = 'sarout12Ibtissame12mzMeryemjox45Oussama45cx1c2VyX2FnZW50IjoiTW9';
+
 function startUserSession($user)
 {
 	$_SESSION['user'] = [
@@ -22,21 +24,48 @@ function startUserSession($user)
 	];
 }
 
-function get_user_id($db, $data, $entire_user = false)
+function get_user($db, $entire_user = false)
 {
-	// Check: we get the user id only from localStorage variables, {{ credientials.user.id }} as integer number
-	//	- Credentials contains also {{ credientials.token }} as string
-	//	- These values can be accessed and sent to to PHP server via the function 'getCredentials' from 'src/store/axios.js'
-	//		search in vs code: const credentials = getCredentials(); 
-	//	- These values are saved in localStorage after a successfull log in or sign up in 'src/pages/SeConnecter.vue'
-	//	- These values will unsset from localStorage when log out in 'src/Components/UserSettingsIcon.vue'
-	if (isset($data['credentials']) && isset($data['credentials']['user']) && isset($data['credentials']['user']['id'])) {
-		$id = $data['credentials']['user']['id'];
-		$result = executeSQL($db, 'SELECT * from users WHERE id = ?', [$id], false);
-		if (!empty($result)) {
-			return $entire_user ? $result[0] : $id;
+	global $hashKey;
+	try {
+		$headers = getallheaders();
+		if (isset($headers['Authorization'])) {
+			$matches = [];
+			if (preg_match('/Bearer\s+(.*)$/i', $headers['Authorization'], $matches)) {
+				$parts = explode('.', $matches[1]);
+				if (count($parts) === 2) {
+					$jsonData = base64_decode($parts[0]);
+					$token = json_decode($jsonData, true);
+					if ($token && time() <= $token['expires_at']) {
+						$expectedSignature = hash_hmac('sha256', $jsonData, $hashKey);
+						if ($parts[1] == $expectedSignature) {
+							$sql = 'SELECT id, first_name, last_name, email, level from users WHERE id = ?';
+							$result = executeSQL($db, $sql, [$token['user_id']], false);
+							if (!empty($result)) {
+								return $entire_user ? $result[0] : $result[0]['id'];
+							}
+						}
+					}
+				}
+			}
 		}
+	} catch (Exception $e) {
 	}
 	handleError('Utilisateur non connecté', 401);
+}
+
+function generateToken($user)
+{
+	global $hashKey;
+	$data = [
+		'user_id' => $user['id'],
+		'expires_at' => time() + (24 * 60 * 60),
+		'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+		'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '',
+	];
+	$jsonData = json_encode($data);
+	$signature = hash_hmac('sha256', $jsonData, $hashKey);
+	$token = base64_encode($jsonData) . '.' . $signature;
+	return $token;
 }
 ?>

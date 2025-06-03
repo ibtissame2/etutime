@@ -7,7 +7,7 @@ $db = openDatabase();
 
 try {
     // Récupérer l'utilisateur complet depuis la session
-    $user = get_user_id($db, $data, true);
+    $user = get_user($db, true);
     if (!$user) {
         handleError('Utilisateur non connecté', 401);
     }
@@ -42,7 +42,7 @@ try {
                  AND created_at > DATE_SUB(NOW(), INTERVAL 24 HOUR)
                  ORDER BY created_at DESC 
                  LIMIT 1";
-    
+
     $existing = executeSQL($db, $checkSql, [$userId], false);
 
     if (!empty($existing)) {
@@ -53,9 +53,9 @@ try {
                           score_total = ?, 
                           updated_at = CURRENT_TIMESTAMP 
                       WHERE id = ? AND user_id = ?";
-        
+
         executeSQL($db, $updateSql, [$niveau, $scoreTotal, $questionnaireId, $userId]);
-        
+
         $response = [
             'success' => true,
             'message' => 'Questionnaire mis à jour avec succès',
@@ -71,9 +71,9 @@ try {
         // Créer un nouveau questionnaire
         $insertSql = "INSERT INTO questionnaire_resultats (user_id, niveau_concentration, score_total) 
                       VALUES (?, ?, ?)";
-        
+
         $questionnaireId = executeSQL($db, $insertSql, [$userId, $niveau, $scoreTotal]);
-        
+
         $response = [
             'success' => true,
             'message' => 'Questionnaire sauvegardé avec succès',

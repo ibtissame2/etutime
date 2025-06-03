@@ -28,7 +28,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<DashboardCard title="Team Activity" :icon="UserGroupIcon">
+	<DashboardCard title="Activité d'équipe" :icon="UserGroupIcon">
 		<div v-if="participants.length">
 			<TeamActivityCardEntry
 				v-for="(participant, index) in sortedParticipants.three"

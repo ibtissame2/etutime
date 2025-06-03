@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 try {
     $data = $_GET; // Utilisation de $_GET pour les requêtes GET
     $db = openDatabase();
-    $user = get_user_id($db, $data, true);
+    $user = get_user($db, true);
 
     // Requête pour récupérer les données de base de l'utilisateur
     $sql = "SELECT 

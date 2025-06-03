@@ -4,7 +4,7 @@ require_once __DIR__ . '/../database.php';
 
 $data = getPostData();
 $db = openDatabase();
-$user_id = get_user_id($db, $data);
+$user_id = get_user($db);
 $sql = 'SELECT m.*, ch.name as chapitre_name, ch.module_id as chapitre_module_id, mt.tache_id as tache_id
         FROM minuteurs m
         LEFT JOIN chapitres ch ON ch.id = m.chapitre_id

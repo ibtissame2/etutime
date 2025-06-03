@@ -72,7 +72,7 @@ try {
         'success' => true,
         'message' => 'Compte créé avec succès !',
         'user' => $userInfo[0],
-        'redirect' => '/dashboard'
+        'token' => generateToken($userInfo[0]),
     ]);
 
 } catch (Exception $e) {

@@ -27,17 +27,15 @@ try {
         throw new Exception("Email ou mot de passe incorrect");
     }
 
-    // Création d'un token simple pour l'API (dans un système de production, utilisez JWT)
-    $token = bin2hex(random_bytes(32));
-
-    // Démarrer la session utilisateur
-    startUserSession([
+    $user = [
         'id' => $user['id'],
         'first_name' => $user['first_name'],
         'last_name' => $user['last_name'],
         'email' => $user['email'],
         'level' => $user['level']
-    ]);
+    ];
+
+    startUserSession($user);
 
     // Ne pas renvoyer le mot de passe hashé
     unset($user['password']);
@@ -47,8 +45,7 @@ try {
         'success' => true,
         'message' => 'Connexion réussie',
         'user' => $user,
-        'token' => $token,
-        'redirect' => '/dashboard'
+        'token' => generateToken($user),
     ]);
 
 } catch (Exception $e) {

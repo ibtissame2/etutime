@@ -4,7 +4,7 @@ require_once __DIR__ . '/../database.php';
 
 function createChapitreIfNotExist($db, $data, $throwError = false)
 {
-	$user_id = get_user_id($db, $data);
+	$user_id = get_user($db);
 	if (!$data['name']) {
 		if (!$throwError)
 			return ["chapitre_id" => null, "module_id" => $data['module_id']];

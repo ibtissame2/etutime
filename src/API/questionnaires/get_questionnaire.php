@@ -7,7 +7,7 @@ $db = openDatabase();
 
 try {
     // Récupérer l'utilisateur complet depuis la session
-    $user = get_user_id($db, $data, true);
+    $user = get_user($db, true);
     if (!$user) {
         handleError('Utilisateur non connecté', 401);
     }
@@ -24,7 +24,7 @@ try {
             WHERE user_id = ? 
             ORDER BY created_at DESC 
             LIMIT 1";
-    
+
     $results = executeSQL($db, $sql, [$userId], false);
 
     if (empty($results)) {
@@ -36,7 +36,7 @@ try {
         ];
     } else {
         $questionnaire = $results[0];
-        
+
         $questionnaire['created_at'] = date('Y-m-d H:i:s', strtotime($questionnaire['created_at']));
         if ($questionnaire['updated_at']) {
             $questionnaire['updated_at'] = date('Y-m-d H:i:s', strtotime($questionnaire['updated_at']));
@@ -73,9 +73,9 @@ try {
                      GROUP BY niveau_concentration
                      ORDER BY COUNT(*) DESC
                      LIMIT 1";
-        
+
         $stats = executeSQL($db, $statsSql, [$userId], false);
-        
+
         if (!empty($stats)) {
             $response['statistics'] = [
                 'total_questionnaires' => intval($stats[0]['total_questionnaires']),

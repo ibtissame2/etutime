@@ -4,7 +4,7 @@ require_once __DIR__ . '/../database.php';
 
 $data = getPostData();
 $db = openDatabase();
-$user_id = get_user_id($db, $data);
+$user_id = get_user($db);
 if (isset($data['name'])) {
 	$sql = 'UPDATE `chapitres` SET `name` = ?, `module_id` = ? WHERE `id` = ? AND `user_id` = ?;';
 	executeSQL($db, $sql, [$data['name'], $data['module_id'], $data['id'], $user_id]);
