@@ -70,7 +70,6 @@ try {
     // Réponse de succès
     echo json_encode([
         'success' => true,
-        'message' => 'Compte créé avec succès !',
         'user' => $userInfo[0],
         'token' => generateToken($userInfo[0]),
     ]);

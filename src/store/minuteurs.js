@@ -21,6 +21,7 @@ export const useMinuteursStore = createCRUDStore({
 		elements: 'minuteurs',
 		Element: 'Minuteur',
 		element: 'minuteur',
+		updateMessages: ['Minuteur a été arrêté avec succès', "Échec de l'arrêt du minuteur"],
 	},
 	adapter(minuteur, argument) {
 		minuteur.chapitre_name = minuteur.chapitre_name || '';

@@ -914,6 +914,13 @@ onBeforeUnmount(() => {
 	animation: pulse 1.5s infinite;
 }
 
+h3.course-card-title {
+	width: calc(100% - 11px);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
 @keyframes pulse {
 	0% {
 		opacity: 1;
@@ -1204,6 +1211,7 @@ onBeforeUnmount(() => {
 }
 
 .course-card {
+	overflow: hidden;
 	border: 1px solid var(--border-primary);
 	border-radius: 6px;
 	padding: 15px;

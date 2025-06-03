@@ -1,10 +1,10 @@
 <script setup>
 import MainContainer from '@/Components/src/MainContainer.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { TagIcon } from '@heroicons/vue/16/solid';
-import { ref, watch, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import PageTitle from '@/Components/Common/PageTitle.vue';
 import { fetch, getCredentials } from '@/store/axios'; // Remplace l'import axios direct
+import CalendarIcon from '@/Components/Icons/CalendarIcon.vue';
 
 // Définition des données pour l'emploi du temps
 const moduleId = ref(null);
@@ -15,7 +15,6 @@ const creneaux = ref([]);
 const emploiPersonnalise = ref({});
 const emploiGenere = ref(null);
 const modules = ref([]);
-const nouveauModule = ref('');
 const etapeActuelle = ref(1);
 const horaireFixe = ref({});
 const niveau = ref('moyen'); // Peut être 'faible', 'moyen', ou 'élevé'
@@ -30,509 +29,508 @@ const successMessage = ref('');
 
 // Méthodes
 const genererCreneaux = () => {
-    const creneauxArray = [];
-    let heureDebut = new Date();
-    heureDebut.setHours(8, 0, 0, 0); // Début à 8h
+	const creneauxArray = [];
+	let heureDebut = new Date();
+	heureDebut.setHours(8, 0, 0, 0); // Début à 8h
 
-    const heureFin = new Date();
-    heureFin.setHours(22, 0, 0, 0); // Fin à 22h
+	const heureFin = new Date();
+	heureFin.setHours(22, 0, 0, 0); // Fin à 22h
 
-    while (heureDebut < heureFin) {
-        const heure = heureDebut.getHours();
-        // Sauter l'heure entre 12h et 13h
-        if (heure !== 12) {
-            const debutStr = heureDebut.toTimeString().substring(0, 5);
-            heureDebut = new Date(heureDebut.getTime() + 60 * 60000);
-            const finStr = heureDebut.toTimeString().substring(0, 5);
-            creneauxArray.push(`${debutStr} - ${finStr}`);
-        } else {
-            heureDebut = new Date(heureDebut.getTime() + 60 * 60000); // Passer à 13h
-        }
-    }
+	while (heureDebut < heureFin) {
+		const heure = heureDebut.getHours();
+		// Sauter l'heure entre 12h et 13h
+		if (heure !== 12) {
+			const debutStr = heureDebut.toTimeString().substring(0, 5);
+			heureDebut = new Date(heureDebut.getTime() + 60 * 60000);
+			const finStr = heureDebut.toTimeString().substring(0, 5);
+			creneauxArray.push(`${debutStr} - ${finStr}`);
+		} else {
+			heureDebut = new Date(heureDebut.getTime() + 60 * 60000); // Passer à 13h
+		}
+	}
 
-    creneaux.value = creneauxArray;
+	creneaux.value = creneauxArray;
 };
 
 const initialiserEmploiVide = () => {
-    const emploi = {};
-    jours.value.forEach((jour) => {
-        emploi[jour] = Array(creneaux.value.length).fill('');
-    });
-    emploiPersonnalise.value = emploi;
+	const emploi = {};
+	jours.value.forEach((jour) => {
+		emploi[jour] = Array(creneaux.value.length).fill('');
+	});
+	emploiPersonnalise.value = emploi;
 };
 
 const initialiserHoraireFixe = () => {
-    const horaire = {};
-    jours.value.forEach((jour) => {
-        horaire[jour] = Array(creneaux.value.length).fill('');
-    });
-    horaireFixe.value = horaire;
+	const horaire = {};
+	jours.value.forEach((jour) => {
+		horaire[jour] = Array(creneaux.value.length).fill('');
+	});
+	horaireFixe.value = horaire;
 };
 
 // Récupérer les modules depuis la base de données
 const chargerModules = async () => {
-    try {
-        const credentials = getCredentials();
-        const response = await fetch('emploi/get_modules', {
-            credentials
-        });
+	try {
+		const credentials = getCredentials();
+		const response = await fetch('emploi/get_modules', {
+			credentials,
+		});
 
-        if (response.success && response.data) {
-            modules.value = response.data.map(module => module.name);
-            if (modules.value.length < 4) {
-                showError('Vous devez avoir au moins 4 modules pour générer un emploi du temps optimal');
-            }
-        } else {
-            showError(response.message || 'Erreur lors du chargement des modules');
-        }
-    } catch (error) {
-        console.error('Erreur lors du chargement des modules:', error);
-        showError('Erreur lors du chargement des modules');
-    }
+		if (response.success && response.data) {
+			modules.value = response.data.map((module) => module.name);
+			if (modules.value.length < 4) {
+				showError('Vous devez avoir au moins 4 modules pour générer un emploi du temps optimal');
+			}
+		} else {
+			showError(response.message || 'Erreur lors du chargement des modules');
+		}
+	} catch (error) {
+		console.error('Erreur lors du chargement des modules:', error);
+		showError('Erreur lors du chargement des modules');
+	}
 };
 
 const genererEmploi = () => {
-    if (modules.value.length < 4) {
-        showError('Vous devez avoir au moins 4 modules pour générer un emploi du temps optimal');
-        return;
-    }
+	if (modules.value.length < 4) {
+		showError('Vous devez avoir au moins 4 modules pour générer un emploi du temps optimal');
+		return;
+	}
 
-    // Créer une copie de l'horaire fixe comme base
-    const planning = JSON.parse(JSON.stringify(horaireFixe.value));
+	// Créer une copie de l'horaire fixe comme base
+	const planning = JSON.parse(JSON.stringify(horaireFixe.value));
 
-    // Ajouter 1 heure de transport après le dernier cours de chaque journée
-    jours.value.forEach((jour) => {
-        let dernierIndex = -1;
+	// Ajouter 1 heure de transport après le dernier cours de chaque journée
+	jours.value.forEach((jour) => {
+		let dernierIndex = -1;
 
-        // Trouver l'index du dernier cours fixe de la journée
-        for (let i = creneaux.value.length - 1; i >= 0; i--) {
-            if (horaireFixe.value[jour][i]) {
-                dernierIndex = i;
-                break;
-            }
-        }
+		// Trouver l'index du dernier cours fixe de la journée
+		for (let i = creneaux.value.length - 1; i >= 0; i--) {
+			if (horaireFixe.value[jour][i]) {
+				dernierIndex = i;
+				break;
+			}
+		}
 
-        // Ajouter transport si possible
-        if (dernierIndex !== -1 && dernierIndex + 1 < creneaux.value.length) {
-            const heureCreneau = creneaux.value[dernierIndex + 1].split('-')[0].trim();
-            const heureTransport = parseInt(heureCreneau.split(':')[0]);
+		// Ajouter transport si possible
+		if (dernierIndex !== -1 && dernierIndex + 1 < creneaux.value.length) {
+			const heureCreneau = creneaux.value[dernierIndex + 1].split('-')[0].trim();
+			const heureTransport = parseInt(heureCreneau.split(':')[0]);
 
-            if (heureTransport !== 12 && !planning[jour][dernierIndex + 1]) {
-                planning[jour][dernierIndex + 1] = 'Transport';
-            }
-        }
-    });
+			if (heureTransport !== 12 && !planning[jour][dernierIndex + 1]) {
+				planning[jour][dernierIndex + 1] = 'Transport';
+			}
+		}
+	});
 
-    // Fonction pour distribuer des sessions de 2h
-    const assigner = (jour, indexModules, typeActivite, startIndex = 0) => {
-        if (!indexModules || indexModules.length === 0) {
-            return;
-        }
+	// Fonction pour distribuer des sessions de 2h
+	const assigner = (jour, indexModules, typeActivite, startIndex = 0) => {
+		if (!indexModules || indexModules.length === 0) {
+			return;
+		}
 
-        let slotsAssignes = 0;
-        let currentIndex = startIndex;
+		let slotsAssignes = 0;
+		let currentIndex = startIndex;
 
-        while (slotsAssignes < indexModules.length && currentIndex < creneaux.value.length - 1) {
-            // Vérifier si l'heure actuelle est disponible
-            const heureDebutStr = creneaux.value[currentIndex].split('-')[0].trim();
-            const heureDebut = parseInt(heureDebutStr.split(':')[0]);
+		while (slotsAssignes < indexModules.length && currentIndex < creneaux.value.length - 1) {
+			// Vérifier si l'heure actuelle est disponible
+			const heureDebutStr = creneaux.value[currentIndex].split('-')[0].trim();
+			const heureDebut = parseInt(heureDebutStr.split(':')[0]);
 
-            // Vérifier disponibilité et éviter 12h-13h
-            if (!planning[jour][currentIndex] && !planning[jour][currentIndex + 1] && heureDebut !== 11) {
-                // Assigner l'activité pour 2 heures consécutives
-                const moduleNom = modules.value[indexModules[slotsAssignes]];
-                planning[jour][currentIndex] = `${typeActivite} ${moduleNom}`;
-                planning[jour][currentIndex + 1] = `${typeActivite} ${moduleNom} (suite)`;
-                slotsAssignes++;
-                currentIndex += 2;
-            } else {
-                currentIndex++;
-            }
-        }
-    };
+			// Vérifier disponibilité et éviter 12h-13h
+			if (!planning[jour][currentIndex] && !planning[jour][currentIndex + 1] && heureDebut !== 11) {
+				// Assigner l'activité pour 2 heures consécutives
+				const moduleNom = modules.value[indexModules[slotsAssignes]];
+				planning[jour][currentIndex] = `${typeActivite} ${moduleNom}`;
+				planning[jour][currentIndex + 1] = `${typeActivite} ${moduleNom} (suite)`;
+				slotsAssignes++;
+				currentIndex += 2;
+			} else {
+				currentIndex++;
+			}
+		}
+	};
 
-    // Logique de génération selon le nombre de modules
-    if (modules.value.length > 0) {
-        // Calculer les indices des modules pour l'assignation
-        const indices = modules.value.map((_, index) => index);
+	// Logique de génération selon le nombre de modules
+	if (modules.value.length > 0) {
+		// Calculer les indices des modules pour l'assignation
+		const indices = modules.value.map((_, index) => index);
 
-        // Distribution pour l'université (maintenant par défaut)
-        const groupe1 = indices.slice(0, Math.min(2, indices.length));
-        const groupe2 = indices.slice(2, Math.min(4, indices.length));
-        const groupe3 = indices.slice(4);
+		// Distribution pour l'université (maintenant par défaut)
+		const groupe1 = indices.slice(0, Math.min(2, indices.length));
+		const groupe2 = indices.slice(2, Math.min(4, indices.length));
+		const groupe3 = indices.slice(4);
 
-        // Assigner les groupes aux jours
-        assigner('Lundi', groupe1, 'Révision');
-        assigner('Mercredi', groupe2, 'Révision');
-        assigner('Mardi', groupe1, 'TD');
-        assigner('Jeudi', groupe2, 'TD');
+		// Assigner les groupes aux jours
+		assigner('Lundi', groupe1, 'Révision');
+		assigner('Mercredi', groupe2, 'Révision');
+		assigner('Mardi', groupe1, 'TD');
+		assigner('Jeudi', groupe2, 'TD');
 
-        if (groupe3.length > 0) {
-            assigner('Vendredi', groupe3, 'Révision');
-            assigner('Samedi', groupe3, 'TD');
-        } else {
-            // S'il n'y a pas de groupe 3, réutiliser le groupe 1
-            assigner('Vendredi', groupe1, 'Révision');
-            assigner('Samedi', groupe2, 'TD');
-        }
+		if (groupe3.length > 0) {
+			assigner('Vendredi', groupe3, 'Révision');
+			assigner('Samedi', groupe3, 'TD');
+		} else {
+			// S'il n'y a pas de groupe 3, réutiliser le groupe 1
+			assigner('Vendredi', groupe1, 'Révision');
+			assigner('Samedi', groupe2, 'TD');
+		}
 
-        // TP le dimanche si possible
-        if (creneaux.value.length >= 2) {
-            planning['Dimanche'][0] = 'TP';
-            planning['Dimanche'][1] = 'TP (suite)';
-        }
-    }
+		// TP le dimanche si possible
+		if (creneaux.value.length >= 2) {
+			planning['Dimanche'][0] = 'TP';
+			planning['Dimanche'][1] = 'TP (suite)';
+		}
+	}
 
-    // Assigner le planning généré
-    emploiGenere.value = planning;
+	// Assigner le planning généré
+	emploiGenere.value = planning;
 };
 
 // Fonction pour sauvegarder l'emploi du temps
 const enregistrerEmploi = async () => {
-    const emploiAEnregistrer = niveau.value === 'élevé' ? emploiPersonnalise.value : emploiGenere.value;
-    
-    if (!emploiAEnregistrer) {
-        showError('Aucun emploi du temps à enregistrer');
-        return;
-    }
+	const emploiAEnregistrer = niveau.value === 'élevé' ? emploiPersonnalise.value : emploiGenere.value;
 
-    isSaving.value = true;
-    errorMessage.value = '';
-    successMessage.value = '';
+	if (!emploiAEnregistrer) {
+		showError('Aucun emploi du temps à enregistrer');
+		return;
+	}
 
-    try {
-        const credentials = getCredentials();
-        const response = await fetch('emploi/save_emploi', {
-            emploi: emploiAEnregistrer,
-            horaireFixe: horaireFixe.value,
-            moduleId: moduleId.value,
-            credentials
-        });
+	isSaving.value = true;
+	errorMessage.value = '';
+	successMessage.value = '';
 
-        if (response.success) {
-            emploiAffiche.value = emploiAEnregistrer;
-            emploiEnregistre.value = true;
-            showSuccess('Emploi du temps enregistré avec succès !');
-        } else {
-            showError(response.message || 'Erreur lors de l\'enregistrement');
-        }
-    } catch (error) {
-        console.error('Erreur lors de l\'enregistrement:', error);
-        showError('Erreur lors de l\'enregistrement de l\'emploi du temps');
-    } finally {
-        isSaving.value = false;
-    }
+	try {
+		const credentials = getCredentials();
+		const response = await fetch('emploi/save_emploi', {
+			emploi: emploiAEnregistrer,
+			horaireFixe: horaireFixe.value,
+			moduleId: moduleId.value,
+			credentials,
+		});
+
+		if (response.success) {
+			emploiAffiche.value = emploiAEnregistrer;
+			emploiEnregistre.value = true;
+			showSuccess('Emploi du temps enregistré avec succès !');
+		} else {
+			showError(response.message || "Erreur lors de l'enregistrement");
+		}
+	} catch (error) {
+		console.error("Erreur lors de l'enregistrement:", error);
+		showError("Erreur lors de l'enregistrement de l'emploi du temps");
+	} finally {
+		isSaving.value = false;
+	}
 };
 
 // Fonction pour charger l'emploi du temps existant
 const chargerEmploi = async () => {
-    isLoading.value = true;
-    errorMessage.value = '';
+	isLoading.value = true;
+	errorMessage.value = '';
 
-    try {
-        const credentials = getCredentials();
-        const response = await fetch('emploi/get_emploi', {
-            credentials
-        });
-        console.log('Réponse API:', response); // Debug
+	try {
+		const credentials = getCredentials();
+		const response = await fetch('emploi/get_emploi', {
+			credentials,
+		});
+		console.log('Réponse API:', response); // Debug
 
-        if (response.success && response.data) {
-            const data = response.data;
-            
-            // Récupération du niveau de concentration
-            niveau.value = data.niveauConcentration || 'moyen';
-            scoreTotal.value = data.scoreTotal || 0;
-            moduleId.value = data.moduleId;
+		if (response.success && response.data) {
+			const data = response.data;
 
-            console.log('Niveau de concentration récupéré:', niveau.value);
-            console.log('Score total:', scoreTotal.value);
-            
-            // Charger l'emploi du temps s'il existe
-            if (data.emploi && typeof data.emploi === 'object') {
-                emploiAffiche.value = data.emploi;
-                emploiEnregistre.value = true;
-                console.log('Emploi du temps chargé avec succès');
-            } else {
-                console.log('Aucun emploi du temps existant');
-                emploiAffiche.value = null;
-                emploiEnregistre.value = false;
-            }
-            
-            // Charger l'horaire fixe s'il existe
-            if (data.horaireFixe && typeof data.horaireFixe === 'object') {
-                horaireFixe.value = data.horaireFixe;
-                console.log('Horaire fixe chargé');
-            } else {
-                // Initialiser un horaire fixe vide
-                initialiserHoraireFixe();
-                console.log('Horaire fixe initialisé');
-            }
+			// Récupération du niveau de concentration
+			niveau.value = data.niveauConcentration || 'moyen';
+			scoreTotal.value = data.scoreTotal || 0;
+			moduleId.value = data.moduleId;
 
-        } else {
-            // Gérer le cas d'erreur depuis l'API
-            showError(response.message || 'Erreur lors du chargement des données');
-            console.error('Erreur API:', response.message);
-        }
-    } catch (error) {
-        console.error('Erreur lors du chargement:', error);
-        showError('Erreur lors du chargement des données');
-    } finally {
-        isLoading.value = false;
-    }
+			console.log('Niveau de concentration récupéré:', niveau.value);
+			console.log('Score total:', scoreTotal.value);
+
+			// Charger l'emploi du temps s'il existe
+			if (data.emploi && typeof data.emploi === 'object') {
+				emploiAffiche.value = data.emploi;
+				emploiEnregistre.value = true;
+				console.log('Emploi du temps chargé avec succès');
+			} else {
+				console.log('Aucun emploi du temps existant');
+				emploiAffiche.value = null;
+				emploiEnregistre.value = false;
+			}
+
+			// Charger l'horaire fixe s'il existe
+			if (data.horaireFixe && typeof data.horaireFixe === 'object') {
+				horaireFixe.value = data.horaireFixe;
+				console.log('Horaire fixe chargé');
+			} else {
+				// Initialiser un horaire fixe vide
+				initialiserHoraireFixe();
+				console.log('Horaire fixe initialisé');
+			}
+		} else {
+			// Gérer le cas d'erreur depuis l'API
+			showError(response.message || 'Erreur lors du chargement des données');
+			console.error('Erreur API:', response.message);
+		}
+	} catch (error) {
+		console.error('Erreur lors du chargement:', error);
+		showError('Erreur lors du chargement des données');
+	} finally {
+		isLoading.value = false;
+	}
 };
 
 // Fonction pour modifier l'emploi du temps
 const modifierEmploi = () => {
-    emploiEnregistre.value = false;
-    emploiAffiche.value = null;
-    etapeActuelle.value = 1;
-    successMessage.value = '';
-    errorMessage.value = '';
+	emploiEnregistre.value = false;
+	emploiAffiche.value = null;
+	etapeActuelle.value = 1;
+	successMessage.value = '';
+	errorMessage.value = '';
 };
 
 // Fonctions utilitaires pour les messages
 const showError = (message) => {
-    errorMessage.value = message;
-    setTimeout(() => {
-        errorMessage.value = '';
-    }, 5000);
+	errorMessage.value = message;
+	setTimeout(() => {
+		errorMessage.value = '';
+	}, 5000);
 };
 
 const showSuccess = (message) => {
-    successMessage.value = message;
-    setTimeout(() => {
-        successMessage.value = '';
-    }, 5000);
+	successMessage.value = message;
+	setTimeout(() => {
+		successMessage.value = '';
+	}, 5000);
 };
 
 // Initialisation au chargement de la page
 onMounted(async () => {
-    genererCreneaux();
-    initialiserEmploiVide();
-    initialiserHoraireFixe();
-    
-    // Charger les modules depuis la base de données
-    await chargerModules();
-    
-    // Charger l'emploi du temps existant si disponible
-    await chargerEmploi();
+	genererCreneaux();
+	initialiserEmploiVide();
+	initialiserHoraireFixe();
+
+	// Charger les modules depuis la base de données
+	await chargerModules();
+
+	// Charger l'emploi du temps existant si disponible
+	await chargerEmploi();
 });
 </script>
 
 <template>
-    <AppLayout title="Emploi du temps" data-testid="emploi_view">
-        <MainContainer class="py-3 sm:py-5 border-b border-default-background-separator">
-            <PageTitle :icon="TagIcon" title="Emploi du temps"></PageTitle>
-        </MainContainer>
+	<AppLayout title="Emploi du temps" data-testid="emploi_view">
+		<MainContainer class="py-3 sm:py-5 border-b border-default-background-separator">
+			<PageTitle :icon="CalendarIcon" title="Emploi du temps"></PageTitle>
+		</MainContainer>
 
-        <MainContainer class="py-5">
-            <div class="emploi-container">
-                <!-- Messages d'état -->
-                <div v-if="errorMessage" class="alert alert-error">
-                    {{ errorMessage }}
-                </div>
-                
-                <div v-if="successMessage" class="alert alert-success">
-                    {{ successMessage }}
-                </div>
+		<MainContainer class="py-5">
+			<div class="emploi-container">
+				<!-- Messages d'état -->
+				<div v-if="errorMessage" class="alert alert-error">
+					{{ errorMessage }}
+				</div>
 
-                <!-- Indicateur de chargement -->
-                <div v-if="isLoading" class="loading-container">
-                    <div class="loading-spinner"></div>
-                    <p>Chargement de votre emploi du temps...</p>
-                </div>
+				<div v-if="successMessage" class="alert alert-success">
+					{{ successMessage }}
+				</div>
 
-                <!-- Affichage de l'emploi du temps enregistré -->
-                <div v-else-if="emploiEnregistre" class="saved-schedule">
-                    <h2 class="text-xl font-medium mb-4 text-primary">Votre emploi du temps enregistré</h2>
+				<!-- Indicateur de chargement -->
+				<div v-if="isLoading" class="loading-container">
+					<div class="loading-spinner"></div>
+					<p>Chargement de votre emploi du temps...</p>
+				</div>
 
-                    <div class="schedule-grid">
-                        <div class="grid-header">
-                            <div class="header-cell">Heure</div>
-                            <div v-for="jour in jours" :key="jour" class="header-cell">{{ jour }}</div>
-                        </div>
+				<!-- Affichage de l'emploi du temps enregistré -->
+				<div v-else-if="emploiEnregistre" class="saved-schedule">
+					<h2 class="text-xl font-medium mb-4 text-primary">Votre emploi du temps enregistré</h2>
 
-                        <div v-for="(creneau, index) in creneaux" :key="index" class="grid-row">
-                            <div class="time-cell">{{ creneau }}</div>
-                            <div
-                                v-for="jour in jours"
-                                :key="jour"
-                                class="activity-cell"
-                                :class="{
-                                    'has-activity': emploiAffiche[jour][index],
-                                    'fixed-activity': horaireFixe[jour] && horaireFixe[jour][index],
-                                }"
-                            >
-                                {{ emploiAffiche[jour][index] || '' }}
-                                <span
-                                    v-if="horaireFixe[jour] && horaireFixe[jour][index] && emploiAffiche[jour][index] === horaireFixe[jour][index]"
-                                    class="fixed-badge"
-                                    >Fixé</span
-                                >
-                            </div>
-                        </div>
-                    </div>
+					<div class="schedule-grid">
+						<div class="grid-header">
+							<div class="header-cell">Heure</div>
+							<div v-for="jour in jours" :key="jour" class="header-cell">{{ jour }}</div>
+						</div>
 
-                    <button @click="modifierEmploi" class="btn-primary" :disabled="isSaving">
-                        Modifier l'emploi du temps
-                    </button>
-                </div>
+						<div v-for="(creneau, index) in creneaux" :key="index" class="grid-row">
+							<div class="time-cell">{{ creneau }}</div>
+							<div
+								v-for="jour in jours"
+								:key="jour"
+								class="activity-cell"
+								:class="{
+									'has-activity': emploiAffiche[jour][index],
+									'fixed-activity': horaireFixe[jour] && horaireFixe[jour][index],
+								}"
+							>
+								{{ emploiAffiche[jour][index] || '' }}
+								<span
+									v-if="
+										horaireFixe[jour] &&
+										horaireFixe[jour][index] &&
+										emploiAffiche[jour][index] === horaireFixe[jour][index]
+									"
+									class="fixed-badge"
+									>Fixé</span
+								>
+							</div>
+						</div>
+					</div>
 
-                <div v-else-if="niveau === 'élevé'" class="custom-schedule">
-                    <h2 class="text-xl font-medium mb-2 text-primary">Créez votre emploi du temps personnalisé</h2>
-                    <p class="text-secondary mb-6">Complétez votre emploi du temps selon vos préférences</p>
+					<button @click="modifierEmploi" class="btn-primary" :disabled="isSaving">Modifier l'emploi du temps</button>
+				</div>
 
-                    <div class="time-grid">
-                        <div class="time-header">
-                            <div class="time-cell">Heure</div>
-                            <div v-for="jour in jours" :key="jour" class="day-cell">{{ jour }}</div>
-                        </div>
+				<div v-else-if="niveau === 'élevé'" class="custom-schedule">
+					<h2 class="text-xl font-medium mb-2 text-primary">Créez votre emploi du temps personnalisé</h2>
+					<p class="text-secondary mb-6">Complétez votre emploi du temps selon vos préférences</p>
 
-                        <div v-for="(creneau, index) in creneaux" :key="index" class="time-row">
-                            <div class="time-cell">{{ creneau }}</div>
-                            <div v-for="jour in jours" :key="jour" class="day-cell">
-                                <input
-                                    v-model="emploiPersonnalise[jour][index]"
-                                    type="text"
-                                    placeholder="Activité..."
-                                    class="activity-input"
-                                />
-                            </div>
-                        </div>
-                    </div>
+					<div class="time-grid">
+						<div class="time-header">
+							<div class="time-cell">Heure</div>
+							<div v-for="jour in jours" :key="jour" class="day-cell">{{ jour }}</div>
+						</div>
 
-                    <button @click="enregistrerEmploi" class="btn-primary" :disabled="isSaving">
-                        <span v-if="isSaving">Enregistrement...</span>
-                        <span v-else>Enregistrer mon emploi du temps</span>
-                    </button>
-                </div>
+						<div v-for="(creneau, index) in creneaux" :key="index" class="time-row">
+							<div class="time-cell">{{ creneau }}</div>
+							<div v-for="jour in jours" :key="jour" class="day-cell">
+								<input
+									v-model="emploiPersonnalise[jour][index]"
+									type="text"
+									placeholder="Activité..."
+									class="activity-input"
+								/>
+							</div>
+						</div>
+					</div>
 
-                <div v-else class="auto-schedule">
-                    <h2 class="text-xl font-medium mb-2 text-primary">Votre emploi du temps optimisé</h2>
-                    <p class="text-secondary mb-6">
-                        Nous allons générer un emploi du temps adapté à votre niveau de concentration
-                    </p>
+					<button @click="enregistrerEmploi" class="btn-primary" :disabled="isSaving">
+						<span v-if="isSaving">Enregistrement...</span>
+						<span v-else>Enregistrer mon emploi du temps</span>
+					</button>
+				</div>
 
-                    <div class="schedule-steps">
-                        <!-- Étape 1: Affichage des modules -->
-                        <div class="step" :class="{ 'active-step': etapeActuelle === 1 }">
-                            <div class="step-header" @click="etapeActuelle = 1">
-                                <span class="step-number">1</span>
-                                <h3 class="text-base font-medium">Vos modules</h3>
-                            </div>
-                            <div class="step-content" v-show="etapeActuelle === 1">
-                                <div class="option-group">
-                                    <label class="text-secondary font-medium mb-2 block">Modules/Cours :</label>
-                                    <div class="modules-list">
-                                        <div v-for="(module, index) in modules" :key="index" class="module-item">
-                                            {{ module }}
-                                        </div>
-                                    </div>
-                                    <p v-if="modules.length < 4" class="text-danger mt-2">
-                                        Vous devez avoir au moins 4 modules pour générer un emploi du temps optimal
-                                    </p>
-                                </div>
+				<div v-else class="auto-schedule">
+					<h2 class="text-xl font-medium mb-2 text-primary">Votre emploi du temps optimisé</h2>
+					<p class="text-secondary mb-6">
+						Nous allons générer un emploi du temps adapté à votre niveau de concentration
+					</p>
 
-                                <button @click="etapeActuelle = 2" class="btn-secondary" :disabled="modules.length < 4">
-                                    Suivant
-                                </button>
-                            </div>
-                        </div>
+					<div class="schedule-steps">
+						<!-- Étape 1: Affichage des modules -->
+						<div class="step" :class="{ 'active-step': etapeActuelle === 1 }">
+							<div class="step-header" @click="etapeActuelle = 1">
+								<span class="step-number">1</span>
+								<h3 class="text-base font-medium">Vos modules</h3>
+							</div>
+							<div class="step-content" v-show="etapeActuelle === 1">
+								<div class="option-group">
+									<label class="text-secondary font-medium mb-2 block">Modules/Cours :</label>
+									<div class="modules-list">
+										<div v-for="(module, index) in modules" :key="index" class="module-item">
+											{{ module }}
+										</div>
+									</div>
+									<p v-if="modules.length < 4" class="text-danger mt-2">
+										Vous devez avoir au moins 4 modules pour générer un emploi du temps optimal
+									</p>
+								</div>
 
-                        <!-- Étape 2: Saisie des horaires fixes -->
-                        <div class="step" :class="{ 'active-step': etapeActuelle === 2 }">
-                            <div class="step-header" @click="etapeActuelle = 2">
-                                <span class="step-number">2</span>
-                                <h3 class="text-base font-medium">Horaire des cours/obligations</h3>
-                            </div>
-                            <div class="step-content" v-show="etapeActuelle === 2">
-                                <p class="text-secondary mb-4">Indiquez vos créneaux fixes (cours, travail, etc.) :</p>
+								<button @click="etapeActuelle = 2" class="btn-secondary" :disabled="modules.length < 4">Suivant</button>
+							</div>
+						</div>
 
-                                <div class="fixed-schedule-grid">
-                                    <div class="grid-header">
-                                        <div class="header-cell">Heure</div>
-                                        <div v-for="jour in jours" :key="jour" class="header-cell">{{ jour }}</div>
-                                    </div>
+						<!-- Étape 2: Saisie des horaires fixes -->
+						<div class="step" :class="{ 'active-step': etapeActuelle === 2 }">
+							<div class="step-header" @click="etapeActuelle = 2">
+								<span class="step-number">2</span>
+								<h3 class="text-base font-medium">Horaire des cours/obligations</h3>
+							</div>
+							<div class="step-content" v-show="etapeActuelle === 2">
+								<p class="text-secondary mb-4">Indiquez vos créneaux fixes (cours, travail, etc.) :</p>
 
-                                    <div v-for="(creneau, index) in creneaux" :key="index" class="grid-row">
-                                        <div class="time-cell">{{ creneau }}</div>
-                                        <div v-for="jour in jours" :key="jour" class="day-cell">
-                                            <input v-model="horaireFixe[jour][index]" type="text" placeholder="Libre" class="fixed-input" />
-                                        </div>
-                                    </div>
-                                </div>
+								<div class="fixed-schedule-grid">
+									<div class="grid-header">
+										<div class="header-cell">Heure</div>
+										<div v-for="jour in jours" :key="jour" class="header-cell">{{ jour }}</div>
+									</div>
 
-                                <div class="step-buttons">
-                                    <button @click="etapeActuelle = 1" class="btn-outline">Retour</button>
-                                    <button @click="etapeActuelle = 3" class="btn-secondary">Suivant</button>
-                                </div>
-                            </div>
-                        </div>
+									<div v-for="(creneau, index) in creneaux" :key="index" class="grid-row">
+										<div class="time-cell">{{ creneau }}</div>
+										<div v-for="jour in jours" :key="jour" class="day-cell">
+											<input v-model="horaireFixe[jour][index]" type="text" placeholder="Libre" class="fixed-input" />
+										</div>
+									</div>
+								</div>
 
-                        <!-- Étape 3: Génération et validation -->
-                        <div class="step" :class="{ 'active-step': etapeActuelle === 3 }">
-                            <div class="step-header" @click="etapeActuelle = 3">
-                                <span class="step-number">3</span>
-                                <h3 class="text-base font-medium">Génération de l'emploi du temps</h3>
-                            </div>
-                            <div class="step-content" v-show="etapeActuelle === 3">
-                                <button @click="genererEmploi" class="btn-primary w-full" :disabled="modules.length < 4">
-                                    Générer l'emploi du temps
-                                </button>
+								<div class="step-buttons">
+									<button @click="etapeActuelle = 1" class="btn-outline">Retour</button>
+									<button @click="etapeActuelle = 3" class="btn-secondary">Suivant</button>
+								</div>
+							</div>
+						</div>
 
-                                <div v-if="emploiGenere" class="generated-schedule mt-6">
-                                    <h4 class="text-lg font-medium mb-4 text-primary">Votre emploi du temps optimisé :</h4>
+						<!-- Étape 3: Génération et validation -->
+						<div class="step" :class="{ 'active-step': etapeActuelle === 3 }">
+							<div class="step-header" @click="etapeActuelle = 3">
+								<span class="step-number">3</span>
+								<h3 class="text-base font-medium">Génération de l'emploi du temps</h3>
+							</div>
+							<div class="step-content" v-show="etapeActuelle === 3">
+								<button @click="genererEmploi" class="btn-primary w-full" :disabled="modules.length < 4">
+									Générer l'emploi du temps
+								</button>
 
-                                    <div class="schedule-grid">
-                                        <div class="grid-header">
-                                            <div class="header-cell">Heure</div>
-                                            <div v-for="jour in jours" :key="jour" class="header-cell">{{ jour }}</div>
-                                        </div>
+								<div v-if="emploiGenere" class="generated-schedule mt-6">
+									<h4 class="text-lg font-medium mb-4 text-primary">Votre emploi du temps optimisé :</h4>
 
-                                        <div v-for="(creneau, index) in creneaux" :key="index" class="grid-row">
-                                            <div class="time-cell">{{ creneau }}</div>
-                                            <div
-                                                v-for="jour in jours"
-                                                :key="jour"
-                                                class="activity-cell"
-                                                :class="{
-                                                    'has-activity': emploiGenere[jour][index],
-                                                    'fixed-activity': horaireFixe[jour][index],
-                                                }"
-                                            >
-                                                {{ emploiGenere[jour][index] || horaireFixe[jour][index] }}
-                                                <span v-if="horaireFixe[jour][index]" class="fixed-badge">Fixé</span>
-                                            </div>
-                                        </div>
-                                    </div>
+									<div class="schedule-grid">
+										<div class="grid-header">
+											<div class="header-cell">Heure</div>
+											<div v-for="jour in jours" :key="jour" class="header-cell">{{ jour }}</div>
+										</div>
 
-                                    <div class="schedule-legend">
-                                        <div class="legend-item">
-                                            <span class="legend-color fixed"></span>
-                                            <span>Créneau fixé (non modifiable)</span>
-                                        </div>
-                                        <div class="legend-item">
-                                            <span class="legend-color generated"></span>
-                                            <span>Activité générée</span>
-                                        </div>
-                                    </div>
+										<div v-for="(creneau, index) in creneaux" :key="index" class="grid-row">
+											<div class="time-cell">{{ creneau }}</div>
+											<div
+												v-for="jour in jours"
+												:key="jour"
+												class="activity-cell"
+												:class="{
+													'has-activity': emploiGenere[jour][index],
+													'fixed-activity': horaireFixe[jour][index],
+												}"
+											>
+												{{ emploiGenere[jour][index] || horaireFixe[jour][index] }}
+												<span v-if="horaireFixe[jour][index]" class="fixed-badge">Fixé</span>
+											</div>
+										</div>
+									</div>
 
-                                    <button @click="enregistrerEmploi" class="btn-primary w-full mt-4" :disabled="isSaving">
-                                        <span v-if="isSaving">Enregistrement...</span>
-                                        <span v-else>Enregistrer cet emploi du temps</span>
-                                    </button>
-                                </div>
+									<div class="schedule-legend">
+										<div class="legend-item">
+											<span class="legend-color fixed"></span>
+											<span>Créneau fixé (non modifiable)</span>
+										</div>
+										<div class="legend-item">
+											<span class="legend-color generated"></span>
+											<span>Activité générée</span>
+										</div>
+									</div>
 
-                                <div class="step-buttons">
-                                    <button @click="etapeActuelle = 2" class="btn-outline">Retour</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </MainContainer>
-    </AppLayout>
+									<button @click="enregistrerEmploi" class="btn-primary w-full mt-4" :disabled="isSaving">
+										<span v-if="isSaving">Enregistrement...</span>
+										<span v-else>Enregistrer cet emploi du temps</span>
+									</button>
+								</div>
+
+								<div class="step-buttons">
+									<button @click="etapeActuelle = 2" class="btn-outline">Retour</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</MainContainer>
+	</AppLayout>
 </template>
 
 <!-- Le reste du style reste inchangé -->
@@ -648,7 +646,9 @@ onMounted(async () => {
 		--step-text: #ebf8ff;
 	}
 }
+</style>
 
+<style scoped>
 .emploi-container {
 	max-width: 1200px;
 	margin: 0 auto;

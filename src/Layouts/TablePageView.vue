@@ -1,6 +1,5 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue';
-import { useOrganizationStore } from '@/utils/useOrganization';
 import { PlusIcon } from '@heroicons/vue/16/solid';
 import { FolderPlusIcon } from '@heroicons/vue/24/solid';
 import { TrashIcon, PencilSquareIcon } from '@heroicons/vue/20/solid';
@@ -49,7 +48,6 @@ function getId(column) {
 }
 
 onMounted(async () => {
-	await useOrganizationStore().fetchOrganization();
 	emit('fetch');
 });
 </script>

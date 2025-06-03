@@ -66,21 +66,6 @@
 						<span v-if="isLoading"> <i class="fas fa-circle-notch fa-spin"></i> Chargement... </span>
 						<span v-else> <i class="fas fa-sign-in-alt"></i> Se connecter </span>
 					</button>
-
-					<div class="social-login">
-						<p>Ou se connecter avec</p>
-						<div class="social-buttons">
-							<button type="button" class="btn-social btn-google" @click="socialLogin('google')">
-								<i class="fab fa-google"></i>
-							</button>
-							<button type="button" class="btn-social btn-microsoft" @click="socialLogin('microsoft')">
-								<i class="fab fa-microsoft"></i>
-							</button>
-							<button type="button" class="btn-social btn-apple" @click="socialLogin('apple')">
-								<i class="fab fa-apple"></i>
-							</button>
-						</div>
-					</div>
 				</form>
 			</div>
 
@@ -198,14 +183,6 @@
 					</button>
 				</form>
 			</div>
-
-			<!-- Alerte de notification -->
-			<div v-if="notification" :class="['notification', notification.type]">
-				<i :class="notificationIcon"></i> {{ notification.message }}
-				<button @click="notification = null" class="close-notification">
-					<i class="fas fa-times"></i>
-				</button>
-			</div>
 		</div>
 
 		<!-- Modals -->
@@ -255,13 +232,19 @@
 			</div>
 		</div>
 	</div>
+	<NotificationContainer></NotificationContainer>
 </template>
 
 <script>
 import { fetch, getCredentials } from '@/store/axios';
+import { useNotificationsStore } from '@/store/notification';
+import NotificationContainer from '@/Components/NotificationContainer.vue';
 
 export default {
 	name: 'AuthComponent',
+	components: {
+		NotificationContainer,
+	},
 
 	data() {
 		return {
@@ -274,7 +257,6 @@ export default {
 			showTerms: false,
 			showPrivacy: false,
 			isLoading: false,
-			notification: null,
 			resetEmail: '',
 
 			loginForm: {
@@ -333,25 +315,13 @@ export default {
 			if (this.passwordStrength < 70) return 'Moyen';
 			return 'Fort';
 		},
-
-		notificationIcon() {
-			if (this.notification) {
-				switch (this.notification.type) {
-					case 'success':
-						return 'fas fa-check-circle';
-					case 'error':
-						return 'fas fa-exclamation-circle';
-					case 'info':
-						return 'fas fa-info-circle';
-					default:
-						return 'fas fa-bell';
-				}
-			}
-			return '';
-		},
 	},
 
 	methods: {
+		notify(type, message) {
+			useNotificationsStore().addNotification(type, message);
+		},
+
 		validateLoginForm() {
 			const errors = {};
 
@@ -442,27 +412,18 @@ export default {
 						localStorage.removeItem('token');
 					}
 
-					this.notification = {
-						type: 'success',
-						message: data.message || 'Inscription réussie! Redirection en cours...',
-					};
+					this.notify('success', 'Inscription réussie! Redirection en cours...');
 
 					// Redirection vers AppView pour les nouveaux utilisateurs
 					setTimeout(() => {
 						this.$router.push('/app');
 					}, 1500);
 				} else {
-					this.notification = {
-						type: 'error',
-						message: data.message || "Erreur lors de l'inscription",
-					};
+					this.notify('error', "Erreur lors de l'inscription");
 				}
 			} catch (error) {
 				console.error('Erreur:', error);
-				this.notification = {
-					type: 'error',
-					message: "Erreur de connexion au serveur. Impossible de se connecter à l'API.",
-				};
+				this.notify('error', 'Veuillez vérifier votre connexion ou réessayer plus tard.');
 			} finally {
 				this.isLoading = false;
 			}
@@ -493,27 +454,18 @@ export default {
 						localStorage.removeItem('token');
 					}
 
-					this.notification = {
-						type: 'success',
-						message: data.message || 'Connexion réussie! Redirection en cours...',
-					};
+					this.notify('success', 'Bienvenue ' + data.user.first_name + '!');
 
 					// Redirection vers Dashboard pour les utilisateurs existants
 					setTimeout(() => {
 						this.$router.push('/dashboard');
 					}, 1500);
 				} else {
-					this.notification = {
-						type: 'error',
-						message: data.message || 'Échec de la connexion. Veuillez vérifier vos identifiants.',
-					};
+					this.notify('error', 'Échec de la connexion. Veuillez vérifier vos identifiants.');
 				}
 			} catch (error) {
 				console.error('Erreur de connexion:', error);
-				this.notification = {
-					type: 'error',
-					message: 'Erreur de connexion au serveur. Veuillez vérifier votre connexion ou réessayer plus tard.',
-				};
+				this.notify('error', 'Veuillez vérifier votre connexion ou réessayer plus tard.');
 			} finally {
 				this.isLoading = false;
 			}
@@ -528,36 +480,19 @@ export default {
 				});
 
 				if (data.success) {
-					this.notification = {
-						type: 'success',
-						message: data.message || 'Un email de réinitialisation a été envoyé à votre adresse.',
-					};
+					this.notify('success', 'Un email de réinitialisation a été envoyé à votre adresse.');
 
 					this.showResetPassword = false;
 					this.resetEmail = '';
 				} else {
-					this.notification = {
-						type: 'error',
-						message: data.message || "Échec de l'envoi. Veuillez réessayer.",
-					};
+					this.notify('error', "Échec de l'envoi. Veuillez réessayer.");
 				}
 			} catch (error) {
 				console.error('Erreur de réinitialisation:', error);
-				this.notification = {
-					type: 'error',
-					message: 'Impossible de se connecter au serveur pour réinitialiser le mot de passe.',
-				};
+				this.notify('error', 'Veuillez vérifier votre connexion ou réessayer plus tard.');
 			} finally {
 				this.isLoading = false;
 			}
-		},
-		socialLogin(provider) {
-			console.log(`Tentative de connexion avec ${provider}`);
-			// Cette fonctionnalité nécessiterait une implémentation côté serveur
-			this.notification = {
-				type: 'info',
-				message: `Fonctionnalité de connexion via ${provider} non implémentée.`,
-			};
 		},
 	},
 
@@ -1025,68 +960,6 @@ label {
 .btn-social:hover {
 	transform: scale(1.05);
 	box-shadow: var(--shadow-md);
-}
-
-/* Notification */
-.notification {
-	position: absolute;
-	bottom: 2rem;
-	left: 2rem;
-	right: 2rem;
-	padding: 1rem 1.5rem;
-	border-radius: var(--border-radius-sm);
-	color: white;
-	display: flex;
-	align-items: center;
-	animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-	box-shadow: var(--shadow-lg);
-	z-index: 1000;
-	backdrop-filter: blur(10px);
-}
-
-.notification i {
-	margin-right: 1rem;
-	font-size: 1.25rem;
-}
-
-.success {
-	background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
-}
-
-.error {
-	background: linear-gradient(135deg, var(--error-color) 0%, #dc2626 100%);
-}
-
-.info {
-	background: linear-gradient(135deg, var(--info-color) 0%, #2563eb 100%);
-}
-
-.close-notification {
-	margin-left: auto;
-	background: none;
-	border: none;
-	color: white;
-	opacity: 0.8;
-	cursor: pointer;
-	transition: var(--transition);
-	padding: 0.25rem;
-	border-radius: 4px;
-}
-
-.close-notification:hover {
-	opacity: 1;
-	background: rgba(255, 255, 255, 0.2);
-}
-
-@keyframes slideUp {
-	from {
-		transform: translateY(100%);
-		opacity: 0;
-	}
-	to {
-		transform: translateY(0);
-		opacity: 1;
-	}
 }
 
 /* Modal */

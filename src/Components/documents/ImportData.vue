@@ -1,12 +1,11 @@
 <script setup>
 import PrimaryButton from '@/Components/src/Buttons/PrimaryButton.vue';
-import { computed, onMounted, ref } from 'vue';
-import { useNotificationsStore } from '@/utils/notification';
+import { computed, ref } from 'vue';
+import { useNotificationsStore } from '@/store/notification';
 import InputLabel from '@/Components/src/Input/InputLabel.vue';
 import { DocumentIcon } from '@heroicons/vue/24/solid';
 import { ArrowDownOnSquareIcon } from '@heroicons/vue/24/outline';
 
-import { getCurrentOrganizationId } from '@/utils/useUser';
 import DialogModal from '@/Components/src/DialogModal.vue';
 import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 // import { initializeStores } from '@/store/init';
@@ -19,19 +18,6 @@ const { addNotification } = useNotificationsStore();
 
 const loading = ref(false);
 
-onMounted(async () => {
-	const organizationId = getCurrentOrganizationId();
-	if (organizationId) {
-		importTypeOptions.value = (
-			await api.getImporters({
-				params: {
-					organization: organizationId,
-				},
-			})
-		).data;
-	}
-});
-
 const reportResult = ref(null);
 const files = ref(null);
 
@@ -43,39 +29,6 @@ async function importData() {
 	if (files.value?.length !== 1) {
 		addNotification('error', 'Please select the CSV or ZIP file that you want to import');
 		return;
-	}
-	const rawBase64String = await toBase64(files.value[0]);
-	const base64String = rawBase64String.split(';')[1].replace('base64,', '');
-	const organizationId = getCurrentOrganizationId();
-	if (organizationId !== null) {
-		const { handleApiRequestNotifications } = useNotificationsStore();
-		loading.value = true;
-		try {
-			reportResult.value = await handleApiRequestNotifications(() => {
-				if (importType.value) {
-					return api.importData(
-						{
-							type: importType.value.key,
-							data: base64String,
-						},
-						{
-							params: {
-								organization: organizationId,
-							},
-						}
-					);
-				}
-				return new Promise((resolve, reject) => {
-					reject('Import type is null');
-				});
-			});
-			// initializeStores();
-			if (reportResult.value) {
-				showResultModal.value = true;
-			}
-		} finally {
-			loading.value = false;
-		}
 	}
 }
 

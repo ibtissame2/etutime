@@ -43,7 +43,6 @@ try {
     // Réponse de succès
     echo json_encode([
         'success' => true,
-        'message' => 'Connexion réussie',
         'user' => $user,
         'token' => generateToken($user),
     ]);

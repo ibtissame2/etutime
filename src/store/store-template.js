@@ -11,13 +11,7 @@ export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 			isLoading.value = true;
 			const credentials = getCredentials();
 			if (!credentials) return [];
-			const response = await fetch(
-				typo.name + '/all',
-				{ credentials },
-				undefined,
-				undefined,
-				'Échec de la récupération des ' + typo.elements
-			);
+			const response = await fetch(typo.name + '/all', { credentials });
 			if (Array.isArray(response)) {
 				let argument = {};
 				list.value = response.map((element) => (adapter ? adapter.call(currentStore, element, argument) : element));
@@ -48,6 +42,7 @@ export const createCRUDStore = ({ typo, setup, adapter, onFinishFetch }) => {
 				typo.name + '/update',
 				{ id, credentials, ...object },
 				(data) => (onSuccess?.(data), refresh && fetchData()),
+				...(typo.updateMessages || []),
 				typo.Element + ' mis à jour avec succès',
 				'Échec de la mise à jour du ' + typo.element
 			);
