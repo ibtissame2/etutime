@@ -9,12 +9,8 @@ CREATE TABLE users (
     email_verified_at TIMESTAMP NULL,
     password VARCHAR(255) NULL,
     level VARCHAR(50) NOT NULL,
-    remember_token VARCHAR(100) NULL,
     profile_photo_path VARCHAR(2048) NULL,
     week_start VARCHAR(255) NOT NULL DEFAULT 'Monday',
-    two_factor_secret TEXT NULL,
-    two_factor_recovery_codes TEXT NULL,
-    two_factor_confirmed_at TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
@@ -130,25 +126,6 @@ CREATE TABLE user_profiles (
     PRIMARY KEY (id),
     UNIQUE KEY (user_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE sessions_etude (
-    id INT NOT NULL AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    minuteur_id INT NULL,
-    questionnaire_id INT NOT NULL, 
-    is_active TINYINT(1) NOT NULL DEFAULT 1,
-    is_paused TINYINT(1) NOT NULL DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    INDEX idx_active_sessions (is_active),
-    INDEX idx_user_active (user_id, is_active),
-    INDEX idx_questionnaire_id (questionnaire_id),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (minuteur_id) REFERENCES minuteurs(id) ON DELETE SET NULL,
-    FOREIGN KEY (module_id) REFERENCES modules(id) ON DELETE SET NULL,
-    FOREIGN KEY (questionnaire_id) REFERENCES questionnaire_resultats(id) ON DELETE CASCADE   
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE imports (

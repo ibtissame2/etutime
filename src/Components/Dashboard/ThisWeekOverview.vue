@@ -3,7 +3,6 @@ import dayjs from 'dayjs';
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useMinuteursStore } from '@/store/minuteurs';
-import { formatHumanReadableDuration } from '@/Components/src/utils/time';
 import { ClockIcon } from '@heroicons/vue/20/solid';
 import CardTitle from '@/Components/src/CardTitle.vue';
 import RapportChart from '@/Components/Rapport/RapportChart.vue';
@@ -16,12 +15,6 @@ const filteredMinuteurs = computed(() => {
 	const end = dayjs().endOf('week').format('YYYY-MM-DD HH:mm:ss');
 	return minuteurs.value.filter((m) => m.end && m.start >= start && m.start <= end);
 });
-
-const totalWeeklyTime = computed(() => {
-	let total = 0;
-	filteredMinuteurs.value.forEach((minuteur) => (total = total + minuteur.duration));
-	return total;
-});
 </script>
 
 <template>
@@ -31,12 +24,6 @@ const totalWeeklyTime = computed(() => {
 			<RapportChart :minuteurs="filteredMinuteurs" :is-this-week="true"></RapportChart>
 		</div>
 		<div class="space-y-6">
-			<div class="rounded-lg bg-card-background border-card-border shadow-card border px-3.5 py-2.5">
-				<dt class="font-semibold text-sm text-muted">Temps passé</dt>
-				<dd class="text-2xl text-text-primary pt-1 font-semibold">
-					{{ totalWeeklyTime ? formatHumanReadableDuration(totalWeeklyTime) : '--' }}
-				</dd>
-			</div>
 			<RapportPieChart :minuteurs="filteredMinuteurs"></RapportPieChart>
 		</div>
 	</div>

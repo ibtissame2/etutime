@@ -11,202 +11,200 @@ const errorMessage = ref('');
 const successMessage = ref('');
 
 const user = ref({
-    id: null,
-    first_name: '',
-    last_name: '',
-    name: '',
-    email: '',
-    avatar: '/api/placeholder/120/120',
-    role: 'Étudiant',
-    program: '',
-    joinedAt: '',
-    phone: '',
-    location: '',
-    bio: ''
+	id: null,
+	first_name: '',
+	last_name: '',
+	name: '',
+	email: '',
+	avatar: '/api/placeholder/120/120',
+	role: 'Étudiant',
+	program: '',
+	joinedAt: '',
+	phone: '',
+	location: '',
+	bio: '',
 });
 const editableUser = ref({ ...user.value });
 
 async function loadProfile() {
-    try {
-        isLoading.value = true;
-        errorMessage.value = '';
-        
-        console.log('Chargement du profil...');
-        const credentials = getCredentials();
-        const response = await axios.get(`${apiBaseUrl}/get_profile.php`, {
-            params: { credentials },
-            withCredentials: true,
-            timeout: 10000
-        });
-        
-        console.log('Réponse du serveur:', response.data);
-        
-        if (response.data.success) {
-            const profileData = response.data.profile;
-            
-            user.value = {
-                id: profileData.id,
-                first_name: profileData.first_name,
-                last_name: profileData.last_name,
-                name: `${profileData.first_name} ${profileData.last_name}`,
-                email: profileData.email,
-                joinedAt: new Date(profileData.created_at).toLocaleDateString('fr-FR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                }),
-                avatar: profileData.profile_photo_path 
-                       ? `/storage/${profileData.profile_photo_path}` 
-                       : '/api/placeholder/120/120',
-                role: profileData.role || 'Étudiant',
-                program: profileData.program || '',
-                phone: profileData.phone || '',
-                location: profileData.location || '',
-                bio: profileData.bio || ''
-            };
+	try {
+		isLoading.value = true;
+		errorMessage.value = '';
 
-            editableUser.value = { ...user.value };
-            console.log('Profil chargé avec succès:', user.value);
-        } else {
-            throw new Error(response.data.message || 'Erreur lors du chargement du profil');
-        }
-    } catch (error) {
-        console.error('Erreur de chargement du profil:', error);
-        errorMessage.value = error.response?.data?.message || error.message || 'Erreur lors du chargement du profil';
-    } finally {
-        isLoading.value = false;
-    }
+		console.log('Chargement du profil...');
+		const credentials = getCredentials();
+		const response = await axios.get(`${apiBaseUrl}/get_profile.php`, {
+			params: { credentials },
+			withCredentials: true,
+			timeout: 10000,
+		});
+
+		console.log('Réponse du serveur:', response.data);
+
+		if (response.data.success) {
+			const profileData = response.data.profile;
+
+			user.value = {
+				id: profileData.id,
+				first_name: profileData.first_name,
+				last_name: profileData.last_name,
+				name: `${profileData.first_name} ${profileData.last_name}`,
+				email: profileData.email,
+				joinedAt: new Date(profileData.created_at).toLocaleDateString('fr-FR', {
+					year: 'numeric',
+					month: 'long',
+					day: 'numeric',
+				}),
+				avatar: profileData.profile_photo_path
+					? `/storage/${profileData.profile_photo_path}`
+					: '/api/placeholder/120/120',
+				role: profileData.role || 'Étudiant',
+				program: profileData.program || '',
+				phone: profileData.phone || '',
+				location: profileData.location || '',
+				bio: profileData.bio || '',
+			};
+
+			editableUser.value = { ...user.value };
+			console.log('Profil chargé avec succès:', user.value);
+		} else {
+			throw new Error(response.data.message || 'Erreur lors du chargement du profil');
+		}
+	} catch (error) {
+		console.error('Erreur de chargement du profil:', error);
+		errorMessage.value = error.response?.data?.message || error.message || 'Erreur lors du chargement du profil';
+	} finally {
+		isLoading.value = false;
+	}
 }
 
 async function handleSubmit(e) {
-    e.preventDefault();
-    console.log('Formulaire soumis');
-    await saveProfile();
+	e.preventDefault();
+	console.log('Formulaire soumis');
+	await saveProfile();
 }
 
 async function saveProfile() {
-    try {
-        isLoading.value = true;
-        errorMessage.value = '';
-        successMessage.value = '';
+	try {
+		isLoading.value = true;
+		errorMessage.value = '';
+		successMessage.value = '';
 
-        console.log('Début de la sauvegarde...');
-        console.log('Données editableUser:', editableUser.value);
+		console.log('Début de la sauvegarde...');
+		console.log('Données editableUser:', editableUser.value);
 
-        // Vérification des champs requis
-        if (!editableUser.value.first_name?.trim() || 
-            !editableUser.value.last_name?.trim() || 
-            !editableUser.value.email?.trim()) {
-            throw new Error('Les champs Prénom, Nom et Email sont obligatoires');
-        }
+		// Vérification des champs requis
+		if (
+			!editableUser.value.first_name?.trim() ||
+			!editableUser.value.last_name?.trim() ||
+			!editableUser.value.email?.trim()
+		) {
+			throw new Error('Les champs Prénom, Nom et Email sont obligatoires');
+		}
 
-        // Validation de l'email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(editableUser.value.email.trim())) {
-            throw new Error('Format d\'email invalide');
-        }
+		// Validation de l'email
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailRegex.test(editableUser.value.email.trim())) {
+			throw new Error("Format d'email invalide");
+		}
 
-        const credentials = getCredentials();
-        const dataToSend = {
-            credentials,
-            userData: {
-                first_name: editableUser.value.first_name.trim(),
-                last_name: editableUser.value.last_name.trim(),
-                email: editableUser.value.email.trim(),
-                role: editableUser.value.role || 'Étudiant',
-                program: editableUser.value.program?.trim() || '',
-                phone: editableUser.value.phone?.trim() || '',
-                location: editableUser.value.location?.trim() || '',
-                bio: editableUser.value.bio?.trim() || ''
-            }
-        };
+		const credentials = getCredentials();
+		const dataToSend = {
+			credentials,
+			userData: {
+				first_name: editableUser.value.first_name.trim(),
+				last_name: editableUser.value.last_name.trim(),
+				email: editableUser.value.email.trim(),
+				role: editableUser.value.role || 'Étudiant',
+				program: editableUser.value.program?.trim() || '',
+				phone: editableUser.value.phone?.trim() || '',
+				location: editableUser.value.location?.trim() || '',
+				bio: editableUser.value.bio?.trim() || '',
+			},
+		};
 
-        console.log('Données à envoyer à l\'API:', dataToSend);
+		console.log("Données à envoyer à l'API:", dataToSend);
 
-        const response = await axios.post(
-            `${apiBaseUrl}/update_profile.php`,
-            dataToSend,
-            {
-                withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                timeout: 15000
-            }
-        );
+		const response = await axios.post(`${apiBaseUrl}/update_profile.php`, dataToSend, {
+			withCredentials: true,
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+			},
+			timeout: 15000,
+		});
 
-        console.log('Réponse de l\'API:', response.data);
+		console.log("Réponse de l'API:", response.data);
 
-        if (response.data?.success) {
-            // Mettre à jour les données locales
-            user.value = { 
-                ...editableUser.value,
-                name: `${editableUser.value.first_name} ${editableUser.value.last_name}`
-            };
-            
-            editMode.value = false;
-            successMessage.value = 'Profil mis à jour avec succès';
-            
-            console.log('Sauvegarde réussie');
-            
-            setTimeout(() => {
-                successMessage.value = '';
-            }, 5000);
-        } else {
-            throw new Error(response.data?.message || 'Erreur inconnue lors de la mise à jour');
-        }
-    } catch (error) {
-        console.error('Erreur complète:', error);
-        
-        if (error.response) {
-            console.error('Status:', error.response.status);
-            console.error('Data:', error.response.data);
-            
-            switch (error.response.status) {
-                case 401:
-                    errorMessage.value = 'Session expirée. Veuillez vous reconnecter.';
-                    break;
-                case 400:
-                    errorMessage.value = error.response.data?.message || 'Données invalides';
-                    break;
-                case 404:
-                    errorMessage.value = 'Utilisateur non trouvé';
-                    break;
-                case 500:
-                    errorMessage.value = 'Erreur serveur. Veuillez réessayer plus tard.';
-                    break;
-                default:
-                    errorMessage.value = error.response.data?.message || `Erreur serveur (${error.response.status})`;
-            }
-        } else if (error.request) {
-            console.error('Erreur réseau:', error.request);
-            errorMessage.value = 'Impossible de contacter le serveur. Vérifiez votre connexion.';
-        } else {
-            console.error('Erreur:', error.message);
-            errorMessage.value = error.message || 'Erreur inconnue lors de la mise à jour du profil';
-        }
-    } finally {
-        isLoading.value = false;
-    }
+		if (response.data?.success) {
+			// Mettre à jour les données locales
+			user.value = {
+				...editableUser.value,
+				name: `${editableUser.value.first_name} ${editableUser.value.last_name}`,
+			};
+
+			editMode.value = false;
+			successMessage.value = 'Profil mis à jour avec succès';
+
+			console.log('Sauvegarde réussie');
+
+			setTimeout(() => {
+				successMessage.value = '';
+			}, 5000);
+		} else {
+			throw new Error(response.data?.message || 'Erreur inconnue lors de la mise à jour');
+		}
+	} catch (error) {
+		console.error('Erreur complète:', error);
+
+		if (error.response) {
+			console.error('Status:', error.response.status);
+			console.error('Data:', error.response.data);
+
+			switch (error.response.status) {
+				case 401:
+					errorMessage.value = 'Session expirée. Veuillez vous reconnecter.';
+					break;
+				case 400:
+					errorMessage.value = error.response.data?.message || 'Données invalides';
+					break;
+				case 404:
+					errorMessage.value = 'Utilisateur non trouvé';
+					break;
+				case 500:
+					errorMessage.value = 'Erreur serveur. Veuillez réessayer plus tard.';
+					break;
+				default:
+					errorMessage.value = error.response.data?.message || `Erreur serveur (${error.response.status})`;
+			}
+		} else if (error.request) {
+			console.error('Erreur réseau:', error.request);
+			errorMessage.value = 'Impossible de contacter le serveur. Vérifiez votre connexion.';
+		} else {
+			console.error('Erreur:', error.message);
+			errorMessage.value = error.message || 'Erreur inconnue lors de la mise à jour du profil';
+		}
+	} finally {
+		isLoading.value = false;
+	}
 }
 
 function cancelEdit() {
-    editableUser.value = { ...user.value };
-    editMode.value = false;
-    errorMessage.value = '';
-    successMessage.value = '';
-    console.log('Édition annulée');
+	editableUser.value = { ...user.value };
+	editMode.value = false;
+	errorMessage.value = '';
+	successMessage.value = '';
+	console.log('Édition annulée');
 }
 
 function clearMessages() {
-    errorMessage.value = '';
-    successMessage.value = '';
+	errorMessage.value = '';
+	successMessage.value = '';
 }
 
 onMounted(() => {
-    console.log('Composant monté, chargement du profil...');
-    loadProfile();
+	console.log('Composant monté, chargement du profil...');
+	loadProfile();
 });
 </script>
 
@@ -224,9 +222,7 @@ onMounted(() => {
 			</div>
 
 			<!-- Indicateur de chargement -->
-			<div v-if="isLoading && !editMode" class="loading-indicator">
-				Chargement du profil...
-			</div>
+			<div v-if="isLoading && !editMode" class="loading-indicator">Chargement du profil...</div>
 
 			<!-- Formulaire de profil -->
 			<form @submit="handleSubmit" class="profile-form" v-if="!isLoading || editMode">
@@ -236,7 +232,12 @@ onMounted(() => {
 
 					<div class="profile-header-content">
 						<div class="profile-avatar">
-							<img :src="user.avatar" alt="Avatar de profil" class="avatar-image" />
+							<img :src="user.avatar" alt="" class="avatar-image" />
+							<img
+								class="student-icon-overlay h-8 w-8 rounded-full object-cover"
+								src="https://cdn-icons-png.flaticon.com/512/3710/3710582.png"
+								alt="Student"
+							/>
 							<div v-if="!editMode" class="edit-avatar-overlay">
 								<span class="edit-icon">📷</span>
 							</div>
@@ -247,26 +248,26 @@ onMounted(() => {
 								<div class="profile-name">{{ user.name }}</div>
 							</template>
 							<template v-else>
-								<input 
-									v-model="editableUser.first_name" 
-									id="first_name" 
-									name="first_name" 
-									class="edit-input name-input" 
-									placeholder="Prénom" 
-									type="text" 
+								<input
+									v-model="editableUser.first_name"
+									id="first_name"
+									name="first_name"
+									class="edit-input name-input"
+									placeholder="Prénom"
+									type="text"
 									required
 									maxlength="255"
 								/>
-								<input 
-									v-model="editableUser.last_name" 
-									id="last_name" 
-									name="last_name" 
-									class="edit-input name-input" 
-									placeholder="Nom" 
-									type="text" 
+								<input
+									v-model="editableUser.last_name"
+									id="last_name"
+									name="last_name"
+									class="edit-input name-input"
+									placeholder="Nom"
+									type="text"
 									required
 									maxlength="255"
-									style="margin-top: 8px;"
+									style="margin-top: 8px"
 								/>
 							</template>
 
@@ -274,13 +275,13 @@ onMounted(() => {
 								<div class="detail-item">
 									<span class="detail-icon">✉️</span>
 									<span v-if="!editMode" class="detail-text">{{ user.email }}</span>
-									<input 
-										v-else 
-										v-model="editableUser.email" 
-										id="email" 
-										name="email" 
-										class="edit-input" 
-										type="email" 
+									<input
+										v-else
+										v-model="editableUser.email"
+										id="email"
+										name="email"
+										class="edit-input"
+										type="email"
 										required
 										maxlength="255"
 									/>
@@ -288,13 +289,13 @@ onMounted(() => {
 								<div class="detail-item">
 									<span class="detail-icon">📱</span>
 									<span v-if="!editMode" class="detail-text">{{ user.phone || 'Non renseigné' }}</span>
-									<input 
-										v-else 
-										v-model="editableUser.phone" 
-										id="phone" 
-										name="phone" 
-										class="edit-input" 
-										type="tel" 
+									<input
+										v-else
+										v-model="editableUser.phone"
+										id="phone"
+										name="phone"
+										class="edit-input"
+										type="tel"
 										placeholder="Téléphone"
 										maxlength="20"
 									/>
@@ -302,13 +303,7 @@ onMounted(() => {
 								<div class="detail-item">
 									<span class="detail-icon">👨‍🎓</span>
 									<span v-if="!editMode" class="detail-text">{{ user.role }}</span>
-									<select 
-										v-else 
-										v-model="editableUser.role" 
-										id="role" 
-										name="role" 
-										class="edit-input"
-									>
+									<select v-else v-model="editableUser.role" id="role" name="role" class="edit-input">
 										<option value="Étudiant">Étudiant</option>
 										<option value="Enseignant">Enseignant</option>
 										<option value="Administrateur">Administrateur</option>
@@ -317,13 +312,13 @@ onMounted(() => {
 								<div class="detail-item">
 									<span class="detail-icon">🎓</span>
 									<span v-if="!editMode" class="detail-text">{{ user.program || 'Non renseigné' }}</span>
-									<input 
-										v-else 
-										v-model="editableUser.program" 
-										id="program" 
-										name="program" 
-										class="edit-input" 
-										type="text" 
+									<input
+										v-else
+										v-model="editableUser.program"
+										id="program"
+										name="program"
+										class="edit-input"
+										type="text"
 										placeholder="Programme d'étude"
 										maxlength="255"
 									/>
@@ -331,13 +326,13 @@ onMounted(() => {
 								<div class="detail-item">
 									<span class="detail-icon">📍</span>
 									<span v-if="!editMode" class="detail-text">{{ user.location || 'Non renseigné' }}</span>
-									<input 
-										v-else 
-										v-model="editableUser.location" 
-										id="location" 
-										name="location" 
-										class="edit-input" 
-										type="text" 
+									<input
+										v-else
+										v-model="editableUser.location"
+										id="location"
+										name="location"
+										class="edit-input"
+										type="text"
 										placeholder="Localisation"
 										maxlength="255"
 									/>
@@ -350,32 +345,21 @@ onMounted(() => {
 						</div>
 
 						<div class="profile-actions">
-							<button 
-								v-if="!editMode" 
-								@click="editMode = true" 
-								type="button" 
+							<button
+								v-if="!editMode"
+								@click="editMode = true"
+								type="button"
 								class="edit-profile-btn"
 								:disabled="isLoading"
 							>
 								Modifier le profil
 							</button>
 							<div v-else class="edit-actions">
-								<button 
-									type="submit" 
-									class="save-btn" 
-									:disabled="isLoading"
-								>
+								<button type="submit" class="save-btn" :disabled="isLoading">
 									<span v-if="isLoading">Enregistrement...</span>
 									<span v-else>Enregistrer</span>
 								</button>
-								<button 
-									@click="cancelEdit" 
-									type="button" 
-									class="cancel-btn" 
-									:disabled="isLoading"
-								>
-									Annuler
-								</button>
+								<button @click="cancelEdit" type="button" class="cancel-btn" :disabled="isLoading">Annuler</button>
 							</div>
 						</div>
 					</div>
@@ -404,6 +388,20 @@ onMounted(() => {
 </template>
 
 <style scoped>
+/* Styles pour la page de profil */
+.student-icon-overlay {
+	position: absolute;
+	bottom: 10px;
+	left: 10px;
+	width: 100%;
+	height: 100%;
+	border-radius: 100%;
+	background: var(--color-bg-tertiay);
+	box-shadow: 0 1px 4px var(--shadow-color);
+	pointer-events: none;
+	border: 2px solid var(--color-bg-secondart);
+}
+
 .profile-page {
 	font-family: 'Inter', 'Roboto', sans-serif;
 	max-width: 1200px;

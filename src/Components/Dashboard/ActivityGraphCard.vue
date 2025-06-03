@@ -96,7 +96,9 @@ const option = computed(() => {
 					style="height: 260px; background-color: transparent"
 				/>
 			</div>
-			<div v-else class="text-center text-gray-500 pt-12 py-8">Aucune donnée d'activité<br />disponible</div>
+			<div v-else class="text-center flex flex-1 justify-center items-center">
+				<div class="text-center text-gray-500 py-8">Aucune donnée d'activité<br />disponible</div>
+			</div>
 		</div>
 	</DashboardCard>
 </template>

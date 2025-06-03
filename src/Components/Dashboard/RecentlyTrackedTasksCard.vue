@@ -35,10 +35,7 @@ const latestMinuteurs = computed(() => {
 			></RecentlyTrackedTasksCardEntry>
 		</div>
 		<div v-else class="text-center flex flex-1 justify-center items-center">
-			<div>
-				<h3 class="text-text-primary font-semibold text-sm">Aucune minuteur créer</h3>
-				<p class="pb-5 max-w-md mx-auto text-sm pt-1">Créer votre premier minuteur</p>
-			</div>
+			<div class="text-center text-gray-500 py-8">Aucune donnée disponible</div>
 		</div>
 	</DashboardCard>
 </template>

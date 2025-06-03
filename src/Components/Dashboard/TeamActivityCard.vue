@@ -1,54 +1,59 @@
 <script setup>
+import { storeToRefs } from 'pinia';
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { useEnvStore } from '@/store/env';
 import { UserGroupIcon } from '@heroicons/vue/20/solid';
 import DashboardCard from '@/Components/Dashboard/DashboardCard.vue';
 import TeamActivityCardEntry from '@/Components/Dashboard/TeamActivityCardEntry.vue';
-import SecondaryButton from '@/Components/src/Buttons/SecondaryButton.vue';
 
-const latestTeamActivity = [
-	{
-		time_entry_id: '1',
-		name: 'time 1',
-		description: 'Hello',
-		status: true,
-		task_id: '1',
-		project_id: '1',
-		tags: [],
-	},
-	{
-		time_entry_id: '2',
-		name: 'time 2',
-		description: 'Hello 2',
-		status: false,
-		task_id: '2',
-		project_id: '2',
-		tags: [],
-	},
-];
+const { participants } = storeToRefs(useEnvStore());
+const { loadStudyData } = useEnvStore();
+
+const checkInterval = ref(null);
+
+const sortedParticipants = computed(() => {
+	const sorted = participants.value.toSorted((a, b) => (b.duration_week > a.duration_week ? 1 : -1));
+	const index = sorted.findIndex((p) => p.current_user);
+	return { three: sorted.slice(0, 3), current: { obj: index !== -1 ? sorted[index] : null, index } };
+});
+
+onMounted(() => {
+	loadStudyData();
+	checkInterval.value = setInterval(loadStudyData, 1000);
+});
+
+onBeforeUnmount(() => {
+	clearInterval(checkInterval.value);
+});
 </script>
 
 <template>
 	<DashboardCard title="Team Activity" :icon="UserGroupIcon">
-		<div v-if="latestTeamActivity">
+		<div v-if="participants.length">
 			<TeamActivityCardEntry
-				v-for="activity in latestTeamActivity"
-				:key="activity.time_entry_id"
-				:class="latestTeamActivity.length === 4 ? 'last:border-0' : ''"
-				:name="activity.name"
-				:description="activity.description"
-				:working="activity.status"
+				v-for="(participant, index) in sortedParticipants.three"
+				class="border-b last:border-b-0"
+				:key="participant.id"
+				:order="index"
+				:is-current="participant.current_user"
+				:name="participant.name"
+				:duration="participant.duration_week"
+				:working="participant.is_active"
 			></TeamActivityCardEntry>
-		</div>
-		<div v-else class="text-center text-gray-500 py-8">No team activity found</div>
-		<div
-			v-if="latestTeamActivity && latestTeamActivity.length <= 1"
-			class="text-center flex flex-1 justify-center items-center"
-		>
-			<div>
-				<UserGroupIcon class="w-8 text-icon-default inline pb-2"></UserGroupIcon>
-				<h3 class="text-text-primary font-semibold text-sm">Invite your co-workers</h3>
-				<p class="pb-5 text-sm">You can invite your entire team.</p>
-				<SecondaryButton>Go to Members (Ibtissame)</SecondaryButton>
+
+			<div v-if="sortedParticipants.current.obj && sortedParticipants.current.index > 2" class="border-t mt-4 pt-4">
+				<TeamActivityCardEntry
+					class="border-t"
+					:is-current="true"
+					:order="sortedParticipants.current.index"
+					:name="sortedParticipants.current.obj.name"
+					:duration="sortedParticipants.current.obj.duration_week"
+					:working="sortedParticipants.current.obj.is_active"
+				></TeamActivityCardEntry>
 			</div>
+		</div>
+		<div v-else class="text-center flex flex-1 justify-center items-center">
+			<div class="text-center text-gray-500 py-8">Aucune donnée disponible</div>
 		</div>
 	</DashboardCard>
 </template>

@@ -17,17 +17,17 @@ try {
     $data = $_GET; // Utilisation de $_GET pour les requêtes GET
     $db = openDatabase();
     $user = get_user_id($db, $data, true);
-    
+
     // Requête pour récupérer les données de base de l'utilisateur
     $sql = "SELECT 
-                u.id, u.first_name, u.last_name, u.email, u.created_at, u.profile_photo_path,
+                u.id, u.first_name, u.last_name, u.email, u.created_at, 
                 up.phone, up.location, up.bio, up.program, up.role
             FROM users u
             LEFT JOIN user_profiles up ON u.id = up.user_id
             WHERE u.id = ?";
-    
+
     $profile = executeSQL($db, $sql, [$user['id']], false);
-    
+
     if (empty($profile)) {
         throw new Exception('Utilisateur non trouvé', 404);
     }

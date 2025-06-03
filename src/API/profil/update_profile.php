@@ -17,7 +17,7 @@ try {
     $data = getPostData();
     $db = openDatabase();
     $user = get_user_id($db, $data, true);
-    
+
     if (empty($data['userData'])) {
         throw new Exception('Données utilisateur manquantes', 400);
     }
@@ -40,7 +40,7 @@ try {
             email = ?, 
             profile_photo_path = ?
             WHERE id = ?";
-    
+
     $profilePhotoPath = $userData['profile_photo_path'] ?? null;
     executeSQL($db, $sql, [
         $userData['first_name'],
@@ -60,7 +60,7 @@ try {
             bio = VALUES(bio),
             program = VALUES(program),
             role = VALUES(role)";
-    
+
     executeSQL($db, $sql, [
         $user['id'],
         $userData['phone'] ?? null,
@@ -72,12 +72,12 @@ try {
 
     // Récupérer le profil mis à jour pour le retourner
     $sql = "SELECT 
-                u.id, u.first_name, u.last_name, u.email, u.created_at, u.profile_photo_path,
+                u.id, u.first_name, u.last_name, u.email, u.created_at, 
                 up.phone, up.location, up.bio, up.program, up.role
             FROM users u
             LEFT JOIN user_profiles up ON u.id = up.user_id
             WHERE u.id = ?";
-    
+
     $updatedProfile = executeSQL($db, $sql, [$user['id']], false);
 
     echo json_encode([
