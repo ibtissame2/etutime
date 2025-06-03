@@ -33,8 +33,16 @@ async function loadProfile() {
 
 		console.log('Chargement du profil...');
 		const credentials = getCredentials();
+
+		if (!credentials || !credentials.token) {
+			throw new Error("Aucun token d'authentification trouvé");
+		}
+
 		const response = await axios.get(`${apiBaseUrl}/get_profile.php`, {
-			params: { credentials },
+			headers: {
+				Authorization: `Bearer ${credentials.token}`,
+				'Content-Type': 'application/json',
+			},
 			withCredentials: true,
 			timeout: 10000,
 		});
@@ -90,8 +98,10 @@ async function saveProfile() {
 		errorMessage.value = '';
 		successMessage.value = '';
 
-		console.log('Début de la sauvegarde...');
+		console.log('=== DEBUG START ===');
 		console.log('Données editableUser:', editableUser.value);
+		console.log('User ID:', user.value.id);
+		console.log('User object:', user.value);
 
 		// Vérification des champs requis
 		if (
@@ -109,8 +119,20 @@ async function saveProfile() {
 		}
 
 		const credentials = getCredentials();
+		console.log('Credentials token exists:', !!credentials?.token);
+
+		if (!credentials || !credentials.token) {
+			throw new Error("Aucun token d'authentification trouvé");
+		}
+
+		// Check if user ID exists
+		if (!user.value.id) {
+			console.error('USER ID IS MISSING!');
+			throw new Error('ID utilisateur manquant. Veuillez recharger la page.');
+		}
+
+		// CORRECT FORMAT: Wrap data in 'userData' object as expected by PHP backend
 		const dataToSend = {
-			credentials,
 			userData: {
 				first_name: editableUser.value.first_name.trim(),
 				last_name: editableUser.value.last_name.trim(),
@@ -120,14 +142,23 @@ async function saveProfile() {
 				phone: editableUser.value.phone?.trim() || '',
 				location: editableUser.value.location?.trim() || '',
 				bio: editableUser.value.bio?.trim() || '',
+				// Removed profile_photo_path since the database column doesn't exist
 			},
 		};
 
-		console.log("Données à envoyer à l'API:", dataToSend);
+		console.log('=== REQUEST DEBUG ===');
+		console.log('API URL:', `${apiBaseUrl}/update_profile.php`);
+		console.log('Data to send:', JSON.stringify(dataToSend, null, 2));
+		console.log('Headers:', {
+			Authorization: `Bearer ${credentials.token}`,
+			'Content-Type': 'application/json',
+			Accept: 'application/json',
+		});
 
 		const response = await axios.post(`${apiBaseUrl}/update_profile.php`, dataToSend, {
 			withCredentials: true,
 			headers: {
+				Authorization: `Bearer ${credentials.token}`,
 				'Content-Type': 'application/json',
 				Accept: 'application/json',
 			},
@@ -155,11 +186,13 @@ async function saveProfile() {
 			throw new Error(response.data?.message || 'Erreur inconnue lors de la mise à jour');
 		}
 	} catch (error) {
-		console.error('Erreur complète:', error);
+		console.error('=== ERROR DEBUG ===');
+		console.error('Full error:', error);
 
 		if (error.response) {
-			console.error('Status:', error.response.status);
-			console.error('Data:', error.response.data);
+			console.error('Error status:', error.response.status);
+			console.error('Error data:', error.response.data);
+			console.error('Error headers:', error.response.headers);
 
 			switch (error.response.status) {
 				case 401:
@@ -178,14 +211,15 @@ async function saveProfile() {
 					errorMessage.value = error.response.data?.message || `Erreur serveur (${error.response.status})`;
 			}
 		} else if (error.request) {
-			console.error('Erreur réseau:', error.request);
+			console.error('Request error:', error.request);
 			errorMessage.value = 'Impossible de contacter le serveur. Vérifiez votre connexion.';
 		} else {
-			console.error('Erreur:', error.message);
+			console.error('Other error:', error.message);
 			errorMessage.value = error.message || 'Erreur inconnue lors de la mise à jour du profil';
 		}
 	} finally {
 		isLoading.value = false;
+		console.log('=== DEBUG END ===');
 	}
 }
 
