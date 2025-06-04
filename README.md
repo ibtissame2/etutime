@@ -85,4 +85,9 @@ Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://
 ![Image](https://github.com/user-attachments/assets/c7d69690-cd65-400d-93ee-4a436fe3a785)
 ![Image](https://github.com/user-attachments/assets/8047cdff-b20e-466a-89b9-2f190aff9417)
 ![Image](https://github.com/user-attachments/assets/1978bfe6-7d80-446f-a65a-952f12bd602a) 
+![Image](https://github.com/user-attachments/assets/2268a0d6-6665-4c67-bb6f-a14a706fb6f2)
+![Image](https://github.com/user-attachments/assets/8c8c94fc-0a62-4f87-b661-223c990a00dd)
+![Image](https://github.com/user-attachments/assets/cd7a43d7-0463-4f63-a34f-efc17b5978dd)
+![Image](https://github.com/user-attachments/assets/ed648ea0-0d20-440d-8a6e-ee44f1f3a1fc)
+![Image](https://github.com/user-attachments/assets/13fd804d-9834-4674-96e1-507f8d2e385c)
 
