@@ -81,7 +81,7 @@ o	Rapport
 
 Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
 ![Image](https://github.com/user-attachments/assets/4cb5ca94-d1ac-46be-ab86-719a328ccd71)
-![Image](https://github.com/user-attachments/assets/14be9e45-fc5f-4e83-b8c6-4bfdcb54ce76)
+
 ![Image](https://github.com/user-attachments/assets/c7d69690-cd65-400d-93ee-4a436fe3a785)
 ![Image](https://github.com/user-attachments/assets/8047cdff-b20e-466a-89b9-2f190aff9417)
 ![Image](https://github.com/user-attachments/assets/1978bfe6-7d80-446f-a65a-952f12bd602a) 
