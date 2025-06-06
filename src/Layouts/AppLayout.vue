@@ -25,6 +25,7 @@ import TagIcon from '@/Components/Icons/TagIcon.vue';
 import EnvGroupIcon from '@/Components/Icons/EnvGroupIcon.vue';
 import BookCheckIcon from '@/Components/Icons/BookCheckIcon.vue';
 import SidebarIcon from '@/Components/Icons/SidebarIcon.vue';
+import ChatBot from '@/Pages/ChatBot.vue';
 
 defineProps({
 	title: String,
@@ -34,6 +35,9 @@ const router = useRouter();
 const isConnecting = ref(null);
 const isConnected = ref(false);
 const showSidebarMenu = ref(false);
+
+const showChat = ref(false);
+const toggleChat = () => (showChat.value = !showChat.value);
 
 function appTheme() {
 	document.documentElement.classList.add(theme.value);
@@ -212,6 +216,44 @@ onMounted(async () => {
 		</div>
 	</div>
 	<NotificationContainer></NotificationContainer>
+	<!-- Ajoutez ceci avant </template> -->
+	<div class="chat-icon-container" @click="toggleChat">
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width="24"
+			height="24"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+			stroke-linecap="round"
+			stroke-linejoin="round"
+		>
+			<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+		</svg>
+	</div>
+
+	<div v-if="showChat" class="chat-modal">
+		<div class="chat-modal-content">
+			<button class="chat-close-btn" @click="toggleChat">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<line x1="18" y1="6" x2="6" y2="18"></line>
+					<line x1="6" y1="6" x2="18" y2="18"></line>
+				</svg>
+			</button>
+			<ChatBot />
+		</div>
+	</div>
 </template>
 
 <style scoped>
@@ -233,6 +275,95 @@ onMounted(async () => {
 		z-index: 9999999999;
 		width: 100%;
 		display: flex !important;
+	}
+}
+.chat-icon-container {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	width: 50px;
+	height: 50px;
+	background-color: #1976d2;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+	z-index: 1000;
+	transition: all 0.3s ease;
+}
+
+.chat-icon-container:hover {
+	background-color: #1565c0;
+	transform: scale(1.1);
+}
+
+.chat-icon-container svg {
+	color: white;
+	width: 24px;
+	height: 24px;
+}
+.chat-modal {
+	position: fixed;
+	bottom: 80px;
+	right: 20px;
+	width: 350px;
+	height: 500px; /* Hauteur fixe */
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+	z-index: 1000;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.chat-modal-content {
+	position: relative;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+.chat-close-btn {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	background: none;
+	border: none;
+	cursor: pointer;
+	z-index: 10;
+	padding: 5px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.chat-close-btn:hover {
+	background-color: #f5f5f5;
+}
+
+.chat-close-btn svg {
+	width: 16px;
+	height: 16px;
+	color: #666;
+}
+
+/* Styles responsifs */
+@media (max-width: 768px) {
+	.chat-modal {
+		width: 90%;
+		right: 5%;
+		bottom: 70px;
+		max-height: 60vh;
+	}
+
+	.chat-icon-container {
+		bottom: 15px;
+		right: 15px;
+		width: 45px;
+		height: 45px;
 	}
 }
 </style>
