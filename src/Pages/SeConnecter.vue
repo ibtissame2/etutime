@@ -211,12 +211,20 @@
 			<div class="modal-content">
 				<h3>Réinitialisation du mot de passe</h3>
 				<p>Veuillez entrer votre adresse email pour recevoir les instructions de réinitialisation.</p>
-				<form @submit.prevent="handleResetPassword">
+				<form @submit.prevent="handleResetPassword" name="resetPasswordForm">
 					<div class="form-group">
 						<label for="reset-email">Email académique</label>
 						<div class="input-with-icon">
 							<i class="fas fa-envelope"></i>
-							<input id="reset-email" type="email" v-model="resetEmail" placeholder="exemple@etudiant.fr" required />
+							<input 
+								id="reset-email" 
+								name="resetEmail"
+								type="email" 
+								v-model="resetEmail" 
+								placeholder="exemple@etudiant.fr" 
+								autocomplete="email"
+								required 
+							/>
 						</div>
 					</div>
 					<div class="modal-actions">
@@ -558,10 +566,11 @@ export default {
 
 					this.notify('success', 'Bienvenue ' + (userData.first_name || 'cher étudiant') + '!')
 
-					// Redirection vers Dashboard
-					setTimeout(() => {
-						this.$router.push('/dashboard')
-					}, 1500)
+					// Redirection vers Dashboard - forcer la navigation
+					this.isConnected = true
+					this.$nextTick(() => {
+						window.location.href = '/dashboard'
+					})
 				}
 			} catch (error) {
 				console.error('Erreur de connexion:', error)
