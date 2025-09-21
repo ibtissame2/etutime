@@ -210,6 +210,7 @@
 			<div class="modal-content">
 				<h3>Conditions d'utilisation</h3>
 				<div class="modal-body">
+					<!-- Contenu des conditions d'utilisation -->
 					<p>Contenu des conditions d'utilisation de l'application StudyPro pour étudiants...</p>
 				</div>
 				<div class="modal-actions">
@@ -222,6 +223,7 @@
 			<div class="modal-content">
 				<h3>Politique de confidentialité</h3>
 				<div class="modal-body">
+					<!-- Contenu de la politique de confidentialité -->
 					<p>Contenu de la politique de confidentialité de l'application StudyPro pour étudiants...</p>
 				</div>
 				<div class="modal-actions">
@@ -234,7 +236,7 @@
 </template>
 
 <script>
-import { supabase } from '@/lib/supabase.js'
+import { fetch, getCredentials } from '@/store/axios';
 import { useNotificationsStore } from '@/store/notification';
 import NotificationContainer from '@/Components/NotificationContainer.vue';
 
@@ -247,6 +249,7 @@ export default {
 	data() {
 		return {
 			isConnected: true,
+
 			activeTab: 'login',
 			showLoginPassword: false,
 			showRegisterPassword: false,
@@ -255,11 +258,13 @@ export default {
 			showPrivacy: false,
 			isLoading: false,
 			resetEmail: '',
+
 			loginForm: {
 				email: '',
 				password: '',
 				rememberMe: false,
 			},
+
 			registerForm: {
 				firstName: '',
 				lastName: '',
@@ -269,6 +274,7 @@ export default {
 				confirmPassword: '',
 				termsAccepted: false,
 			},
+
 			errors: {},
 		};
 	},
@@ -277,19 +283,33 @@ export default {
 		passwordStrength() {
 			const password = this.registerForm.password;
 			if (!password) return 0;
+
 			let strength = 0;
+
+			// Longueur minimum
 			if (password.length >= 8) strength += 20;
+
+			// Majuscules et minuscules
 			if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 20;
+
+			// Chiffres
 			if (/[0-9]/.test(password)) strength += 20;
+
+			// Caractères spéciaux
 			if (/[^a-zA-Z0-9]/.test(password)) strength += 20;
+
+			// Longueur bonus
 			if (password.length >= 12) strength += 20;
+
 			return strength;
 		},
+
 		passwordStrengthClass() {
 			if (this.passwordStrength < 40) return 'weak';
 			if (this.passwordStrength < 70) return 'medium';
 			return 'strong';
 		},
+
 		passwordStrengthText() {
 			if (this.passwordStrength < 40) return 'Faible';
 			if (this.passwordStrength < 70) return 'Moyen';
@@ -301,160 +321,193 @@ export default {
 		notify(type, message) {
 			useNotificationsStore().addNotification(type, message);
 		},
+
 		validateLoginForm() {
 			const errors = {};
+
 			if (!this.loginForm.email) {
 				errors.loginEmail = "L'email est obligatoire";
 			} else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.loginForm.email)) {
 				errors.loginEmail = 'Veuillez entrer un email valide';
 			}
+
 			if (!this.loginForm.password) {
 				errors.loginPassword = 'Le mot de passe est obligatoire';
 			}
+
 			this.errors = errors;
 			return Object.keys(errors).length === 0;
 		},
+
 		validateRegisterForm() {
 			const errors = {};
-			if (!this.registerForm.firstName.trim()) errors.firstName = 'Le prénom est obligatoire';
-			if (!this.registerForm.lastName.trim()) errors.lastName = 'Le nom est obligatoire';
+
+			if (!this.registerForm.firstName.trim()) {
+				errors.firstName = 'Le prénom est obligatoire';
+			}
+
+			if (!this.registerForm.lastName.trim()) {
+				errors.lastName = 'Le nom est obligatoire';
+			}
+
 			if (!this.registerForm.email) {
 				errors.email = "L'email est obligatoire";
 			} else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.registerForm.email)) {
 				errors.email = 'Veuillez entrer un email valide';
 			}
-			if (!this.registerForm.level) errors.level = "Veuillez sélectionner votre niveau d'études";
+
+			if (!this.registerForm.level) {
+				errors.level = "Veuillez sélectionner votre niveau d'études";
+			}
+
 			if (!this.registerForm.password) {
 				errors.password = 'Le mot de passe est obligatoire';
 			} else if (this.registerForm.password.length < 8) {
 				errors.password = 'Le mot de passe doit contenir au moins 8 caractères';
-			} else if (!/[a-z]/.test(this.registerForm.password) || !/[A-Z]/.test(this.registerForm.password) || !/[0-9]/.test(this.registerForm.password)) {
+			} else if (
+				!/[a-z]/.test(this.registerForm.password) ||
+				!/[A-Z]/.test(this.registerForm.password) ||
+				!/[0-9]/.test(this.registerForm.password)
+			) {
 				errors.password = 'Le mot de passe doit contenir au moins une minuscule, une majuscule et un chiffre';
 			}
+
 			if (this.registerForm.password !== this.registerForm.confirmPassword) {
 				errors.confirmPassword = 'Les mots de passe ne correspondent pas';
 			}
-			if (!this.registerForm.termsAccepted) errors.terms = "Vous devez accepter les conditions d'utilisation";
+
+			if (!this.registerForm.termsAccepted) {
+				errors.terms = "Vous devez accepter les conditions d'utilisation";
+			}
+
 			this.errors = errors;
 			return Object.keys(errors).length === 0;
 		},
+
 		async handleRegister() {
 			if (!this.validateRegisterForm()) return;
+
 			try {
 				this.isLoading = true;
-				const { data, error } = await supabase.auth.signUp({
+
+				const data = await fetch(`connection/register`, {
+					firstName: this.registerForm.firstName,
+					lastName: this.registerForm.lastName,
 					email: this.registerForm.email,
 					password: this.registerForm.password,
-					options: {
-						data: {
-							firstName: this.registerForm.firstName,
-							lastName: this.registerForm.lastName,
-							first_name: this.registerForm.firstName,
-							last_name: this.registerForm.lastName,
-							level: this.registerForm.level
-						}
-					}
+					level: this.registerForm.level,
 				});
-				if (error) throw new Error(error.message);
-				if (data.user) {
-					this.notify('success', 'Inscription réussie! Vérifiez votre email pour confirmer votre compte.');
-					this.activeTab = 'login';
-					this.registerForm = {
-						firstName: '',
-						lastName: '',
-						email: '',
-						level: '',
-						password: '',
-						confirmPassword: '',
-						termsAccepted: false
-					};
-				}
-			} catch (error) {
-				console.error('Erreur inscription:', error);
-				if (error.message.includes('already registered')) {
-					this.notify('error', 'Cette adresse email est déjà utilisée.');
-				} else {
-					this.notify('error', "Erreur lors de l'inscription. Veuillez réessayer.");
-				}
-			} finally {
-				this.isLoading = false;
-			}
-		},
-		async handleLogin() {
-			if (!this.validateLoginForm()) return;
-			try {
-				this.isLoading = true;
-				const { data, error } = await supabase.auth.signInWithPassword({
-					email: this.loginForm.email,
-					password: this.loginForm.password
-				});
-				if (error) throw new Error(error.message);
-				if (data.user) {
-					const userData = {
-						id: data.user.id,
-						first_name: data.user.user_metadata?.first_name || data.user.user_metadata?.firstName || '',
-						last_name: data.user.user_metadata?.last_name || data.user.user_metadata?.lastName || '',
-						email: data.user.email,
-						level: data.user.user_metadata?.level || ''
-					};
-					if (this.loginForm.rememberMe) {
-						localStorage.setItem('user', JSON.stringify(userData));
-						localStorage.setItem('token', data.session.access_token);
+
+				if (data.success) {
+					// Stocker les informations utilisateur
+					if (this.registerForm.rememberMe) {
+						localStorage.setItem('user', JSON.stringify(data.user));
+						localStorage.setItem('token', data.token);
 						sessionStorage.removeItem('user');
 						sessionStorage.removeItem('token');
 					} else {
-						sessionStorage.setItem('user', JSON.stringify(userData));
-						sessionStorage.setItem('token', data.session.access_token);
+						sessionStorage.setItem('user', JSON.stringify(data.user));
+						sessionStorage.setItem('token', data.token);
 						localStorage.removeItem('user');
 						localStorage.removeItem('token');
 					}
-					this.notify('success', 'Bienvenue ' + userData.first_name + '!');
+
+					this.notify('success', 'Inscription réussie! Redirection en cours...');
+
+					// Redirection vers AppView pour les nouveaux utilisateurs
 					setTimeout(() => {
-						this.$router.push('/dashboard');
+						this.$router.push('/app');
 					}, 1500);
+				} else {
+					this.notify('error', "Erreur lors de l'inscription");
 				}
 			} catch (error) {
-				console.error('Erreur de connexion:', error);
-				this.notify('error', 'Email ou mot de passe incorrect.');
+				console.error('Erreur:', error);
+				this.notify('error', 'Veuillez vérifier votre connexion ou réessayer plus tard.');
 			} finally {
 				this.isLoading = false;
 			}
 		},
+
+		async handleLogin() {
+			if (!this.validateLoginForm()) return;
+
+			try {
+				this.isLoading = true;
+
+				const data = await fetch(`connection/login`, {
+					email: this.loginForm.email,
+					password: this.loginForm.password,
+				});
+
+				if (data.success) {
+					// Stocker les informations utilisateur
+					if (this.loginForm.rememberMe) {
+						localStorage.setItem('user', JSON.stringify(data.user));
+						localStorage.setItem('token', data.token);
+						sessionStorage.removeItem('user');
+						sessionStorage.removeItem('token');
+					} else {
+						sessionStorage.setItem('user', JSON.stringify(data.user));
+						sessionStorage.setItem('token', data.token);
+						localStorage.removeItem('user');
+						localStorage.removeItem('token');
+					}
+
+					this.notify('success', 'Bienvenue ' + data.user.first_name + '!');
+
+					// Redirection vers Dashboard pour les utilisateurs existants
+					setTimeout(() => {
+						this.$router.push('/dashboard');
+					}, 1500);
+				} else {
+					this.notify('error', 'Échec de la connexion. Veuillez vérifier vos identifiants.');
+				}
+			} catch (error) {
+				console.error('Erreur de connexion:', error);
+				this.notify('error', 'Veuillez vérifier votre connexion ou réessayer plus tard.');
+			} finally {
+				this.isLoading = false;
+			}
+		},
+
 		async handleResetPassword() {
 			try {
 				this.isLoading = true;
-				const { error } = await supabase.auth.resetPasswordForEmail(this.resetEmail, {
-					redirectTo: window.location.origin + '/reset-password'
+
+				const data = await fetch(`connection/reset_password`, {
+					email: this.resetEmail,
 				});
-				if (error) throw new Error(error.message);
-				this.notify('success', 'Un email de réinitialisation a été envoyé à votre adresse.');
-				this.showResetPassword = false;
-				this.resetEmail = '';
+
+				if (data.success) {
+					this.notify('success', 'Un email de réinitialisation a été envoyé à votre adresse.');
+
+					this.showResetPassword = false;
+					this.resetEmail = '';
+				} else {
+					this.notify('error', "Échec de l'envoi. Veuillez réessayer.");
+				}
 			} catch (error) {
 				console.error('Erreur de réinitialisation:', error);
-				this.notify('error', 'Erreur lors de l\'envoi. Veuillez réessayer.');
+				this.notify('error', 'Veuillez vérifier votre connexion ou réessayer plus tard.');
 			} finally {
 				this.isLoading = false;
 			}
 		},
 	},
+
 	async beforeMount() {
-		try {
-			const { data: { session } } = await supabase.auth.getSession();
-			if (session?.user) {
-				this.$router.push('/dashboard');
-			} else {
-				this.isConnected = false;
-			}
-		} catch (error) {
-			console.error('Erreur lors de la vérification de session:', error);
-			this.isConnected = false;
-		}
+		const credentials = getCredentials();
+		if (!credentials) return (this.isConnected = false);
+		const connected = await fetch('connection/middleware', { credentials });
+		if (connected?.success) this.$router.push('/dashboard');
+		else this.isConnected = false;
 	},
 };
 </script>
 
 <style scoped>
+/* Container principal */
 .auth-container {
 	display: flex;
 	flex-direction: column;
@@ -465,6 +518,7 @@ export default {
 	background: var(--bg-gradient);
 	position: relative;
 }
+
 .auth-container::before {
 	content: '';
 	position: absolute;
@@ -477,12 +531,15 @@ export default {
 		radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.15) 0%, transparent 50%);
 	pointer-events: none;
 }
+
+/* Branding */
 .app-branding {
 	text-align: center;
 	margin-bottom: 3rem;
 	z-index: 1;
 	position: relative;
 }
+
 .app-branding h1 {
 	font-size: 3rem;
 	font-weight: 800;
@@ -493,12 +550,15 @@ export default {
 	background-clip: text;
 	text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .app-branding p {
 	font-size: 1.125rem;
 	color: var(--text-secondary);
 	font-weight: 500;
 	opacity: 0.9;
 }
+
+/* Carte d'authentification */
 .auth-card {
 	width: 100%;
 	max-width: 480px;
@@ -511,11 +571,14 @@ export default {
 	z-index: 1;
 	border: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+/* Onglets */
 .auth-tabs {
 	display: flex;
 	background: var(--bg-secondary);
 	border-bottom: 1px solid var(--border-color);
 }
+
 .tab-btn {
 	flex: 1;
 	padding: 1rem 1.5rem;
@@ -529,10 +592,12 @@ export default {
 	outline: none;
 	position: relative;
 }
+
 .tab-btn.active {
 	color: var(--primary-color);
 	background: var(--card-bg);
 }
+
 .tab-btn.active::after {
 	content: '';
 	position: absolute;
@@ -544,16 +609,21 @@ export default {
 	background: linear-gradient(90deg, var(--primary-color), var(--primary-dark));
 	border-radius: 3px 3px 0 0;
 }
+
 .tab-btn:hover:not(.active) {
 	background: var(--hover-bg);
 	color: var(--text-primary);
 }
+
 .tab-btn i {
 	margin-right: 0.5rem;
 }
+
+/* Formulaire */
 .auth-form {
 	padding: 2.5rem;
 }
+
 .auth-form h2 {
 	font-size: 1.75rem;
 	color: var(--text-primary);
@@ -561,15 +631,18 @@ export default {
 	text-align: center;
 	font-weight: 700;
 }
+
 .form-group {
 	margin-bottom: 1.5rem;
 }
+
 .form-row {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 1rem;
 	margin-bottom: 0;
 }
+
 label {
 	display: block;
 	margin-bottom: 0.75rem;
@@ -577,17 +650,20 @@ label {
 	font-weight: 600;
 	color: var(--text-primary);
 }
+
 .input-with-icon {
 	position: relative;
 	display: flex;
 	align-items: center;
 }
+
 .input-with-icon i {
 	position: absolute;
 	left: 1rem;
 	color: var(--text-secondary);
 	z-index: 2;
 }
+
 .input-with-icon input,
 .input-with-icon select {
 	width: 100%;
@@ -600,15 +676,18 @@ label {
 	transition: var(--transition);
 	outline: none;
 }
+
 .input-with-icon input:focus,
 .input-with-icon select:focus {
 	border-color: var(--primary-color);
 	box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 	transform: translateY(-1px);
 }
+
 .input-with-icon input::placeholder {
 	color: var(--text-secondary);
 }
+
 .toggle-password {
 	position: absolute;
 	right: 1rem;
@@ -622,19 +701,24 @@ label {
 	transition: var(--transition);
 	z-index: 2;
 }
+
 .toggle-password:hover {
 	color: var(--primary-color);
 	background: var(--primary-light);
 }
+
 .error-text {
 	color: var(--error-color);
 	font-size: 0.8125rem;
 	margin-top: 0.5rem;
 	font-weight: 500;
 }
+
+/* Force du mot de passe */
 .password-strength {
 	margin-top: 0.75rem;
 }
+
 .strength-meter {
 	height: 6px;
 	background: var(--border-color);
@@ -642,23 +726,29 @@ label {
 	margin-bottom: 0.5rem;
 	overflow: hidden;
 }
+
 .strength-meter div {
 	height: 100%;
 	border-radius: 3px;
 	transition: var(--transition);
 }
+
 .weak {
 	background: linear-gradient(90deg, var(--error-color), #fca5a5);
 	color: var(--error-color);
 }
+
 .medium {
 	background: linear-gradient(90deg, var(--warning-color), #fcd34d);
 	color: var(--warning-color);
 }
+
 .strong {
 	background: linear-gradient(90deg, var(--success-color), #6ee7b7);
 	color: var(--success-color);
 }
+
+/* Options de formulaire */
 .form-options {
 	display: flex;
 	justify-content: space-between;
@@ -666,6 +756,7 @@ label {
 	margin-bottom: 2rem;
 	font-size: 0.875rem;
 }
+
 .checkbox-container {
 	display: flex;
 	align-items: center;
@@ -673,6 +764,7 @@ label {
 	cursor: pointer;
 	user-select: none;
 }
+
 .checkbox-container input {
 	position: absolute;
 	opacity: 0;
@@ -680,6 +772,7 @@ label {
 	height: 0;
 	width: 0;
 }
+
 .checkmark {
 	position: relative;
 	height: 20px;
@@ -690,22 +783,27 @@ label {
 	border-radius: 4px;
 	transition: var(--transition);
 }
+
 .checkbox-container:hover input ~ .checkmark {
 	border-color: var(--primary-color);
 	background: var(--primary-light);
 }
+
 .checkbox-container input:checked ~ .checkmark {
 	background: var(--primary-color);
 	border-color: var(--primary-color);
 }
+
 .checkmark:after {
 	content: '';
 	position: absolute;
 	display: none;
 }
+
 .checkbox-container input:checked ~ .checkmark:after {
 	display: block;
 }
+
 .checkbox-container .checkmark:after {
 	left: 6px;
 	top: 2px;
@@ -715,16 +813,20 @@ label {
 	border-width: 0 2px 2px 0;
 	transform: rotate(45deg);
 }
+
 .forgot-password {
 	color: var(--primary-color);
 	text-decoration: none;
 	transition: var(--transition);
 	font-weight: 500;
 }
+
 .forgot-password:hover {
 	text-decoration: underline;
 	color: var(--primary-dark);
 }
+
+/* Bouton de soumission */
 .btn-submit {
 	width: 100%;
 	padding: 1rem;
@@ -743,6 +845,7 @@ label {
 	position: relative;
 	overflow: hidden;
 }
+
 .btn-submit::before {
 	content: '';
 	position: absolute;
@@ -753,28 +856,113 @@ label {
 	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
 	transition: var(--transition);
 }
+
 .btn-submit:hover {
 	transform: translateY(-2px);
 	box-shadow: var(--shadow-lg);
 }
+
 .btn-submit:hover::before {
 	left: 100%;
 }
+
 .btn-submit:active {
 	transform: translateY(0);
 }
+
 .btn-submit:disabled {
 	background: var(--text-secondary);
 	cursor: not-allowed;
 	transform: none;
 	box-shadow: var(--shadow-sm);
 }
+
 .btn-submit:disabled::before {
 	display: none;
 }
+
 .btn-submit i {
 	margin-right: 0.5rem;
 }
+
+/* Connexion avec réseaux sociaux */
+.social-login {
+	margin-top: 2rem;
+	text-align: center;
+}
+
+.social-login p {
+	position: relative;
+	margin-bottom: 1.5rem;
+	color: var(--text-secondary);
+	display: flex;
+	align-items: center;
+	font-size: 0.875rem;
+}
+
+.social-login p::before,
+.social-login p::after {
+	content: '';
+	flex: 1;
+	height: 1px;
+	background: var(--border-color);
+}
+
+.social-login p::before {
+	margin-right: 1rem;
+}
+
+.social-login p::after {
+	margin-left: 1rem;
+}
+
+.social-buttons {
+	display: flex;
+	justify-content: center;
+	gap: 1rem;
+}
+
+.btn-social {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	border: 2px solid var(--border-color);
+	font-size: 1.25rem;
+	color: var(--text-primary);
+	background: var(--input-bg);
+	cursor: pointer;
+	transition: var(--transition);
+	position: relative;
+	overflow: hidden;
+}
+
+.btn-google:hover {
+	border-color: #db4437;
+	color: #db4437;
+	background: rgba(219, 68, 55, 0.1);
+}
+
+.btn-microsoft:hover {
+	border-color: #0078d4;
+	color: #0078d4;
+	background: rgba(0, 120, 212, 0.1);
+}
+
+.btn-apple:hover {
+	border-color: #000000;
+	color: var(--text-primary);
+	background: rgba(0, 0, 0, 0.1);
+}
+
+.btn-social:hover {
+	transform: scale(1.05);
+	box-shadow: var(--shadow-md);
+}
+
+/* Modal */
 .modal {
 	position: fixed;
 	top: 0;
@@ -789,6 +977,7 @@ label {
 	z-index: 1000;
 	animation: fadeIn 0.3s ease-out;
 }
+
 .modal-content {
 	width: 90%;
 	max-width: 500px;
@@ -799,12 +988,14 @@ label {
 	animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	border: 1px solid var(--border-color);
 }
+
 .modal-content h3 {
 	margin-bottom: 1.5rem;
 	color: var(--text-primary);
 	font-size: 1.5rem;
 	font-weight: 700;
 }
+
 .modal-body {
 	max-height: 300px;
 	overflow-y: auto;
@@ -813,12 +1004,14 @@ label {
 	color: var(--text-secondary);
 	line-height: 1.6;
 }
+
 .modal-actions {
 	display: flex;
 	justify-content: flex-end;
 	gap: 1rem;
 	margin-top: 2rem;
 }
+
 .btn-cancel {
 	padding: 0.75rem 1.5rem;
 	background: var(--bg-secondary);
@@ -829,37 +1022,104 @@ label {
 	cursor: pointer;
 	transition: var(--transition);
 }
+
 .btn-cancel:hover {
 	background: var(--hover-bg);
 	border-color: var(--text-secondary);
 }
+
 @keyframes fadeIn {
-	from { opacity: 0; }
-	to { opacity: 1; }
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
 }
+
 @keyframes scaleIn {
-	from { transform: scale(0.9); opacity: 0; }
-	to { transform: scale(1); opacity: 1; }
+	from {
+		transform: scale(0.9);
+		opacity: 0;
+	}
+	to {
+		transform: scale(1);
+		opacity: 1;
+	}
 }
+
+/* Responsive Design */
 @media (max-width: 768px) {
-	.auth-container { padding: 1rem; }
-	.app-branding { margin-bottom: 2rem; }
-	.app-branding h1 { font-size: 2.5rem; }
-	.auth-form { padding: 2rem; }
-	.form-row { grid-template-columns: 1fr; gap: 0; }
-	.form-options { flex-direction: column; align-items: flex-start; gap: 1rem; }
+	.auth-container {
+		padding: 1rem;
+	}
+
+	.app-branding {
+		margin-bottom: 2rem;
+	}
+
+	.app-branding h1 {
+		font-size: 2.5rem;
+	}
+
+	.auth-form {
+		padding: 2rem;
+	}
+
+	.form-row {
+		grid-template-columns: 1fr;
+		gap: 0;
+	}
+
+	.form-options {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 1rem;
+	}
+
+	.notification {
+		left: 1rem;
+		right: 1rem;
+		bottom: 1rem;
+	}
 }
+
 @media (max-width: 480px) {
-	.auth-container { padding: 0.5rem; }
-	.app-branding h1 { font-size: 2rem; }
-	.auth-form { padding: 1.5rem; }
-	.tab-btn { padding: 0.875rem 1rem; font-size: 0.875rem; }
-	.modal-content { padding: 2rem; }
+	.auth-container {
+		padding: 0.5rem;
+	}
+
+	.app-branding h1 {
+		font-size: 2rem;
+	}
+
+	.auth-form {
+		padding: 1.5rem;
+	}
+
+	.tab-btn {
+		padding: 0.875rem 1rem;
+		font-size: 0.875rem;
+	}
+
+	.modal-content {
+		padding: 2rem;
+	}
 }
+
+/* Animations pour les interactions */
 @media (prefers-reduced-motion: reduce) {
-	* { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+	* {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
 }
-input:focus-visible, select:focus-visible, button:focus-visible {
+
+/* Focus visible pour l'accessibilité */
+input:focus-visible,
+select:focus-visible,
+button:focus-visible {
 	outline: 2px solid var(--primary-color);
 	outline-offset: 2px;
 }
+</style>
