@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import VChart, { THEME_KEY } from 'vue-echarts';
 import { provide, computed } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useMinuteursStore } from '@/Store/minuteurs';
+//import { useMinuteursStore } from '@/Store/minuteurs';
 import { formatDate, formatHumanReadableDuration } from '@/Components/src/utils/time';
 import { use } from 'echarts/core';
 import { HeatmapChart } from 'echarts/charts';
