@@ -114,7 +114,7 @@
 						<div class="input-with-icon">
 							<i class="fas fa-graduation-cap"></i>
 							<select id="reg-level" v-model="registerForm.level" required>
-								<option value="" disabled selected>Sélectionnez votre niveau</option>
+								<option value="" disabled>Sélectionnez votre niveau</option>
 								<option value="lycee">Lycée</option>
 								<option value="licence1">Licence 1</option>
 								<option value="licence2">Licence 2</option>
@@ -186,7 +186,7 @@
 		</div>
 
 		<!-- Modals -->
-		<div v-if="showResetPassword" class="modal">
+		<div v-if="showResetPassword" class="modal" @click.self="showResetPassword = false">
 			<div class="modal-content">
 				<h3>Réinitialisation du mot de passe</h3>
 				<p>Veuillez entrer votre adresse email pour recevoir les instructions de réinitialisation.</p>
@@ -206,12 +206,24 @@
 			</div>
 		</div>
 
-		<div v-if="showTerms" class="modal">
+		<div v-if="showTerms" class="modal" @click.self="showTerms = false">
 			<div class="modal-content">
 				<h3>Conditions d'utilisation</h3>
 				<div class="modal-body">
-					<!-- Contenu des conditions d'utilisation -->
-					<p>Contenu des conditions d'utilisation de l'application StudyPro pour étudiants...</p>
+					<p><strong>1. Acceptation des conditions</strong></p>
+					<p>En utilisant Etutime, vous acceptez les présentes conditions d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser ce service.</p>
+					
+					<p><strong>2. Utilisation du service</strong></p>
+					<p>Etutime est une application destinée à aider les étudiants dans la gestion de leur temps et l'organisation de leurs études. Vous vous engagez à utiliser le service de manière appropriée et légale.</p>
+					
+					<p><strong>3. Protection des données</strong></p>
+					<p>Vos données personnelles sont protégées conformément à notre politique de confidentialité. Nous ne partagerons pas vos informations sans votre consentement explicite.</p>
+					
+					<p><strong>4. Responsabilités</strong></p>
+					<p>Vous êtes responsable de la confidentialité de votre mot de passe et de toutes les activités effectuées sous votre compte.</p>
+					
+					<p><strong>5. Limitation de responsabilité</strong></p>
+					<p>Etutime ne peut être tenu responsable des dommages indirects ou consécutifs résultant de l'utilisation du service.</p>
 				</div>
 				<div class="modal-actions">
 					<button class="btn-submit" @click="showTerms = false">Fermer</button>
@@ -219,12 +231,24 @@
 			</div>
 		</div>
 
-		<div v-if="showPrivacy" class="modal">
+		<div v-if="showPrivacy" class="modal" @click.self="showPrivacy = false">
 			<div class="modal-content">
 				<h3>Politique de confidentialité</h3>
 				<div class="modal-body">
-					<!-- Contenu de la politique de confidentialité -->
-					<p>Contenu de la politique de confidentialité de l'application StudyPro pour étudiants...</p>
+					<p><strong>1. Collecte des données</strong></p>
+					<p>Nous collectons les informations que vous nous fournissez lors de l'inscription : nom, prénom, email, niveau d'études.</p>
+					
+					<p><strong>2. Utilisation des données</strong></p>
+					<p>Vos données sont utilisées exclusivement pour le fonctionnement de l'application et l'amélioration de nos services.</p>
+					
+					<p><strong>3. Sécurité</strong></p>
+					<p>Nous mettons en place des mesures de sécurité appropriées pour protéger vos informations personnelles contre tout accès non autorisé.</p>
+					
+					<p><strong>4. Vos droits</strong></p>
+					<p>Vous avez le droit d'accéder, de modifier ou de supprimer vos données personnelles à tout moment depuis votre profil.</p>
+					
+					<p><strong>5. Conservation des données</strong></p>
+					<p>Vos données sont conservées aussi longtemps que votre compte est actif, ou selon les exigences légales applicables.</p>
 				</div>
 				<div class="modal-actions">
 					<button class="btn-submit" @click="showPrivacy = false">Fermer</button>
@@ -232,13 +256,13 @@
 			</div>
 		</div>
 	</div>
-	<NotificationContainer></NotificationContainer>
+	<NotificationContainer />
 </template>
 
 <script>
-import { fetch, getCredentials } from '@/store/axios';
-import { useNotificationsStore } from '@/store/notification';
-import NotificationContainer from '@/Components/NotificationContainer.vue';
+import { supabase } from '@/lib/supabase.js'
+import { useNotificationsStore } from '@/store/notification'
+import NotificationContainer from '@/Components/NotificationContainer.vue'
 
 export default {
 	name: 'AuthComponent',
@@ -248,8 +272,7 @@ export default {
 
 	data() {
 		return {
-			isConnected: true,
-
+			isConnected: false,
 			activeTab: 'login',
 			showLoginPassword: false,
 			showRegisterPassword: false,
@@ -276,237 +299,314 @@ export default {
 			},
 
 			errors: {},
-		};
+		}
 	},
 
 	computed: {
 		passwordStrength() {
-			const password = this.registerForm.password;
-			if (!password) return 0;
+			const password = this.registerForm.password
+			if (!password) return 0
 
-			let strength = 0;
+			let strength = 0
 
 			// Longueur minimum
-			if (password.length >= 8) strength += 20;
+			if (password.length >= 8) strength += 20
 
 			// Majuscules et minuscules
-			if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 20;
+			if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 20
 
 			// Chiffres
-			if (/[0-9]/.test(password)) strength += 20;
+			if (/[0-9]/.test(password)) strength += 20
 
 			// Caractères spéciaux
-			if (/[^a-zA-Z0-9]/.test(password)) strength += 20;
+			if (/[^a-zA-Z0-9]/.test(password)) strength += 20
 
 			// Longueur bonus
-			if (password.length >= 12) strength += 20;
+			if (password.length >= 12) strength += 20
 
-			return strength;
+			return strength
 		},
 
 		passwordStrengthClass() {
-			if (this.passwordStrength < 40) return 'weak';
-			if (this.passwordStrength < 70) return 'medium';
-			return 'strong';
+			if (this.passwordStrength < 40) return 'weak'
+			if (this.passwordStrength < 70) return 'medium'
+			return 'strong'
 		},
 
 		passwordStrengthText() {
-			if (this.passwordStrength < 40) return 'Faible';
-			if (this.passwordStrength < 70) return 'Moyen';
-			return 'Fort';
+			if (this.passwordStrength < 40) return 'Faible'
+			if (this.passwordStrength < 70) return 'Moyen'
+			return 'Fort'
 		},
+	},
+
+	async beforeMount() {
+		try {
+			const { data: { session } } = await supabase.auth.getSession()
+			
+			if (session?.user) {
+				// Utilisateur déjà connecté
+				this.$router.push('/dashboard')
+			} else {
+				this.isConnected = false
+			}
+		} catch (error) {
+			console.error('Erreur lors de la vérification de session:', error)
+			this.isConnected = false
+		}
 	},
 
 	methods: {
 		notify(type, message) {
-			useNotificationsStore().addNotification(type, message);
+			useNotificationsStore().addNotification(type, message)
 		},
 
 		validateLoginForm() {
-			const errors = {};
+			const errors = {}
 
 			if (!this.loginForm.email) {
-				errors.loginEmail = "L'email est obligatoire";
+				errors.loginEmail = "L'email est obligatoire"
 			} else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.loginForm.email)) {
-				errors.loginEmail = 'Veuillez entrer un email valide';
+				errors.loginEmail = 'Veuillez entrer un email valide'
 			}
 
 			if (!this.loginForm.password) {
-				errors.loginPassword = 'Le mot de passe est obligatoire';
+				errors.loginPassword = 'Le mot de passe est obligatoire'
 			}
 
-			this.errors = errors;
-			return Object.keys(errors).length === 0;
+			this.errors = errors
+			return Object.keys(errors).length === 0
 		},
 
 		validateRegisterForm() {
-			const errors = {};
+			const errors = {}
 
-			if (!this.registerForm.firstName.trim()) {
-				errors.firstName = 'Le prénom est obligatoire';
+			if (!this.registerForm.firstName?.trim()) {
+				errors.firstName = 'Le prénom est obligatoire'
 			}
 
-			if (!this.registerForm.lastName.trim()) {
-				errors.lastName = 'Le nom est obligatoire';
+			if (!this.registerForm.lastName?.trim()) {
+				errors.lastName = 'Le nom est obligatoire'
 			}
 
 			if (!this.registerForm.email) {
-				errors.email = "L'email est obligatoire";
+				errors.email = "L'email est obligatoire"
 			} else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.registerForm.email)) {
-				errors.email = 'Veuillez entrer un email valide';
+				errors.email = 'Veuillez entrer un email valide'
 			}
 
 			if (!this.registerForm.level) {
-				errors.level = "Veuillez sélectionner votre niveau d'études";
+				errors.level = "Veuillez sélectionner votre niveau d'études"
 			}
 
 			if (!this.registerForm.password) {
-				errors.password = 'Le mot de passe est obligatoire';
+				errors.password = 'Le mot de passe est obligatoire'
 			} else if (this.registerForm.password.length < 8) {
-				errors.password = 'Le mot de passe doit contenir au moins 8 caractères';
+				errors.password = 'Le mot de passe doit contenir au moins 8 caractères'
 			} else if (
 				!/[a-z]/.test(this.registerForm.password) ||
 				!/[A-Z]/.test(this.registerForm.password) ||
 				!/[0-9]/.test(this.registerForm.password)
 			) {
-				errors.password = 'Le mot de passe doit contenir au moins une minuscule, une majuscule et un chiffre';
+				errors.password = 'Le mot de passe doit contenir au moins une minuscule, une majuscule et un chiffre'
 			}
 
 			if (this.registerForm.password !== this.registerForm.confirmPassword) {
-				errors.confirmPassword = 'Les mots de passe ne correspondent pas';
+				errors.confirmPassword = 'Les mots de passe ne correspondent pas'
 			}
 
 			if (!this.registerForm.termsAccepted) {
-				errors.terms = "Vous devez accepter les conditions d'utilisation";
+				errors.terms = "Vous devez accepter les conditions d'utilisation"
 			}
 
-			this.errors = errors;
-			return Object.keys(errors).length === 0;
+			this.errors = errors
+			return Object.keys(errors).length === 0
 		},
 
 		async handleRegister() {
-			if (!this.validateRegisterForm()) return;
+			if (!this.validateRegisterForm()) return
 
 			try {
-				this.isLoading = true;
+				this.isLoading = true
 
-				const data = await fetch(`connection/register`, {
-					firstName: this.registerForm.firstName,
-					lastName: this.registerForm.lastName,
+				const { data, error } = await supabase.auth.signUp({
 					email: this.registerForm.email,
 					password: this.registerForm.password,
-					level: this.registerForm.level,
-				});
-
-				if (data.success) {
-					// Stocker les informations utilisateur
-					if (this.registerForm.rememberMe) {
-						localStorage.setItem('user', JSON.stringify(data.user));
-						localStorage.setItem('token', data.token);
-						sessionStorage.removeItem('user');
-						sessionStorage.removeItem('token');
-					} else {
-						sessionStorage.setItem('user', JSON.stringify(data.user));
-						sessionStorage.setItem('token', data.token);
-						localStorage.removeItem('user');
-						localStorage.removeItem('token');
+					options: {
+						data: {
+							firstName: this.registerForm.firstName,
+							lastName: this.registerForm.lastName,
+							first_name: this.registerForm.firstName,
+							last_name: this.registerForm.lastName,
+							level: this.registerForm.level
+						}
 					}
+				})
 
-					this.notify('success', 'Inscription réussie! Redirection en cours...');
+				if (error) {
+					throw new Error(error.message)
+				}
 
-					// Redirection vers AppView pour les nouveaux utilisateurs
-					setTimeout(() => {
-						this.$router.push('/app');
-					}, 1500);
-				} else {
-					this.notify('error', "Erreur lors de l'inscription");
+				if (data.user) {
+					this.notify('success', 'Inscription réussie! Vérifiez votre email pour confirmer votre compte.')
+					
+					// Changer vers l'onglet de connexion
+					this.activeTab = 'login'
+					
+					// Réinitialiser le formulaire
+					this.registerForm = {
+						firstName: '',
+						lastName: '',
+						email: '',
+						level: '',
+						password: '',
+						confirmPassword: '',
+						termsAccepted: false
+					}
+					
+					// Réinitialiser les erreurs
+					this.errors = {}
 				}
 			} catch (error) {
-				console.error('Erreur:', error);
-				this.notify('error', 'Veuillez vérifier votre connexion ou réessayer plus tard.');
+				console.error('Erreur inscription:', error)
+				if (error.message.includes('already registered')) {
+					this.notify('error', 'Cette adresse email est déjà utilisée.')
+				} else {
+					this.notify('error', "Erreur lors de l'inscription. Veuillez réessayer.")
+				}
 			} finally {
-				this.isLoading = false;
+				this.isLoading = false
 			}
 		},
 
 		async handleLogin() {
-			if (!this.validateLoginForm()) return;
+			if (!this.validateLoginForm()) return
 
 			try {
-				this.isLoading = true;
+				this.isLoading = true
 
-				const data = await fetch(`connection/login`, {
+				const { data, error } = await supabase.auth.signInWithPassword({
 					email: this.loginForm.email,
-					password: this.loginForm.password,
-				});
+					password: this.loginForm.password
+				})
 
-				if (data.success) {
+				if (error) {
+					throw new Error(error.message)
+				}
+
+				if (data.user) {
 					// Stocker les informations utilisateur
-					if (this.loginForm.rememberMe) {
-						localStorage.setItem('user', JSON.stringify(data.user));
-						localStorage.setItem('token', data.token);
-						sessionStorage.removeItem('user');
-						sessionStorage.removeItem('token');
-					} else {
-						sessionStorage.setItem('user', JSON.stringify(data.user));
-						sessionStorage.setItem('token', data.token);
-						localStorage.removeItem('user');
-						localStorage.removeItem('token');
+					const userData = {
+						id: data.user.id,
+						first_name: data.user.user_metadata?.first_name || data.user.user_metadata?.firstName || '',
+						last_name: data.user.user_metadata?.last_name || data.user.user_metadata?.lastName || '',
+						email: data.user.email,
+						level: data.user.user_metadata?.level || ''
 					}
 
-					this.notify('success', 'Bienvenue ' + data.user.first_name + '!');
+					if (this.loginForm.rememberMe) {
+						localStorage.setItem('user', JSON.stringify(userData))
+						localStorage.setItem('token', data.session.access_token)
+						sessionStorage.removeItem('user')
+						sessionStorage.removeItem('token')
+					} else {
+						sessionStorage.setItem('user', JSON.stringify(userData))
+						sessionStorage.setItem('token', data.session.access_token)
+						localStorage.removeItem('user')
+						localStorage.removeItem('token')
+					}
 
-					// Redirection vers Dashboard pour les utilisateurs existants
+					this.notify('success', 'Bienvenue ' + userData.first_name + '!')
+
+					// Redirection vers Dashboard
 					setTimeout(() => {
-						this.$router.push('/dashboard');
-					}, 1500);
-				} else {
-					this.notify('error', 'Échec de la connexion. Veuillez vérifier vos identifiants.');
+						this.$router.push('/dashboard')
+					}, 1500)
 				}
 			} catch (error) {
-				console.error('Erreur de connexion:', error);
-				this.notify('error', 'Veuillez vérifier votre connexion ou réessayer plus tard.');
+				console.error('Erreur de connexion:', error)
+				this.notify('error', 'Email ou mot de passe incorrect.')
 			} finally {
-				this.isLoading = false;
+				this.isLoading = false
 			}
 		},
 
 		async handleResetPassword() {
-			try {
-				this.isLoading = true;
-
-				const data = await fetch(`connection/reset_password`, {
-					email: this.resetEmail,
-				});
-
-				if (data.success) {
-					this.notify('success', 'Un email de réinitialisation a été envoyé à votre adresse.');
-
-					this.showResetPassword = false;
-					this.resetEmail = '';
-				} else {
-					this.notify('error', "Échec de l'envoi. Veuillez réessayer.");
-				}
-			} catch (error) {
-				console.error('Erreur de réinitialisation:', error);
-				this.notify('error', 'Veuillez vérifier votre connexion ou réessayer plus tard.');
-			} finally {
-				this.isLoading = false;
+			if (!this.resetEmail) {
+				this.notify('error', 'Veuillez entrer votre adresse email.')
+				return
 			}
-		},
-	},
 
-	async beforeMount() {
-		const credentials = getCredentials();
-		if (!credentials) return (this.isConnected = false);
-		const connected = await fetch('connection/middleware', { credentials });
-		if (connected?.success) this.$router.push('/dashboard');
-		else this.isConnected = false;
-	},
-};
+			if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.resetEmail)) {
+				this.notify('error', 'Veuillez entrer un email valide.')
+				return
+			}
+
+			try {
+				this.isLoading = true
+
+				const { error } = await supabase.auth.resetPasswordForEmail(this.resetEmail, {
+					redirectTo: window.location.origin + '/reset-password'
+				})
+
+				if (error) {
+					throw new Error(error.message)
+				}
+
+				this.notify('success', 'Un email de réinitialisation a été envoyé à votre adresse.')
+				this.showResetPassword = false
+				this.resetEmail = ''
+			} catch (error) {
+				console.error('Erreur de réinitialisation:', error)
+				this.notify('error', 'Erreur lors de l\'envoi. Veuillez réessayer.')
+			} finally {
+				this.isLoading = false
+			}
+		}
+	}
+}
 </script>
 
 <style scoped>
+/* Variables CSS personnalisées pour la cohérence */
+:root {
+	--primary-color: #667eea;
+	--primary-dark: #764ba2;
+	--primary-light: rgba(102, 126, 234, 0.1);
+	--success-color: #10b981;
+	--error-color: #ef4444;
+	--warning-color: #f59e0b;
+	--text-primary: #1f2937;
+	--text-secondary: #6b7280;
+	--bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+	--bg-secondary: #f8fafc;
+	--card-bg: rgba(255, 255, 255, 0.9);
+	--border-color: #e5e7eb;
+	--border-radius: 16px;
+	--border-radius-sm: 8px;
+	--shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+	--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+	--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+	--shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+	--transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+	--input-bg: #ffffff;
+	--hover-bg: #f1f5f9;
+}
+
+/* Mode sombre */
+@media (prefers-color-scheme: dark) {
+	:root {
+		--text-primary: #f9fafb;
+		--text-secondary: #d1d5db;
+		--bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+		--bg-secondary: #1e293b;
+		--card-bg: rgba(30, 41, 59, 0.9);
+		--border-color: #374151;
+		--input-bg: #374151;
+		--hover-bg: #475569;
+	}
+}
+
 /* Container principal */
 .auth-container {
 	display: flex;
@@ -885,83 +985,6 @@ label {
 	margin-right: 0.5rem;
 }
 
-/* Connexion avec réseaux sociaux */
-.social-login {
-	margin-top: 2rem;
-	text-align: center;
-}
-
-.social-login p {
-	position: relative;
-	margin-bottom: 1.5rem;
-	color: var(--text-secondary);
-	display: flex;
-	align-items: center;
-	font-size: 0.875rem;
-}
-
-.social-login p::before,
-.social-login p::after {
-	content: '';
-	flex: 1;
-	height: 1px;
-	background: var(--border-color);
-}
-
-.social-login p::before {
-	margin-right: 1rem;
-}
-
-.social-login p::after {
-	margin-left: 1rem;
-}
-
-.social-buttons {
-	display: flex;
-	justify-content: center;
-	gap: 1rem;
-}
-
-.btn-social {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 50px;
-	height: 50px;
-	border-radius: 50%;
-	border: 2px solid var(--border-color);
-	font-size: 1.25rem;
-	color: var(--text-primary);
-	background: var(--input-bg);
-	cursor: pointer;
-	transition: var(--transition);
-	position: relative;
-	overflow: hidden;
-}
-
-.btn-google:hover {
-	border-color: #db4437;
-	color: #db4437;
-	background: rgba(219, 68, 55, 0.1);
-}
-
-.btn-microsoft:hover {
-	border-color: #0078d4;
-	color: #0078d4;
-	background: rgba(0, 120, 212, 0.1);
-}
-
-.btn-apple:hover {
-	border-color: #000000;
-	color: var(--text-primary);
-	background: rgba(0, 0, 0, 0.1);
-}
-
-.btn-social:hover {
-	transform: scale(1.05);
-	box-shadow: var(--shadow-md);
-}
-
 /* Modal */
 .modal {
 	position: fixed;
@@ -987,6 +1010,8 @@ label {
 	box-shadow: var(--shadow-xl);
 	animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	border: 1px solid var(--border-color);
+	max-height: 80vh;
+	overflow-y: auto;
 }
 
 .modal-content h3 {
@@ -1003,6 +1028,14 @@ label {
 	padding-right: 0.5rem;
 	color: var(--text-secondary);
 	line-height: 1.6;
+}
+
+.modal-body p {
+	margin-bottom: 1rem;
+}
+
+.modal-body p:last-child {
+	margin-bottom: 0;
 }
 
 .modal-actions {
@@ -1077,10 +1110,18 @@ label {
 		gap: 1rem;
 	}
 
-	.notification {
-		left: 1rem;
-		right: 1rem;
-		bottom: 1rem;
+	.modal-content {
+		margin: 1rem;
+		width: calc(100% - 2rem);
+		padding: 2rem;
+	}
+
+	.modal-actions {
+		flex-direction: column-reverse;
+	}
+
+	.modal-actions button {
+		width: 100%;
 	}
 }
 
@@ -1103,7 +1144,7 @@ label {
 	}
 
 	.modal-content {
-		padding: 2rem;
+		padding: 1.5rem;
 	}
 }
 
@@ -1121,5 +1162,34 @@ select:focus-visible,
 button:focus-visible {
 	outline: 2px solid var(--primary-color);
 	outline-offset: 2px;
+}
+
+/* Amélioration de l'accessibilité pour les liens */
+.checkbox-container a {
+	color: var(--primary-color);
+	text-decoration: underline;
+}
+
+.checkbox-container a:hover {
+	color: var(--primary-dark);
+}
+
+/* Scrollbar personnalisé pour le modal */
+.modal-body::-webkit-scrollbar {
+	width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+	background: var(--border-color);
+	border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+	background: var(--text-secondary);
+	border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+	background: var(--primary-color);
 }
 </style>
