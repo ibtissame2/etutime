@@ -3,7 +3,28 @@
 		<div class="app-branding">
 			<h1>Etutime</h1>
 			<p>Gestion de temps et organisation d'études</p>
+			<div v-if="showResendConfirmation" class="modal" @click.self="showResendConfirmation = false">
+			<div class="modal-content">
+				<h3>Email non confirmé</h3>
+				<div class="modal-body">
+					<p><strong>Votre adresse email n'a pas encore été confirmée.</strong></p>
+					<p>Pour pouvoir vous connecter, vous devez d'abord confirmer votre adresse email en cliquant sur le lien dans l'email que nous vous avons envoyé lors de l'inscription.</p>
+					<p>Si vous n'avez pas reçu l'email de confirmation ou si celui-ci a expiré, vous pouvez en demander un nouveau.</p>
+				</div>
+				<div class="modal-actions">
+					<button type="button" class="btn-cancel" @click="showResendConfirmation = false">Annuler</button>
+					<button type="button" class="btn-submit" @click="resendConfirmationEmail" :disabled="isLoading">
+						<span v-if="isLoading">
+							<i class="fas fa-circle-notch fa-spin"></i> Envoi...
+						</span>
+						<span v-else">
+							<i class="fas fa-envelope"></i> Renvoyer l'email
+						</span>
+					</button>
+				</div>
+			</div>
 		</div>
+	</div>
 
 		<div class="auth-card">
 			<div class="auth-tabs">
@@ -279,6 +300,7 @@ export default {
 			showResetPassword: false,
 			showTerms: false,
 			showPrivacy: false,
+			showResendConfirmation: false,
 			isLoading: false,
 			resetEmail: '',
 
@@ -491,10 +513,28 @@ export default {
 				})
 
 				if (error) {
-					throw new Error(error.message)
+					// Gestion spécifique des erreurs courantes
+					if (error.message.includes('Email not confirmed')) {
+						this.notify('warning', 'Veuillez confirmer votre adresse email avant de vous connecter. Vérifiez votre boîte mail.')
+						// Proposer de renvoyer l'email de confirmation
+						this.showResendConfirmation = true
+						return
+					} else if (error.message.includes('Invalid login credentials')) {
+						this.notify('error', 'Email ou mot de passe incorrect.')
+						return
+					} else {
+						throw new Error(error.message)
+					}
 				}
 
 				if (data.user) {
+					// Vérifier si l'utilisateur est confirmé
+					if (!data.user.email_confirmed_at) {
+						this.notify('warning', 'Veuillez confirmer votre adresse email avant de vous connecter.')
+						this.showResendConfirmation = true
+						return
+					}
+
 					// Stocker les informations utilisateur
 					const userData = {
 						id: data.user.id,
@@ -516,7 +556,7 @@ export default {
 						localStorage.removeItem('token')
 					}
 
-					this.notify('success', 'Bienvenue ' + userData.first_name + '!')
+					this.notify('success', 'Bienvenue ' + (userData.first_name || 'cher étudiant') + '!')
 
 					// Redirection vers Dashboard
 					setTimeout(() => {
@@ -525,7 +565,7 @@ export default {
 				}
 			} catch (error) {
 				console.error('Erreur de connexion:', error)
-				this.notify('error', 'Email ou mot de passe incorrect.')
+				this.notify('error', 'Une erreur est survenue lors de la connexion. Veuillez réessayer.')
 			} finally {
 				this.isLoading = false
 			}
@@ -559,6 +599,40 @@ export default {
 			} catch (error) {
 				console.error('Erreur de réinitialisation:', error)
 				this.notify('error', 'Erreur lors de l\'envoi. Veuillez réessayer.')
+			} finally {
+				this.isLoading = false
+			}
+		},
+
+		async resendConfirmationEmail() {
+			const email = this.loginForm.email || this.resetEmail
+
+			if (!email) {
+				this.notify('error', 'Veuillez entrer votre adresse email.')
+				return
+			}
+
+			try {
+				this.isLoading = true
+
+				const { error } = await supabase.auth.resend({
+					type: 'signup',
+					email: email
+				})
+
+				if (error) {
+					throw new Error(error.message)
+				}
+
+				this.notify('success', 'Email de confirmation renvoyé avec succès ! Vérifiez votre boîte mail.')
+				this.showResendConfirmation = false
+			} catch (error) {
+				console.error('Erreur lors du renvoi:', error)
+				if (error.message.includes('already confirmed')) {
+					this.notify('info', 'Votre email est déjà confirmé. Vous pouvez vous connecter.')
+				} else {
+					this.notify('error', 'Erreur lors du renvoi de l\'email. Veuillez réessayer.')
+				}
 			} finally {
 				this.isLoading = false
 			}
