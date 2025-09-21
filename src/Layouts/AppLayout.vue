@@ -25,7 +25,7 @@ import TagIcon from '@/Components/Icons/TagIcon.vue';
 import EnvGroupIcon from '@/Components/Icons/EnvGroupIcon.vue';
 import BookCheckIcon from '@/Components/Icons/BookCheckIcon.vue';
 import SidebarIcon from '@/Components/Icons/SidebarIcon.vue';
-import ChatBot from '@/Pages/ChatBot.vue';
+//import ChatBot from '@/Pages/ChatBot.vue';
 
 defineProps({
 	title: String,
