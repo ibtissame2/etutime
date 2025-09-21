@@ -236,7 +236,7 @@
 </template>
 
 <script>
-import { fetch, getCredentials } from '@/store/axios';
+import { supabase } from '@/lib/supabase.js'
 import { useNotificationsStore } from '@/store/notification';
 import NotificationContainer from '@/Components/NotificationContainer.vue';
 
@@ -390,40 +390,48 @@ export default {
 			try {
 				this.isLoading = true;
 
-				const data = await fetch(`connection/register`, {
-					firstName: this.registerForm.firstName,
-					lastName: this.registerForm.lastName,
+				const { data, error } = await supabase.auth.signUp({
 					email: this.registerForm.email,
 					password: this.registerForm.password,
-					level: this.registerForm.level,
+					options: {
+						data: {
+							firstName: this.registerForm.firstName,
+							lastName: this.registerForm.lastName,
+							first_name: this.registerForm.firstName,
+							last_name: this.registerForm.lastName,
+							level: this.registerForm.level
+						}
+					}
 				});
 
-				if (data.success) {
-					// Stocker les informations utilisateur
-					if (this.registerForm.rememberMe) {
-						localStorage.setItem('user', JSON.stringify(data.user));
-						localStorage.setItem('token', data.token);
-						sessionStorage.removeItem('user');
-						sessionStorage.removeItem('token');
-					} else {
-						sessionStorage.setItem('user', JSON.stringify(data.user));
-						sessionStorage.setItem('token', data.token);
-						localStorage.removeItem('user');
-						localStorage.removeItem('token');
-					}
+				if (error) {
+					throw new Error(error.message);
+				}
 
-					this.notify('success', 'Inscription réussie! Redirection en cours...');
-
-					// Redirection vers AppView pour les nouveaux utilisateurs
-					setTimeout(() => {
-						this.$router.push('/app');
-					}, 1500);
-				} else {
-					this.notify('error', "Erreur lors de l'inscription");
+				if (data.user) {
+					this.notify('success', 'Inscription réussie! Vérifiez votre email pour confirmer votre compte.');
+					
+					// Changer vers l'onglet de connexion
+					this.activeTab = 'login';
+					
+					// Réinitialiser le formulaire
+					this.registerForm = {
+						firstName: '',
+						lastName: '',
+						email: '',
+						level: '',
+						password: '',
+						confirmPassword: '',
+						termsAccepted: false
+					};
 				}
 			} catch (error) {
-				console.error('Erreur:', error);
-				this.notify('error', 'Veuillez vérifier votre connexion ou réessayer plus tard.');
+				console.error('Erreur inscription:', error);
+				if (error.message.includes('already registered')) {
+					this.notify('error', 'Cette adresse email est déjà utilisée.');
+				} else {
+					this.notify('error', "Erreur lors de l'inscription. Veuillez réessayer.");
+				}
 			} finally {
 				this.isLoading = false;
 			}
@@ -435,37 +443,47 @@ export default {
 			try {
 				this.isLoading = true;
 
-				const data = await fetch(`connection/login`, {
+				const { data, error } = await supabase.auth.signInWithPassword({
 					email: this.loginForm.email,
-					password: this.loginForm.password,
+					password: this.loginForm.password
 				});
 
-				if (data.success) {
+				if (error) {
+					throw new Error(error.message);
+				}
+
+				if (data.user) {
 					// Stocker les informations utilisateur
+					const userData = {
+						id: data.user.id,
+						first_name: data.user.user_metadata?.first_name || data.user.user_metadata?.firstName || '',
+						last_name: data.user.user_metadata?.last_name || data.user.user_metadata?.lastName || '',
+						email: data.user.email,
+						level: data.user.user_metadata?.level || ''
+					};
+
 					if (this.loginForm.rememberMe) {
-						localStorage.setItem('user', JSON.stringify(data.user));
-						localStorage.setItem('token', data.token);
+						localStorage.setItem('user', JSON.stringify(userData));
+						localStorage.setItem('token', data.session.access_token);
 						sessionStorage.removeItem('user');
 						sessionStorage.removeItem('token');
 					} else {
-						sessionStorage.setItem('user', JSON.stringify(data.user));
-						sessionStorage.setItem('token', data.token);
+						sessionStorage.setItem('user', JSON.stringify(userData));
+						sessionStorage.setItem('token', data.session.access_token);
 						localStorage.removeItem('user');
 						localStorage.removeItem('token');
 					}
 
-					this.notify('success', 'Bienvenue ' + data.user.first_name + '!');
+					this.notify('success', 'Bienvenue ' + userData.first_name + '!');
 
-					// Redirection vers Dashboard pour les utilisateurs existants
+					// Redirection vers Dashboard
 					setTimeout(() => {
 						this.$router.push('/dashboard');
 					}, 1500);
-				} else {
-					this.notify('error', 'Échec de la connexion. Veuillez vérifier vos identifiants.');
 				}
 			} catch (error) {
 				console.error('Erreur de connexion:', error);
-				this.notify('error', 'Veuillez vérifier votre connexion ou réessayer plus tard.');
+				this.notify('error', 'Email ou mot de passe incorrect.');
 			} finally {
 				this.isLoading = false;
 			}
@@ -475,21 +493,20 @@ export default {
 			try {
 				this.isLoading = true;
 
-				const data = await fetch(`connection/reset_password`, {
-					email: this.resetEmail,
+				const { error } = await supabase.auth.resetPasswordForEmail(this.resetEmail, {
+					redirectTo: window.location.origin + '/reset-password'
 				});
 
-				if (data.success) {
-					this.notify('success', 'Un email de réinitialisation a été envoyé à votre adresse.');
-
-					this.showResetPassword = false;
-					this.resetEmail = '';
-				} else {
-					this.notify('error', "Échec de l'envoi. Veuillez réessayer.");
+				if (error) {
+					throw new Error(error.message);
 				}
+
+				this.notify('success', 'Un email de réinitialisation a été envoyé à votre adresse.');
+				this.showResetPassword = false;
+				this.resetEmail = '';
 			} catch (error) {
 				console.error('Erreur de réinitialisation:', error);
-				this.notify('error', 'Veuillez vérifier votre connexion ou réessayer plus tard.');
+				this.notify('error', 'Erreur lors de l\'envoi. Veuillez réessayer.');
 			} finally {
 				this.isLoading = false;
 			}
@@ -497,11 +514,19 @@ export default {
 	},
 
 	async beforeMount() {
-		const credentials = getCredentials();
-		if (!credentials) return (this.isConnected = false);
-		const connected = await fetch('connection/middleware', { credentials });
-		if (connected?.success) this.$router.push('/dashboard');
-		else this.isConnected = false;
+		try {
+			const { data: { session } } = await supabase.auth.getSession();
+			
+			if (session?.user) {
+				// Utilisateur déjà connecté
+				this.$router.push('/dashboard');
+			} else {
+				this.isConnected = false;
+			}
+		} catch (error) {
+			console.error('Erreur lors de la vérification de session:', error);
+			this.isConnected = false;
+		}
 	},
 };
 </script>
@@ -885,83 +910,6 @@ label {
 	margin-right: 0.5rem;
 }
 
-/* Connexion avec réseaux sociaux */
-.social-login {
-	margin-top: 2rem;
-	text-align: center;
-}
-
-.social-login p {
-	position: relative;
-	margin-bottom: 1.5rem;
-	color: var(--text-secondary);
-	display: flex;
-	align-items: center;
-	font-size: 0.875rem;
-}
-
-.social-login p::before,
-.social-login p::after {
-	content: '';
-	flex: 1;
-	height: 1px;
-	background: var(--border-color);
-}
-
-.social-login p::before {
-	margin-right: 1rem;
-}
-
-.social-login p::after {
-	margin-left: 1rem;
-}
-
-.social-buttons {
-	display: flex;
-	justify-content: center;
-	gap: 1rem;
-}
-
-.btn-social {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 50px;
-	height: 50px;
-	border-radius: 50%;
-	border: 2px solid var(--border-color);
-	font-size: 1.25rem;
-	color: var(--text-primary);
-	background: var(--input-bg);
-	cursor: pointer;
-	transition: var(--transition);
-	position: relative;
-	overflow: hidden;
-}
-
-.btn-google:hover {
-	border-color: #db4437;
-	color: #db4437;
-	background: rgba(219, 68, 55, 0.1);
-}
-
-.btn-microsoft:hover {
-	border-color: #0078d4;
-	color: #0078d4;
-	background: rgba(0, 120, 212, 0.1);
-}
-
-.btn-apple:hover {
-	border-color: #000000;
-	color: var(--text-primary);
-	background: rgba(0, 0, 0, 0.1);
-}
-
-.btn-social:hover {
-	transform: scale(1.05);
-	box-shadow: var(--shadow-md);
-}
-
 /* Modal */
 .modal {
 	position: fixed;
@@ -1076,12 +1024,6 @@ label {
 		align-items: flex-start;
 		gap: 1rem;
 	}
-
-	.notification {
-		left: 1rem;
-		right: 1rem;
-		bottom: 1rem;
-	}
 }
 
 @media (max-width: 480px) {
@@ -1122,4 +1064,3 @@ button:focus-visible {
 	outline: 2px solid var(--primary-color);
 	outline-offset: 2px;
 }
-</style>
